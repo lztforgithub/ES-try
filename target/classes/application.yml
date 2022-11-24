@@ -1,0 +1,10 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: ES
+  elasticsearch:
+    address: 116.204.69.134:9200
+    ip: 116.204.69.134
+    port: 9200
+    pool: 5
