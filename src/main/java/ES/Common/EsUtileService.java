@@ -23,7 +23,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
@@ -33,6 +32,7 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -167,7 +167,7 @@ public class EsUtileService {
      * 通用条件查询，map类型的参数都为空时，默认查询全部
      *
      */
-    /*public PageResult<List<JSONObject>> conditionSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap) throws IOException, IOException {
+    public PageResult<List<JSONObject>> conditionSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap) throws IOException, IOException {
         SearchRequest searchRequest = new SearchRequest(indexName);
         // 索引不存在时不报错
         searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
@@ -218,13 +218,13 @@ public class EsUtileService {
         pageResult.setTotalPage(total==0?0: (int) (total % pageSize == 0 ? total / pageSize : (total / pageSize) + 1));
 
         return pageResult;
-    }*/
+    }
 
     /**
      * 构造多条件查询
      *
      */
-    /*public BoolQueryBuilder buildMultiQuery(Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap) {
+    public BoolQueryBuilder buildMultiQuery(Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap) {
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
         //该值为true时搜索全部
         boolean searchAllFlag = true;
@@ -266,7 +266,7 @@ public class EsUtileService {
         }
 
         return boolQueryBuilder;
-    }*/
+    }
 
     /**
      * 构建高亮字段
