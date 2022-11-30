@@ -21,7 +21,7 @@ import java.util.Set;
 public class WorkCrawler {
     private String url;
 
-    public WorkDoc workDoc;
+    private WorkDoc workDoc;
 
     private String generateAbstract(JSONObject abstract_inverted)
     {
@@ -175,8 +175,15 @@ public class WorkCrawler {
         workDoc.setPcite(cited_by_count);
 
         JSONObject abstract_inverted_index = jsonObject.getJSONObject("abstract_inverted_index");
-        String abstract_text = generateAbstract(abstract_inverted_index);
-        workDoc.setPabstract(abstract_text);
+        if(abstract_inverted_index==null)
+        {
+            workDoc.setPabstract(null);
+        }
+        else
+        {
+            String abstract_text = generateAbstract(abstract_inverted_index);
+            workDoc.setPabstract(abstract_text);
+        }
 
         JSONArray concepts = jsonObject.getJSONArray("concepts");
         for(int i=0; i<concepts.size(); i++)
@@ -227,7 +234,7 @@ public class WorkCrawler {
                 workDoc.addPcitednum(0);
             }
         }
-        System.out.println("generate doc done.");
+        System.out.println("generate "+workDoc.getPID()+" doc done.");
         this.workDoc = workDoc;
         return workDoc;
     }
@@ -236,11 +243,15 @@ public class WorkCrawler {
         this.url = url;
     }
 
-    public void run()
+    public WorkDoc run()
     {
         WorkCrawler workCrawler = new WorkCrawler(url);
         String jsonStr = workCrawler.crawlWork();
-        workCrawler.json2Doc(jsonStr);
+        return workCrawler.json2Doc(jsonStr);
+    }
+
+    public WorkDoc getWorkDoc() {
+        return workDoc;
     }
 
     public static void main(String[] args) {

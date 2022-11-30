@@ -1,3 +1,9 @@
-D:\开发相关\软件系统分析与设计\ES-try\src\main\java\ES\config\ElasticSearchConfig.java
-D:\开发相关\软件系统分析与设计\ES-try\src\main\java\ES\Common\EsUtileService.java
-D:\开发相关\软件系统分析与设计\ES-try\src\main\java\ES\ES.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\Common\EsUtileService.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\storage\WorkStorage.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\Crawler\InstituteCrawler.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\ES.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\Common\PageResult.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\Crawler\WorkCrawler.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\Document\InstituteDoc.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\config\ElasticSearchConfig.java
+C:\Users\1\IdeaProjects\1129\ES-try\src\main\java\ES\Document\WorkDoc.java

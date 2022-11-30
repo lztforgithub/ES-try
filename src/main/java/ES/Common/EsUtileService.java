@@ -1,9 +1,9 @@
 package ES.Common;
 
+import ES.Document.WorkDoc;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -12,6 +12,7 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.IndicesOptions;
@@ -19,7 +20,10 @@ import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
@@ -47,7 +51,7 @@ import java.util.Map;
 public class EsUtileService {
 
     @Autowired
-    RestHighLevelClient restHighLevelClient;
+    RestHighLevelClient restHighLevelClient = new RestHighLevelClient(RestClient.builder(new HttpHost("116.204.69.134", 9200, "http")));
 
     /**
      * 创建索引
@@ -298,6 +302,16 @@ public class EsUtileService {
         }
     }
 
+    public void addDoc(String indexName, WorkDoc workDoc) {
+        IndexRequest request = new IndexRequest(indexName).id(workDoc.getPID()).source(JSONObject.toJSONString(workDoc), XContentType.JSON);
+        try {
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+            System.out.println("add doc "+workDoc.getPID()+" success.");
+        } catch (IOException e) {
+//            System.out.println("add doc "+workDoc.getPID()+" failed.");
+            System.out.println(e);
+        }
+    }
 }
 
 
