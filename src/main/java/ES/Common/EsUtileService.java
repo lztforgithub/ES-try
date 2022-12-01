@@ -1,5 +1,6 @@
 package ES.Common;
 
+import ES.Document.InstitutionDoc;
 import ES.Document.WorkDoc;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -62,6 +63,7 @@ public class EsUtileService {
             CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
             CreateIndexResponse response = restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);
             //log.info("创建索引 response 值为： {}", response.toString());
+            System.out.println("create index:"+indexName);
             return true;
         }catch (Exception e) {
             e.printStackTrace();
@@ -307,6 +309,17 @@ public class EsUtileService {
         try {
             restHighLevelClient.index(request, RequestOptions.DEFAULT);
             System.out.println("add doc "+workDoc.getPID()+" success.");
+        } catch (IOException e) {
+//            System.out.println("add doc "+workDoc.getPID()+" failed.");
+            System.out.println(e);
+        }
+    }
+
+    public void addDoc(String indexName, InstitutionDoc institutionDoc) {
+        IndexRequest request = new IndexRequest(indexName).id(institutionDoc.getIID()).source(JSONObject.toJSONString(institutionDoc), XContentType.JSON);
+        try {
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+            System.out.println("add doc "+institutionDoc.getIID()+" success.");
         } catch (IOException e) {
 //            System.out.println("add doc "+workDoc.getPID()+" failed.");
             System.out.println(e);
