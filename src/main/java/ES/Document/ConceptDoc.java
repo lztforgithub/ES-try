@@ -11,11 +11,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ConceptDoc {
-    public String CID;
-    public String Cname;
-    public String CnameCN;
-    public int Clevel;
-    public ArrayList<String> CancestorID;
+    private String CID;
+    private String Cname;
+    private String CnameCN;
+    private int Clevel;
+    private ArrayList<String> CancestorID;
 
     public ConceptDoc (String CID, String Cname, String CnameCN, int Clevel) {
         this.CID = CID;
@@ -58,5 +58,35 @@ public class ConceptDoc {
     }
 
 
+    public String getCID() {
+        return CID;
+    }
 
+    public void setCID(String cid) {
+        this.CID = cid;
+    }
+
+    public String getCname() {
+        return Cname;
+    }
+
+    public void setCname(String cname) {
+        this.Cname = cname;
+    }
+
+    public String getCnameCN() {
+        return CnameCN;
+    }
+
+    public void setCnameCN(String cnameCN) {
+        CnameCN = cnameCN;
+    }
+
+    public int getClevel() {
+        return Clevel;
+    }
+
+    public void setClevel(int clevel) {
+        Clevel = clevel;
+    }
 }

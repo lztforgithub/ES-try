@@ -1,5 +1,6 @@
 package ES.Common;
 
+import ES.Document.ConceptDoc;
 import ES.Document.InstitutionDoc;
 import ES.Document.WorkDoc;
 import com.alibaba.fastjson.JSON;
@@ -323,6 +324,23 @@ public class EsUtileService {
         } catch (IOException e) {
 //            System.out.println("add doc "+workDoc.getPID()+" failed.");
             System.out.println(e);
+        }
+    }
+
+    /**
+     * 将新的概念放入ES中。
+     * @param indexName 索引名称，应该为concepts。
+     * @param conceptDoc 概念Doc实例。
+     */
+    public void addDoc(String indexName, ConceptDoc conceptDoc) {
+        IndexRequest request = new IndexRequest(indexName)
+                .id(conceptDoc.getCID())
+                .source(JSONObject.toJSONString(conceptDoc), XContentType.JSON);
+        try {
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+            System.out.println("Successfully added new concept: " + conceptDoc.getCID() + " with name " + conceptDoc.getCname());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
