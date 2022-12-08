@@ -2,6 +2,8 @@ package ES.Crawler;
 
 import ES.Common.AlexUtils;
 import ES.Common.HttpUtils;
+import ES.Document.ConceptDoc;
+import com.alibaba.fastjson.JSON;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -17,10 +19,10 @@ import java.util.ArrayList;
 
 public class ConceptCrawler {
 
-    public static JSONArray csConcepts = new JSONArray();
+    public static ArrayList<ConceptDoc> csConcepts = new ArrayList<>();
 
-    public static JSONArray getLevelZeroConcepts(){
-        JSONArray arr = new JSONArray();
+    public static ArrayList<ConceptDoc> getLevelZeroConcepts(){
+        ArrayList<ConceptDoc> arr = new ArrayList<>();
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet("https://api.openalex.org/concepts");
             ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
@@ -36,22 +38,7 @@ public class ConceptCrawler {
                 int count = concepts.length();
                 for(int i = 0; i < count; i++){
                     obj = concepts.getJSONObject(i);
-                    JSONObject newConcept = new JSONObject();
-                    newConcept.put("CID", AlexUtils.getRawID(obj.getString("id")));
-                    newConcept.put("Cname", obj.getString("display_name"));
-                    String chineseName = "none";
-                    try {
-                        chineseName = obj.getJSONObject("international")
-                                .getJSONObject("display_name")
-                                .getString("zh-hans");
-                    } catch (Exception e){
-                        System.out.printf("Concept %s has no Chinese Name provided.\n",
-                                obj.getString("display_name"));
-                    }
-                    newConcept.put("CnameCN", chineseName);
-                    newConcept.put("Clevel", obj.getInt("level"));
-                    newConcept.put("CparentID", "none");
-                    arr.put(newConcept);
+                    arr.add(parseOpenAlexConceptInfo(obj));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -66,9 +53,9 @@ public class ConceptCrawler {
      * 抓取第level级的，父级概念含ancestorID的所有概念。
      * @param level 概念等级。
      * @param ancestorID 所属的父级概念ID。
-     * @return 一个JSONArray，内含所有符合条件的概念。
+     * @return 一个ArrayList，内含所有符合条件的概念，存储为ConceptDoc。
      */
-    public static JSONArray getConceptsByAncestor(int level, String ancestorID){
+    public static ArrayList<ConceptDoc> getConceptsByAncestor(int level, String ancestorID){
         int totalConceptCount = 25;
         int currentConceptCount = 0;
         int page = 0;
@@ -77,7 +64,7 @@ public class ConceptCrawler {
 
         nameValuePairs.add(0, new BasicNameValuePair("filter", "level:1,ancestors.id:" + ancestorID));
         nameValuePairs.add(1, new BasicNameValuePair("page", Integer.toString(0)));
-        JSONArray ret = new JSONArray();
+        ArrayList<ConceptDoc> ret = new ArrayList<>();
 
         try {
             while (currentConceptCount < totalConceptCount) {
@@ -86,10 +73,10 @@ public class ConceptCrawler {
                 String responseString = HttpUtils.handleRequestWithParams(alexURI, nameValuePairs);
                 // 检查是否出错
                 if (responseString.equals("ERR_GET") || responseString.equals("ERR_CLIENT")) {
-                    JSONObject obj = new JSONObject();
-                    obj.put("error", responseString);
-                    ret.put(obj);
-                    return ret; // 返回错误代码
+                    ConceptDoc temp = new ConceptDoc();
+                    temp.setCID(responseString);
+                    ret.add(temp);
+                    return ret; // 返回错误信息
                 }
                 // 处理返回信息
                 JSONObject conceptJSON = new JSONObject(responseString);
@@ -106,11 +93,11 @@ public class ConceptCrawler {
 
                 JSONArray receivedConcepts = conceptJSON.getJSONArray("results");
                 for (int i = 0; i < receivedConcepts.length(); i++) {
-                    JSONObject parsedConcept = parseOpenAlexConceptInfo(receivedConcepts.getJSONObject(i)) ;
-                    ret.put(parsedConcept);
+                    ConceptDoc parsedConcept = parseOpenAlexConceptInfo(receivedConcepts.getJSONObject(i)) ;
+                    ret.add(parsedConcept);
                     currentConceptCount++;
                     System.out.printf("Progress: %d / %d, current CID %s\n", currentConceptCount, totalConceptCount,
-                            parsedConcept.getString("CID"));
+                            parsedConcept.getCID());
                 }
             }
         } catch (Exception e) {
@@ -120,43 +107,104 @@ public class ConceptCrawler {
         return ret;
     }
 
-    public static JSONObject parseOpenAlexConceptInfo(JSONObject concept) {
-        JSONObject ret = new JSONObject();
+    public static ArrayList<ConceptDoc> getConceptsByAPIParams(ArrayList<NameValuePair> nameValuePairs) {
+        ArrayList<ConceptDoc> ret = new ArrayList<>();
         try {
-            ret.put("CID", AlexUtils.getRawID(concept.getString("id")));
-            ret.put("Cname", concept.getString("display_name"));
+            String uri = "https://api.openalex.org/concepts";
+            String response = HttpUtils.handleRequestWithParams(uri, nameValuePairs);
+            JSONObject responseJSON = new JSONObject(response);
+            JSONArray results = responseJSON.getJSONArray("results");
+            for (int i = 0; i < results.length(); i++) {
+                ret.add(parseOpenAlexConceptInfo(results.getJSONObject(i)));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ret;
+    }
+
+    public static ArrayList<ConceptDoc> getConceptsByURL(String url) {
+        ArrayList<ConceptDoc> ret = new ArrayList<>();
+        try {
+            String response = HttpUtils.handleRequestURL(url);
+            JSONObject responseJSON = new JSONObject(response);
+            JSONArray results = responseJSON.getJSONArray("results");
+            for (int i = 0; i < results.length(); i++) {
+                ret.add(parseOpenAlexConceptInfo(results.getJSONObject(i)));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ret;
+    }
+
+    public static ConceptDoc parseOpenAlexConceptInfo(JSONObject concept) {
+        ConceptDoc ret = new ConceptDoc();
+        try {
+            ret.setCID(AlexUtils.getRawID(concept.getString("id")));
+            ret.setCname(concept.getString("display_name"));
             try {
-                ret.put("CnameCN", concept.getJSONObject("international").getJSONObject("display_name").getString("zh-hans"));
+                ret.setCnameCN(concept.getJSONObject("international").getJSONObject("display_name").getString("zh-hans"));
             } catch (Exception e) {
-                ret.put("CnameCN", "none");
+                ret.setCnameCN("none");
                 System.out.printf("Concept %s has no Chinese name.\n", concept.getString("display_name"));
             }
 
-            ret.put("Clevel", concept.getInt("level"));
-            JSONArray ancestors = concept.getJSONArray("ancestors");
-            ArrayList<String> ancestorIDs = new ArrayList<>();
-            for (int i = 0; i < ancestors.length(); i++) {
-                ancestorIDs.add(AlexUtils.getRawID(ancestors.getJSONObject(i).getString("id")));
+            ret.setClevel(concept.getInt("level"));
+            if (concept.getInt("level") > 0) {
+                JSONArray ancestors = concept.getJSONArray("ancestors");
+                ArrayList<String> ancestorIDs = new ArrayList<>();
+                for (int i = 0; i < ancestors.length(); i++) {
+                    ancestorIDs.add(AlexUtils.getRawID(ancestors.getJSONObject(i).getString("id")));
+                }
+                ret.setCancestorID(ancestorIDs);
             }
-            ret.put("CancestorID", ancestorIDs);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return ret;
     }
 
-    public static void main(String[] args) {
-        JSONArray levelZeroConcepts = getLevelZeroConcepts();
+    /**
+     * 爬取该概念的所有父级概念。
+     * @return 经过处理的ConceptDoc。中间如果有出错，则返回的Cname为ERROR。
+     */
+    public ConceptDoc getAncestors(ConceptDoc conceptDoc){
+        assert conceptDoc.getCID().length() > 1;
         try {
-            for (int i = 0; i < levelZeroConcepts.length(); i++) {
-                JSONObject levelZeroConcept = levelZeroConcepts.getJSONObject(i);
+            ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+            nameValuePairs.add(new BasicNameValuePair("filter", "ids.openalex:" + conceptDoc.getCID()));
+            String response = HttpUtils.handleRequestWithParams("https://api.openalex.org/concepts", nameValuePairs);
+            JSONObject responseJSON = new JSONObject(response);
+            // 拿取第一个记录
+            JSONObject entry = responseJSON.getJSONArray("results").getJSONObject(0);
+            JSONArray ancestors = entry.getJSONArray("ancestors");
+            ArrayList<String> temp = new ArrayList<>();
+            for (int i = 0; i < ancestors.length(); i++) {
+                temp.add(AlexUtils.getRawID(ancestors.getJSONObject(i).getString("id")));
+            }
+            conceptDoc.setCancestorID(temp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            conceptDoc.setCname("ERROR");
+        }
+        return conceptDoc;
+    }
+
+    public static void main(String[] args) {
+        ArrayList<ConceptDoc> levelZeroConcepts = getLevelZeroConcepts();
+        try {
+            for (int i = 0; i < levelZeroConcepts.size(); i++) {
+                ConceptDoc levelZeroConcept = levelZeroConcepts.get(i);
                 // System.out.println("Get level 0 concept " + levelZeroConcept.getString("Cname"));
-                if (levelZeroConcept.getString("Cname").equals("Computer science")) {
-                    JSONArray arr = getConceptsByAncestor(1,
-                            levelZeroConcept.getString("CID"));
-                    for (int j = 0; j < arr.length(); j++) {
-                        System.out.printf("Crawled level 1 concept %s\n", arr.getJSONObject(j).getString("Cname"));
-                        csConcepts.put(arr.getJSONObject(j));
+                if (levelZeroConcept.getCname().equals("Computer science")) {
+                    ArrayList<ConceptDoc> arr = getConceptsByAncestor(1,
+                            levelZeroConcept.getCID());
+                    for (ConceptDoc conceptDoc : arr) {
+                        System.out.printf("Crawled level 1 concept %s\n", conceptDoc.getCname());
+                        csConcepts.add(conceptDoc);
                     }
                 }
             }

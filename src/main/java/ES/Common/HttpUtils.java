@@ -53,6 +53,24 @@ public class HttpUtils {
         }
     }
 
+    public static String handleRequestURL(String dest) {
+        String ret = "";
+        try(CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet(dest);
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                ret = handleResponse(response);
+                response.close();
+                return ret;
+            } catch (Exception e){
+                e.printStackTrace();
+                return "ERR_GET";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ERR_CLIENT";
+        }
+    }
+
     public static String fetchWebpage(URL url, String proxyHost, int proxyPort) {
         String line = null;
         try {
