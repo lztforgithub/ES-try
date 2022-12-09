@@ -4,7 +4,9 @@ import ES.Common.EsUtileService;
 import ES.Common.PageResult;
 import ES.Common.Response;
 import ES.Dao.AdmissionApplicationDao;
+import ES.Dao.UserDao;
 import ES.Entity.AdmissionApplication;
+import ES.Ret.BaseRet;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,5 +69,33 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
         map.put("R_UID","*");
         t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
         return Response.success("已入驻学者名单如下:",t);
+    }
+
+
+    @Override
+    public Response<Object> base() throws IOException {
+        int userSum = admissionApplicationDao.countUser();
+
+        PageResult<JSONObject> t;
+        Map<String,Object> map = new HashMap<>();
+        map.put("R_UID","*");
+        t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
+        int iScholarSum = (int) t.getTotal();
+
+        t = esUtileService.conditionSearch("researcher",100,20,"",null,null,null,null);
+        int scholarSum = (int) t.getTotal();
+
+        t = esUtileService.conditionSearch("concept",100,20,"",null,null,null,null);
+        int fieldSum = (int) t.getTotal();
+
+        t = esUtileService.conditionSearch("works",100,20,"",null,null,null,null);
+        int paperSum = (int) t.getTotal();
+
+        t = esUtileService.conditionSearch("institutions",100,20,"",null,null,null,null);
+        int insSum = (int) t.getTotal();
+
+        BaseRet baseRet = new BaseRet(userSum,iScholarSum,scholarSum,fieldSum,paperSum,insSum);
+
+        return Response.success("平台基本信息如下:",baseRet);
     }
 }

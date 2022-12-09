@@ -13,4 +13,6 @@ public interface AdmissionApplicationService {
     Response<Object> update(String aa_id, int acc, String opinion);
 
     Response<Object> RUID() throws IOException;
+
+    Response<Object> base() throws IOException;
 }

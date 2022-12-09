@@ -15,4 +15,7 @@
     <select id="selectById" resultType="ES.Entity.AdmissionApplication">
         select * from admission_application where AAID = #{aa_id}
     </select>
+    <select id="countUser">
+        select count(*) from user
+    </select>
 </mapper>
