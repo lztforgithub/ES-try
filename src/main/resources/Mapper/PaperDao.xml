@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ES.Dao.PaperDao">
+    <select id="selectByPID" resultType="ES.Entity.Comment">
+        select * from comment where C_PID = #{paper_id}
+    </select>
+    <select id="isLike" resultType="ES.Entity.LikeRecords">
+        select * from like_records where C_ID = #{comment_id} and UID = #{user_id}
+    </select>
+    <insert id="insertComment" parameterType="ES.Entity.Comment">
+        insert into comment(CID,C_UID,C_PID,Ccontent,Ctime,Clikes,Ctop)
+            values(#{comment_id},#{uid},#{pid},#{content},#{time},#{likes},#{top})
+    </insert>
+    <insert id="insertLikeRecords" parameterType="ES.Entity.LikeRecords">
+        insert into like_records(LR_ID,C_ID,UID)
+            values(#{likeRecords_id},#{comment_id},#{user_id})
+    </insert>
+    <update id="updateLike">
+        update comment set Clikes=Clikes+1
+            where CID=#{comment_id}
+    </update>
+    <delete id="deleteLikeRecords">
+        delete like_records where UID=#{user_id} and C_ID=#{comment_id}
+    </delete>
+    <update id="updateUnLike">
+        update comment set Clikes=Clikes-1
+        where CID=#{comment_id}
+    </update>
+</mapper>
