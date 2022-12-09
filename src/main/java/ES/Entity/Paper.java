@@ -11,6 +11,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -40,27 +41,27 @@ public class Paper {
     @Field(type= FieldType.text, store = true)
     private String Pauthor;
 
-    @Field(type= FieldType.text, store = true)
-    private String Pdate;
+    @Field(type= FieldType.Date, store = true)
+    private Timestamp Pdate;
 
-    @Field(type= FieldType.text, store = true)
-    private String Pcite;
+    @Field(type= FieldType.Long, store = true)
+    private int Pcite;
 
-    @Field(type= FieldType.text, store = true)
-    private String is_retracted;
+    @Field(type= FieldType.Boolean)
+    private boolean is_retracted;
 
-    @Field(type= FieldType.text, store = true)
-    private String is_paratext;
+    @Field(type= FieldType.Boolean)
+    private boolean is_paratext;
 
     @Field(type= FieldType.text, store = true)
     private String Plink;
 
     @Field(type= FieldType.text, store = true)
     private String Pabstract;
-
+/////////////////////////////////////////////////////////////////////////////////////
     @Field(type= FieldType.text, store = true)
     private String Pabstractwords;
-
+///////////////////////////////////////////////////////////////////////////////////////////
     @Field(type= FieldType.text, store = true)
     private String Pabstractcount;
 
@@ -78,5 +79,5 @@ public class Paper {
 
     @Field(type= FieldType.text, store = true)
     private String Pcitednum;
-    
+
 }
