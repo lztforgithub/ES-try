@@ -289,6 +289,57 @@ public class WorkCrawler {
         this.workDoc = workDoc;
         return workDoc;
     }
+
+    public ArrayList<String> getFirstFiveResults(String search_url)
+    {
+        ArrayList<String> ret = new ArrayList<>();
+        InputStreamReader reader = null;
+        BufferedReader in = null;
+        StringBuffer content = new StringBuffer();
+
+        try {
+            URLConnection connection = new URL(url).openConnection();
+            connection.setConnectTimeout(1000);
+            reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+            in = new BufferedReader(reader);
+
+            String line = null;
+
+            while ((line = in.readLine())!=null)
+            {
+                content.append(line);
+            }
+            System.out.println("crawl "+url+" done.");
+        } catch (IOException e) {
+            System.out.println("can't crawl "+url);;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close buffered reader!!!");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close inputstream reader!!!");
+                }
+            }
+        }
+
+        JSONObject response = JSON.parseObject(content.toString());
+        JSONArray results = response.getJSONArray("results");
+        for(int i=0; i< results.size()&&i<5; i++)
+        {
+            JSONObject result = results.getJSONObject(i);
+            String pid = "W"+result.getString("id").split("W")[1];
+            ret.add(pid);
+        }
+
+        return ret;
+    }
     public WorkCrawler(String url)
     {
         this.url = url;
