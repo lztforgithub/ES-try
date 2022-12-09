@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Locale;
 
 @Component
@@ -34,7 +36,9 @@ public class WorkStorage {
     {
         WorkCrawler workCrawler = new WorkCrawler(url);
         WorkStorage workStorage = new WorkStorage();
-        workStorage.addDoc("works", workCrawler.run());
+        WorkDoc workDoc = workCrawler.run();
+        workStorage.addDoc("works", workDoc);
+        System.out.println("store "+url+" doc done.");
     }
     public void addDoc(String indexName, WorkDoc workDoc)
     {
@@ -48,10 +52,21 @@ public class WorkStorage {
         return esUtileService.queryDocById(indexName, ID);
     }
 
-    public static void main(String[] args) {
-        String url = "https://api.openalex.org/works/W1775749144";
-        WorkStorage workStorage = new WorkStorage();
-        workStorage.storeWork(url);
+    public static void main(String[] args) throws IOException {
+        FileReader fileReader = new FileReader("C:\\Users\\1\\IdeaProjects\\1129\\ES-try\\works_urls.txt");
+        String urls_string = "";
+        int c = 0;
+        while((c=fileReader.read())!=-1)
+        {
+            urls_string += (char)c;
+        }
+        String[] urls = urls_string.split("\n");
+        for(String url:urls)
+        {
+            WorkStorage workStorage = new WorkStorage();
+            workStorage.storeWork(url);
+        }
         System.out.println("----done----");
+        fileReader.close();
     }
 }
