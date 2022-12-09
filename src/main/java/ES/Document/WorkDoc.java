@@ -25,6 +25,8 @@ public class WorkDoc {
     private ArrayList<Integer> Pabstractcount = new ArrayList<>();
     private ArrayList<Integer> Pcitednum = new ArrayList<>();
 
+    private ArrayList<String> PsystemTags = new ArrayList<>();
+
     public String getPID() {
         return PID;
     }
@@ -202,5 +204,18 @@ public class WorkDoc {
     public void addPabstractcount(int n)
     {
         Pabstractcount.add(n);
+    }
+
+    public ArrayList<String> getPsystemTags() {
+        return PsystemTags;
+    }
+
+    public void setPsystemTags(ArrayList<String> psystemTags) {
+        PsystemTags = psystemTags;
+    }
+
+    public void addPsystemTags(String s)
+    {
+        PsystemTags.add(s);
     }
 }

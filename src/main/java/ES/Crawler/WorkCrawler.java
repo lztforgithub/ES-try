@@ -265,6 +265,26 @@ public class WorkCrawler {
                 workDoc.addPcitednum(0);
             }
         }
+
+        String pub_year = jsonObject.getString("publication_year");
+        workDoc.addPsystemTags(pub_year);
+        int counter = 0;
+        if(concepts!=null)
+        {
+            for(int i=0; i<concepts.size()&&counter<3; i++)
+            {
+                JSONObject concept = concepts.getJSONObject(i);
+                int level = Integer.parseInt(concept.getString("level"));
+                if(level>0)
+                {
+                    String concept_id = "C"+concept.getString("id").split("C")[1];
+                    workDoc.addPconcepts(concept_id);
+                    counter += 1;
+                }
+            }
+        }
+
+
         System.out.println("generate "+workDoc.getPID()+" doc done.");
         this.workDoc = workDoc;
         return workDoc;
