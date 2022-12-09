@@ -1,6 +1,8 @@
 package ES.Common;
 
+import ES.Document.ConceptDoc;
 import ES.Document.InstitutionDoc;
+import ES.Document.VenueDoc;
 import ES.Document.WorkDoc;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -23,6 +25,8 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
@@ -30,6 +34,8 @@ import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -42,6 +48,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.net.IDN;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -324,6 +331,64 @@ public class EsUtileService {
 //            System.out.println("add doc "+workDoc.getPID()+" failed.");
             System.out.println(e);
         }
+    }
+
+    /**
+     * 将新的概念放入ES中。
+     * @param indexName 索引名称，应该为concepts。
+     * @param conceptDoc 概念Doc实例。
+     */
+    public void addDoc(String indexName, ConceptDoc conceptDoc) {
+        IndexRequest request = new IndexRequest(indexName)
+                .id(conceptDoc.getCID())
+                .source(JSONObject.toJSONString(conceptDoc), XContentType.JSON);
+        try {
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+            System.out.println("Successfully added new concept: " + conceptDoc.getCID() + " with name " + conceptDoc.getCname());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 将新的出版物放入ES中。
+     * @param indexName 索引名称，应该为concepts。
+     * @param venueDoc 出版物Doc实例。
+     */
+    public void addDoc(String indexName, VenueDoc venueDoc) {
+        IndexRequest request = new IndexRequest(indexName)
+                .id(venueDoc.getVID())
+                .source(JSONObject.toJSONString(venueDoc), XContentType.JSON);
+        try {
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+            System.out.println("Successfully added new concept: " + venueDoc.getVID() + " with name " + venueDoc.getVfullname());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteDuplicateDoc(String indexName, String IDName, String ID) {
+        CountRequest countRequest = new CountRequest(indexName);
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        sourceBuilder.query(QueryBuilders.matchQuery(IDName, ID));
+        countRequest.source(sourceBuilder);
+        try {
+            CountResponse countResponse = restHighLevelClient.count(countRequest, RequestOptions.DEFAULT);
+            int count = (int) countResponse.getCount();
+            System.out.println("Duplicate check: " + count);
+            if (count > 1) {
+                // 清除多余的Doc
+                DeleteByQueryRequest deleteByQueryRequest = new DeleteByQueryRequest(indexName);
+                deleteByQueryRequest.setMaxDocs(count - 1);
+                deleteByQueryRequest.setQuery(QueryBuilders.matchQuery(IDName, ID));
+                BulkByScrollResponse bulkResponse = restHighLevelClient.deleteByQuery(deleteByQueryRequest,
+                        RequestOptions.DEFAULT);
+                System.out.println(bulkResponse.getTotal());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
 
