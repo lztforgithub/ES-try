@@ -1,6 +1,7 @@
 package ES.Service.ServiceImpl;
 
 import ES.Common.EsUtileService;
+import ES.Common.PageResult;
 import ES.Common.Response;
 import ES.Dao.AdmissionApplicationDao;
 import ES.Entity.AdmissionApplication;
@@ -8,9 +9,12 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.Time;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionApplicationService {
@@ -54,5 +58,14 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
             return Response.success("审核成功");
         }
         return Response.fail("审核失败!");
+    }
+
+    @Override
+    public Response<Object> RUID() throws IOException {
+        PageResult<JSONObject> t;
+        Map<String,Object> map = new HashMap<>();
+        map.put("R_UID","*");
+        t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
+        return Response.success("已入驻学者名单如下:",t);
     }
 }

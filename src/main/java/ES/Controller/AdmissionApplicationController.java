@@ -56,4 +56,9 @@ public class AdmissionApplicationController {
         return Response.fail("无权限!");
     }
 
+    //获取已入驻学者列表
+    @RequestMapping("RUID")
+    public Response<Object> RUID(HttpServletRequest request){
+        return admissionApplicationService.RUID();
+    }
 }
