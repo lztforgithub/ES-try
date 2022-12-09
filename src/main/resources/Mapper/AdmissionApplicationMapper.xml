@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ES.Dao.AdmissionApplicationDao">
+    <select id="getList0" resultType="ES.Entity.AdmissionApplication">
+        select * from admission_application where AAccept = 0
+    </select>
+    <select id="getList1" resultType="ES.Entity.AdmissionApplication">
+        select * from admission_application where AAccept > 0
+    </select>
+</mapper>

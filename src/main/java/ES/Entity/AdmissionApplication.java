@@ -60,10 +60,10 @@ public class AdmissionApplication {
     String introduction;
 
     //0 待审核 1 通过 2 拒绝
-    @Column(name = "AAAccept", nullable = false)
+    @Column(name = "AAccept", nullable = false)
     int accept;
 
-    @Column(name = "AAOpinion", nullable = true)
+    @Column(name = "AOpinion", nullable = true)
     String opinion;
 
 }

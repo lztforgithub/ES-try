@@ -1,0 +1,25 @@
+package ES.Service.ServiceImpl;
+
+import ES.Dao.AdmissionApplicationDao;
+import ES.Entity.AdmissionApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionApplicationService {
+
+    @Autowired
+    AdmissionApplicationDao admissionApplicationDao;
+
+    @Override
+    public List<AdmissionApplication> getList0(){
+        return admissionApplicationDao.getList0();
+    }
+
+    @Override
+    public List<AdmissionApplication> getList1(){
+        return admissionApplicationDao.getList1();
+    }
+}

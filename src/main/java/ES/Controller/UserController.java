@@ -17,6 +17,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    //注册
     @PostMapping("/user/register")
     public Response<Object> register(@RequestBody Map<String, String> map){
         String username,pwd,email,bio;
@@ -27,6 +28,7 @@ public class UserController {
         return userService.register(username,pwd,email,bio);
     }
 
+    //登录
     @PostMapping("/login")
     public Response<Object> login(@RequestBody Map<String, String> map){
         String username,pwd;
