@@ -35,4 +35,14 @@ public class CollectController {
         return collectService.viewPaperCollect(user_id,paper_id);
     }
 
+    //新建|修改论文所在收藏夹
+    @PostMapping("/user/CollectPaper")
+    private Response<Object> CollectPaper(HttpServletRequest request, @RequestBody Map<String, String> map){
+        String token = request.getHeader("token");
+        String user_id = JwtUtil.getUserId(token);
+        String paper_id = map.get("PID");
+        String collect_id = map.get("CTID");
+        return collectService.CollectPaper(user_id,paper_id,collect_id);
+    }
+
 }

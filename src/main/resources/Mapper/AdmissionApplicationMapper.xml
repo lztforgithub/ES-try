@@ -12,4 +12,7 @@
                                          opinion = #{opinion}
                                       where AAID = #{aa_id}
     </update>
+    <select id="selectById" resultType="ES.Entity.AdmissionApplication">
+        select * from admission_application where AAID = #{aa_id}
+    </select>
 </mapper>

@@ -4,4 +4,16 @@
     <select id="viewCollect" resultType="ES.Entity.Collected">
         select * from collected where CT_UID = #{user_id}
     </select>
+    <select id="selectByCTIDandPID" resultType="ES.Entity.CollectRecords">
+        select * from collect_records where CR_CTID = #{collect_id} and CR_PID = #{paper_id}
+    </select>
+    <delete id="deleteCollectRecords">
+        delete * from collect_records where
+                CR_CTID in (select CTID from collected where CT_UID = #{user_id})
+                and CR_PID = #{paper_id}
+    </delete>
+    <insert id="insertCollectRecords" parameterType="ES.Entity.CollectRecords">
+        insert into collect_records(CRID,CR_CTID,CR_PID)
+            values(#{collectRecords_id},#{collect_id},#{pid})
+    </insert>
 </mapper>

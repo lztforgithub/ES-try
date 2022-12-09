@@ -1,3 +1,25 @@
+datasource:
+  druid:
+    #url: jdbc:mysql://49.232.135.90:3306/Inkbook?allowMultiQueries=true # 暂时用远程，在部署时IP地址改成127.0.0.1
+    url: jdbc:mysql://127.0.0.1:3306/Inkbook?allowMultiQueries=true
+    username: root
+    password: 221408
+    initial-size: 1
+    min-idle: 1
+    max-active: 20
+    test-on-borrow: true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 200MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  jpa:
+    hibernate:
+      ddl-auto: update
+
 server:
   port: 8081
 spring:
