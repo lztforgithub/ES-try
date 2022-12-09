@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "admissionApplication")
+@Table(name = "admission_application")
 public class AdmissionApplication {
     @Id
     @Column(name = "AAID", nullable = false)

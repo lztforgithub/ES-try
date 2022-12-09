@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "collectRecords")
+@Table(name = "collect_records")
 public class CollectRecords {
     @Id
     @Column(name = "CRID", nullable = false)
