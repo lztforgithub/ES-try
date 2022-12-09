@@ -43,6 +43,12 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
                 jsonObject.put("R_UID",admissionApplication.getUid());
                 jsonObject.put("Rverifytime",new Time(new Date().getTime()));
                 jsonObject.put("Rcustomconcepts",admissionApplication.getInterestedareas());
+                //jsonObject.put("Rinstitute",admissionApplication.getInstitution());
+                jsonObject.put("Rcontact",admissionApplication.getEmail());
+                jsonObject.put("RpersonalPage",admissionApplication.getHomepage()); //可能为空
+                jsonObject.put("Rgateinfo",admissionApplication.getIntroduction());
+
+                esUtileService.updateDoc("researcher",admissionApplication.getRid(),jsonObject);
 
             }
             return Response.success("审核成功");
