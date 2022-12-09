@@ -18,7 +18,7 @@ public class UserController {
     UserService userService;
 
     //注册
-    @PostMapping("/user/register")
+    @PostMapping("/register")
     public Response<Object> register(@RequestBody Map<String, String> map){
         String username,pwd,email,bio;
         username = map.get("username");

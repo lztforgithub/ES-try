@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
         if (user.getPasswd().equals(pwd)){
             //准备存放在IWT中的自定义数据
             Map<String, Object> info = new HashMap<>();
+            info.put("type", user.getType());
             info.put("username", username);
-            info.put("pass", pwd);
 
             //生成JWT字符串
             String token = JwtUtil.sign(user.getUser_id(), info);

@@ -7,4 +7,9 @@
     <select id="getList1" resultType="ES.Entity.AdmissionApplication">
         select * from admission_application where AAccept > 0
     </select>
+    <update id="update">
+        update admission_application set AAccept = #{acc},
+                                         opinion = #{opinion}
+                                      where AAID = #{aa_id}
+    </update>
 </mapper>

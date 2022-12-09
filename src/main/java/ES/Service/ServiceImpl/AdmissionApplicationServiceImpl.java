@@ -1,5 +1,6 @@
 package ES.Service.ServiceImpl;
 
+import ES.Common.Response;
 import ES.Dao.AdmissionApplicationDao;
 import ES.Entity.AdmissionApplication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +22,12 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
     @Override
     public List<AdmissionApplication> getList1(){
         return admissionApplicationDao.getList1();
+    }
+
+    @Override
+    public Response<Object> update(String aa_id, int acc, String opinion){
+        if (admissionApplicationDao.update(aa_id,acc,opinion)>0){
+            return Response.success("审核成功");
+        }
     }
 }
