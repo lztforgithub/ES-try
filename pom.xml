@@ -75,6 +75,11 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.46</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.2</version>
+        </dependency>
 
         <!-- crawler -->
         <dependency>
@@ -109,6 +114,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
 
     </dependencies>
 
