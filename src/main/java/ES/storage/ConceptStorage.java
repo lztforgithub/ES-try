@@ -55,7 +55,7 @@ public class ConceptStorage {
         dimAndMap.put("cname", name);
         try {
             PageResult<JSONObject> pageResult = esUtileService.conditionSearch("concept", 1, 10, "",
-                    null, null, dimAndMap, null);
+                    andMap, null, dimAndMap, null);
             for (JSONObject object : pageResult) {
                 System.out.println(object);
             }
