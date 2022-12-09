@@ -21,7 +21,7 @@ public class JwtUtil {
     private static final String SECRET = "jwt_secret";
 
     /**
-     * 生成jwt字符串，五分钟后过期  JWT(json web token)
+     * 生成jwt字符串，三十分钟后过期  JWT(json web token)
      * @param userId
      * @param info,Map的value只能存放值的类型为：Map，List，Boolean，Integer，Long，Double，String and Date
      * @return
