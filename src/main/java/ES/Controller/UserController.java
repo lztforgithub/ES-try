@@ -26,4 +26,12 @@ public class UserController {
         bio = map.get("bio");
         return userService.register(username,pwd,email,bio);
     }
+
+    @PostMapping("/login")
+    public Response<Object> login(@RequestBody Map<String, String> map){
+        String username,pwd;
+        username = map.get("username");
+        pwd = map.get("password");
+        return userService.login(username,pwd);
+    }
 }
