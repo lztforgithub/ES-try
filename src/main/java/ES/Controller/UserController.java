@@ -19,10 +19,11 @@ public class UserController {
 
     @PostMapping("/user/register")
     public Response<Object> register(@RequestBody Map<String, String> map){
-        String username,pwd,email;
+        String username,pwd,email,bio;
         username = map.get("username");
         pwd = map.get("password");
         email = map.get("email");
-        return userService.register(username,pwd,email);
+        bio = map.get("bio");
+        return userService.register(username,pwd,email,bio);
     }
 }
