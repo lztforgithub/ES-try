@@ -19,7 +19,13 @@ public class WorkDoc {
     private ArrayList<String> Preferences = new ArrayList<>();
     private ArrayList<String> Prelated = new ArrayList<>();
     private String Pbecited;
+
+    private ArrayList<String> Pabstractwords = new ArrayList<>();
+
+    private ArrayList<Integer> Pabstractcount = new ArrayList<>();
     private ArrayList<Integer> Pcitednum = new ArrayList<>();
+
+    private ArrayList<String> PsystemTags = new ArrayList<>();
 
     public String getPID() {
         return PID;
@@ -172,5 +178,44 @@ public class WorkDoc {
     public void addPcitednum(int num)
     {
         Pcitednum.add(num);
+    }
+
+    public ArrayList<String> getPabstractwords() {
+        return Pabstractwords;
+    }
+
+    public void setPabstractwords(ArrayList<String> pabstractwords) {
+        Pabstractwords = pabstractwords;
+    }
+
+    public void addPabstractwords(String w)
+    {
+        Pabstractwords.add(w);
+    }
+
+    public ArrayList<Integer> getPabstractcount() {
+        return Pabstractcount;
+    }
+
+    public void setPabstractcount(ArrayList<Integer> pabstractcount) {
+        Pabstractcount = pabstractcount;
+    }
+
+    public void addPabstractcount(int n)
+    {
+        Pabstractcount.add(n);
+    }
+
+    public ArrayList<String> getPsystemTags() {
+        return PsystemTags;
+    }
+
+    public void setPsystemTags(ArrayList<String> psystemTags) {
+        PsystemTags = psystemTags;
+    }
+
+    public void addPsystemTags(String s)
+    {
+        PsystemTags.add(s);
     }
 }

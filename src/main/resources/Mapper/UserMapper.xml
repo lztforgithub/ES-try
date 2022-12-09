@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ES.Dao.UserDao">
+    <insert id="insertUser" parameterType="ES.Entity.User">
+        insert into user(UID,Uname,Upassword,Uemail,Ubio,Utype)
+        values(#{user_id},#{username},#{passwd},#{email},#{info},#{type})
+    </insert>
+    <select id="selectByUsername" resultType="ES.Entity.User">
+        select * from user where Uname = #{username}
+    </select>
+</mapper>

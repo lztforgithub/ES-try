@@ -5,9 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -134,10 +132,18 @@ public class WorkCrawler {
         workDoc.setPname(title);
 
         JSONObject host_venue = jsonObject.getJSONObject("host_venue");
-        String hostVID = host_venue.getString("id");
-        workDoc.setP_VID(hostVID);
-        String hostVname = host_venue.getString("publisher");
-        workDoc.setP_Vname(hostVname);
+        if(host_venue!=null)
+        {
+            String hostVID = host_venue.getString("id");
+            workDoc.setP_VID(hostVID);
+            String hostVname = host_venue.getString("publisher");
+            workDoc.setP_Vname(hostVname);
+        }
+        else
+        {
+            workDoc.setP_VID(null);
+            workDoc.setP_Vname(null);
+        }
 
         JSONObject access = jsonObject.getJSONObject("open_access");
         String isAccessible = access.getString("is_oa");
@@ -162,17 +168,27 @@ public class WorkCrawler {
 
         Date date = null;
         String publicationDate = jsonObject.getString("publication_date");
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            date = simpleDateFormat.parse(publicationDate);
-        } catch (ParseException e) {
-            System.out.println("parse date error");
+        if(publicationDate!=null)
+        {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                date = simpleDateFormat.parse(publicationDate);
+            } catch (ParseException e) {
+                System.out.println("parse date error");
+            }
         }
-        assert date!=null;
         workDoc.setPdate(date);
 
-        int cited_by_count = Integer.parseInt(jsonObject.getString("cited_by_count"));
-        workDoc.setPcite(cited_by_count);
+        String citedByCount = jsonObject.getString("cited_by_count");
+        if(citedByCount!=null)
+        {
+            int cited_by_count = Integer.parseInt(citedByCount);
+            workDoc.setPcite(cited_by_count);
+        }
+        else
+        {
+            workDoc.setPcite(-1);                                             // not have this info
+        }
 
         JSONObject abstract_inverted_index = jsonObject.getJSONObject("abstract_inverted_index");
         if(abstract_inverted_index==null)
@@ -183,28 +199,43 @@ public class WorkCrawler {
         {
             String abstract_text = generateAbstract(abstract_inverted_index);
             workDoc.setPabstract(abstract_text);
+            Set<String> words = abstract_inverted_index.keySet();
+            for(String s:words)
+            {
+                workDoc.addPabstractwords(s);
+                workDoc.addPabstractcount(abstract_inverted_index.get(s).toString().split(",").length+1);
+            }
         }
 
         JSONArray concepts = jsonObject.getJSONArray("concepts");
-        for(int i=0; i<concepts.size(); i++)
+        if(concepts!=null)
         {
-            JSONObject concept = concepts.getJSONObject(i);
-            String concept_name = concept.getString("display_name");
-            workDoc.addPconcepts(concept_name);
+            for(int i=0; i<concepts.size()&&i<8; i++)
+            {
+                JSONObject concept = concepts.getJSONObject(i);
+                String concept_name = concept.getString("display_name");
+                workDoc.addPconcepts(concept_name);
+            }
         }
 
         JSONArray referenced_works = jsonObject.getJSONArray("referenced_works");
-        for(int i=0; i< referenced_works.size(); i++)
+        if(referenced_works!=null)
         {
-            String refer = referenced_works.getString(i);
-            workDoc.addPreference(refer);
+            for(int i=0; i< referenced_works.size(); i++)
+            {
+                String refer = referenced_works.getString(i);
+                workDoc.addPreference(refer);
+            }
         }
 
         JSONArray related_works = jsonObject.getJSONArray("related_works");
-        for(int i=0; i< related_works.size(); i++)
+        if(related_works!=null)
         {
-            String relate = related_works.getString(i);
-            workDoc.addPrelated(relate);
+            for(int i=0; i< related_works.size(); i++)
+            {
+                String relate = related_works.getString(i);
+                workDoc.addPrelated(relate);
+            }
         }
 
         String cited_by_api_url = jsonObject.getString("cited_by_api_url");
@@ -234,9 +265,80 @@ public class WorkCrawler {
                 workDoc.addPcitednum(0);
             }
         }
+
+        String pub_year = jsonObject.getString("publication_year");
+        workDoc.addPsystemTags(pub_year);
+        int counter = 0;
+        if(concepts!=null)
+        {
+            for(int i=0; i<concepts.size()&&counter<3; i++)
+            {
+                JSONObject concept = concepts.getJSONObject(i);
+                int level = Integer.parseInt(concept.getString("level"));
+                if(level>0)
+                {
+                    String concept_id = "C"+concept.getString("id").split("C")[1];
+                    workDoc.addPconcepts(concept_id);
+                    counter += 1;
+                }
+            }
+        }
+
+
         System.out.println("generate "+workDoc.getPID()+" doc done.");
         this.workDoc = workDoc;
         return workDoc;
+    }
+
+    public ArrayList<String> getFirstFiveResults(String search_url)
+    {
+        ArrayList<String> ret = new ArrayList<>();
+        InputStreamReader reader = null;
+        BufferedReader in = null;
+        StringBuffer content = new StringBuffer();
+
+        try {
+            URLConnection connection = new URL(url).openConnection();
+            connection.setConnectTimeout(1000);
+            reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+            in = new BufferedReader(reader);
+
+            String line = null;
+
+            while ((line = in.readLine())!=null)
+            {
+                content.append(line);
+            }
+            System.out.println("crawl "+url+" done.");
+        } catch (IOException e) {
+            System.out.println("can't crawl "+url);;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close buffered reader!!!");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close inputstream reader!!!");
+                }
+            }
+        }
+
+        JSONObject response = JSON.parseObject(content.toString());
+        JSONArray results = response.getJSONArray("results");
+        for(int i=0; i< results.size()&&i<5; i++)
+        {
+            JSONObject result = results.getJSONObject(i);
+            String pid = "W"+result.getString("id").split("W")[1];
+            ret.add(pid);
+        }
+
+        return ret;
     }
     public WorkCrawler(String url)
     {
@@ -254,8 +356,19 @@ public class WorkCrawler {
         return workDoc;
     }
 
-    public static void main(String[] args) {
-        WorkCrawler workCrawler = new WorkCrawler("https://api.openalex.org/works/W2741809807");
-        workCrawler.run();
+    public static void main(String[] args) throws IOException {
+        FileReader fileReader = new FileReader("works_urls.txt");
+        String urls_string = "";
+        int c = 0;
+        while((c=fileReader.read())!=-1)
+        {
+            urls_string += (char)c;
+        }
+        String[] urls = urls_string.split("\n");
+        for(String url:urls)
+        {
+            WorkCrawler workCrawler = new WorkCrawler(url);
+            workCrawler.run();
+        }
     }
 }

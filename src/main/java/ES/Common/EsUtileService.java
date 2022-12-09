@@ -262,7 +262,7 @@ public class EsUtileService {
         //模糊查询，and
         if (!CollectionUtils.isEmpty(dimAndMap)) {
             for (Map.Entry<String, Object> entry : dimAndMap.entrySet()) {
-                WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey() + ".keyword", "*" + entry.getValue() + "*");
+                WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.must(wildcardQueryBuilder);
             }
             searchAllFlag = false;
@@ -270,7 +270,7 @@ public class EsUtileService {
         //模糊查询，or
         if (!CollectionUtils.isEmpty(dimOrMap)) {
             for (Map.Entry<String, Object> entry : dimOrMap.entrySet()) {
-                WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey() + ".keyword", "*" + entry.getValue() + "*");
+                WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.should(wildcardQueryBuilder);
             }
             searchAllFlag = false;
@@ -328,7 +328,7 @@ public class EsUtileService {
             restHighLevelClient.index(request, RequestOptions.DEFAULT);
             System.out.println("add doc "+institutionDoc.getIID()+" success.");
         } catch (IOException e) {
-//            System.out.println("add doc "+workDoc.getPID()+" failed.");
+//            System.out.println("add doc "+institutionDoc.getIID()+" failed.");
             System.out.println(e);
         }
     }
