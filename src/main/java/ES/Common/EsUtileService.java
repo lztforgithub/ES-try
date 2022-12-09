@@ -182,7 +182,7 @@ public class EsUtileService {
      * 通用条件查询，map类型的参数都为空时，默认查询全部
      *
      */
-    public PageResult<List<JSONObject>> conditionSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap) throws IOException, IOException {
+    public PageResult<JSONObject> conditionSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap) throws IOException, IOException {
         SearchRequest searchRequest = new SearchRequest(indexName);
         // 索引不存在时不报错
         searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
@@ -225,7 +225,7 @@ public class EsUtileService {
         }
 
         long total = searchHits.getTotalHits().value;
-        PageResult<List<JSONObject>> pageResult = new PageResult<>();
+        PageResult<JSONObject> pageResult = new PageResult<>();
         pageResult.setPageNum(pageNum);
         pageResult.setPageSize(pageSize);
         pageResult.setTotal(total);
