@@ -39,7 +39,8 @@ public class UserController {
 
     //发起入驻申请
     @PostMapping("/user/AA")
-    public Response<Object> userAA(){
+    public Response<Object> userAA(@RequestBody Map<String, String> map){
+
         return Response.fail("发起失败!");
     }
 }
