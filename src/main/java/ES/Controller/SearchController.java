@@ -5,6 +5,7 @@ import ES.Common.JwtUtil;
 import ES.Common.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -16,12 +17,12 @@ public class SearchController {
     @Autowired
     EsUtileService esUtileService;
 
-    @GetMapping("/author/hello")
+    @RequestMapping("/author/hello")
     public Response<Object> hello() {
         return Response.success("hello world");
     }
 
-    @GetMapping("/auth/login")
+    @RequestMapping("/auth/login")
     public Response<Object> login() {
         //假设数据库中查询到了该用户，这里测试先所及生成一个UUID，作为用户的id
         String userId = UUID.randomUUID().toString();
