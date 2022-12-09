@@ -10,12 +10,12 @@ public class PageResult<T> implements Iterable<T>{
     /**
      * 数据条数
      */
-    private List<T> records = new ArrayList<>();
+    private List<T> list = new ArrayList<>();
 
     /**
      * 一共有多少条数据
      */
-    private long totalElements;
+    private long total;
 
     /**
      * 当前页数
@@ -28,17 +28,19 @@ public class PageResult<T> implements Iterable<T>{
     private long pageSize;
 
     /**
-     * 一共有多少页
+     * 上限有多少页，用于限制显示数据条数
      */
-    private long totalPages;
+    private long pageNum;
+
+    /**
+     * 当前数据有多少页
+     */
+    private long totalPage;
 
     /**
      * 当前页数有多少条数据
      */
     private int numberOfElements;
-
-    public PageResult() {
-    }
 
     /**
      * 是否有前一页
@@ -55,16 +57,43 @@ public class PageResult<T> implements Iterable<T>{
      * @return boolean
      */
     public boolean hasNext() {
-        return getCurrentPage() + 1 < getTotalPages();
+        return getCurrentPage() + 1 < getPageNum();
     }
 
     /**
-     * 获取总的页数
+     * 获取上限页数
      *
      * @return long
      */
-    public long getTotalPages() {
-        return this.totalPages;
+    public long getPageNum() {
+        return this.pageNum;
+    }
+
+    /**
+     * 设置上限的页数
+     *
+     * @param pageNum  int
+     */
+    public long setPageNum(int pageNum) {
+        return this.pageNum = pageNum;
+    }
+
+    /**
+     * 获取当前页数
+     *
+     * @return long
+     */
+    public long getTotalPage() {
+        return this.totalPage;
+    }
+
+    /**
+     * 设置上限的页数
+     *
+     * @param totalPage int
+     */
+    public long setTotalPage(int totalPage) {
+        return this.totalPage = totalPage;
     }
 
 
@@ -73,17 +102,17 @@ public class PageResult<T> implements Iterable<T>{
      *
      * @return List<T>
      */
-    public List<T> getRecords() {
-        return Collections.unmodifiableList(records);
+    public List<T> getList() {
+        return Collections.unmodifiableList(list);
     }
 
     /**
      * 设置内容
      *
-     * @param records 内容
+     * @param list 内容
      */
-    public void setRecords(List<T> records) {
-        this.records = records;
+    public void setList(List<T> list) {
+        this.list = list;
     }
 
     /**
@@ -112,15 +141,15 @@ public class PageResult<T> implements Iterable<T>{
     /**
      * 获取全部元素数目
      */
-    public long getTotalElements() {
-        return totalElements;
+    public long getTotal() {
+        return total;
     }
 
     /**
      * 设置全部元素数目
      */
-    public void setTotalElements(long totalElements) {
-        this.totalElements = totalElements;
+    public void setTotal(long total) {
+        this.total = total;
     }
 
 
@@ -159,18 +188,7 @@ public class PageResult<T> implements Iterable<T>{
      */
     @Override
     public Iterator<T> iterator() {
-        return getRecords().iterator();
+        return getList().iterator();
     }
 
-    public void setPageNum(Integer pageNum) {
-    }
-
-    public void setTotal(long total) {
-    }
-
-    public void setList(T resultList) {
-    }
-
-    public void setTotalPage(int i) {
-    }
 }
