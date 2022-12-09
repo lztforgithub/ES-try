@@ -79,17 +79,23 @@ public class InstitutionCrawler {
         institutionDoc.setIimage(imageURL);
 
         JSONArray acronyms = jsonObject.getJSONArray("display_name_acronyms");
-        for(int i=0; i<acronyms.size(); i++)
+        if(acronyms!=null)
         {
-            String s = acronyms.getString(i);
-            institutionDoc.addIacronyms(s);
+            for(int i=0; i<acronyms.size(); i++)
+            {
+                String s = acronyms.getString(i);
+                institutionDoc.addIacronyms(s);
+            }
         }
 
         JSONArray altername = jsonObject.getJSONArray("display_name_alternatives");
-        for(int i=0; i< altername.size(); i++)
+        if(altername!=null)
         {
-            String s = altername.getString(i);
-            institutionDoc.addIaltername(s);
+            for(int i=0; i< altername.size(); i++)
+            {
+                String s = altername.getString(i);
+                institutionDoc.addIaltername(s);
+            }
         }
 
         int worksCount = Integer.parseInt(jsonObject.getString("works_count"));
@@ -99,18 +105,36 @@ public class InstitutionCrawler {
         institutionDoc.setIcitednum(cited_by_count);
 
         JSONObject international = jsonObject.getJSONObject("international");
-        JSONObject display_name = international.getJSONObject("display_name");
-        String zh_cn = display_name.getString("zh-cn");
-        institutionDoc.setIchinesename(zh_cn);
+        if(international!=null)
+        {
+            JSONObject display_name = international.getJSONObject("display_name");
+            if(display_name!=null)
+            {
+                String zh_cn = display_name.getString("zh-cn");
+                institutionDoc.setIchinesename(zh_cn);
+            }
+            else
+            {
+                institutionDoc.setIchinesename(null);
+            }
+        }
+        else
+        {
+            institutionDoc.setIchinesename(null);
+        }
+
 
         JSONArray associate = jsonObject.getJSONArray("associated_institutions");
-        for(int i=0; i<associate.size(); i++)
+        if(associate!=null)
         {
-            JSONObject assoInfo = associate.getJSONObject(i);
-            String assoID = assoInfo.getString("id");
-            institutionDoc.addIassociations(assoID);
-            String assoRelation = assoInfo.getString("relationship");
-            institutionDoc.addIrelation(assoRelation);
+            for(int i=0; i<associate.size(); i++)
+            {
+                JSONObject assoInfo = associate.getJSONObject(i);
+                String assoID = assoInfo.getString("id");
+                institutionDoc.addIassociations(assoID);
+                String assoRelation = assoInfo.getString("relationship");
+                institutionDoc.addIrelation(assoRelation);
+            }
         }
 
         JSONArray citeArray = jsonObject.getJSONArray("counts_by_year");
@@ -142,11 +166,14 @@ public class InstitutionCrawler {
         }
 
         JSONArray concepts = jsonObject.getJSONArray("x_concepts");
-        for(int i=0; i<concepts.size(); i++)
+        if(concepts!=null)
         {
-            JSONObject conceptInfo = concepts.getJSONObject(i);
-            String concept = conceptInfo.getString("display_name");
-            institutionDoc.addIconcept(concept);
+            for(int i=0; i<concepts.size(); i++)
+            {
+                JSONObject conceptInfo = concepts.getJSONObject(i);
+                String concept = conceptInfo.getString("display_name");
+                institutionDoc.addIconcept(concept);
+            }
         }
 
         String worksURL = jsonObject.getString("works_api_url");

@@ -328,7 +328,7 @@ public class EsUtileService {
             restHighLevelClient.index(request, RequestOptions.DEFAULT);
             System.out.println("add doc "+institutionDoc.getIID()+" success.");
         } catch (IOException e) {
-//            System.out.println("add doc "+workDoc.getPID()+" failed.");
+//            System.out.println("add doc "+institutionDoc.getIID()+" failed.");
             System.out.println(e);
         }
     }
