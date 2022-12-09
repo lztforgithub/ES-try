@@ -14,7 +14,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Document(indexName = "works")
+@Document(indexName = "venue")
 public class Venue {
     @Id
     @Field(type= FieldType.text, store = true)
