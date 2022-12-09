@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +25,10 @@ public class LikeRecords {
 
     @Column(name = "UID", nullable = false)
     String user_id;
+
+    public LikeRecords(String user_id, String comment_id){
+        this.likeRecords_id = UUID.randomUUID().toString();
+        this.user_id = user_id;
+        this.comment_id = comment_id;
+    }
 }

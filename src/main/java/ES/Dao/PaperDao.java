@@ -14,4 +14,12 @@ public interface PaperDao {
     LikeRecords isLike(@Param("comment_id") String comment_id,@Param("user_id") String user_id);
 
     int insertComment(Comment comment);
+
+    int insertLikeRecords(LikeRecords likeRecords);
+
+    int updateLike(String comment_id);
+
+    int deleteLikeRecords(@Param("user_id") String user_id,@Param("comment_id") String comment_id);
+
+    int updateUnLike(String comment_id);
 }

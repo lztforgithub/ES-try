@@ -65,8 +65,33 @@ public class PaperServiceImpl implements PaperService {
     public Response<Object> commentAdd(String paper_id, String user_id, String content){
         Comment comment = new Comment(paper_id,user_id,content);
         if (paperDao.insertComment(comment)>0){
-            return Response.success("评论成功",comment);
+            return Response.success("评论成功!",comment);
         }
         return Response.fail("评论失败!");
+    }
+
+    @Override
+    public Response<Object> like(String user_id, String comment_id){
+        LikeRecords likeRecords = new LikeRecords(user_id,comment_id);
+        if (paperDao.insertLikeRecords(likeRecords)>0){
+            if (paperDao.updateLike(comment_id)>0){
+                return Response.success("点赞成功!",likeRecords);
+            }
+            paperDao.deleteLikeRecords(user_id,comment_id);
+        }
+        return Response.fail("点赞失败!");
+    }
+
+    @Override
+    public Response<Object> unlike(String user_id, String comment_id){
+
+        if (paperDao.deleteLikeRecords(user_id,comment_id)>0){
+            if (paperDao.updateUnLike(comment_id)>0){
+                return Response.success("取消点赞成功!");
+            }
+            LikeRecords likeRecords = new LikeRecords(user_id,comment_id);
+            paperDao.insertLikeRecords(likeRecords);
+        }
+        return Response.fail("取消点赞失败!");
     }
 }

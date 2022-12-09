@@ -63,4 +63,21 @@ public class PaperController {
         return paperService.commentAdd(paper_id,user_id,content);
     }
 
+    //点赞
+    @PostMapping("/comment/like")
+    private Response<Object> like(HttpServletRequest request, @RequestBody Map<String, String> map){
+        String token = request.getHeader("token");
+        String user_id=JwtUtil.getUserId(token);
+        String comment_id = map.get("CID");
+        return paperService.like(user_id,comment_id);
+    }
+
+    //取消点赞
+    @PostMapping("/comment/unlike")
+    private Response<Object> unlike(HttpServletRequest request, @RequestBody Map<String, String> map){
+        String token = request.getHeader("token");
+        String user_id=JwtUtil.getUserId(token);
+        String comment_id = map.get("CID");
+        return paperService.unlike(user_id,comment_id);
+    }
 }

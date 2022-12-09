@@ -11,4 +11,19 @@
         insert into comment(CID,C_UID,C_PID,Ccontent,Ctime,Clikes,Ctop)
             values(#{comment_id},#{uid},#{pid},#{content},#{time},#{likes},#{top})
     </insert>
+    <insert id="insertLikeRecords" parameterType="ES.Entity.LikeRecords">
+        insert into like_records(LR_ID,C_ID,UID)
+            values(#{likeRecords_id},#{comment_id},#{user_id})
+    </insert>
+    <update id="updateLike">
+        update comment set Clikes=Clikes+1
+            where CID=#{comment_id}
+    </update>
+    <delete id="deleteLikeRecords">
+        delete like_records where UID=#{user_id} and C_ID=#{comment_id}
+    </delete>
+    <update id="updateUnLike">
+        update comment set Clikes=Clikes-1
+        where CID=#{comment_id}
+    </update>
 </mapper>
