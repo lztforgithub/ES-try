@@ -31,6 +31,20 @@ public class VenueCrawler {
         return ret;
     }
 
+    public static int getTotalPageCount(String url) {
+        int pageCount = 0;
+        try {
+            String response = HttpUtils.handleRequestURL(url);
+            JSONObject responseJSON = new JSONObject(response);
+            int count = responseJSON.getJSONObject("meta").getInt("count");
+            int perPage = responseJSON.getJSONObject("meta").getInt("per_page");
+            pageCount = (count % perPage == 0 ? count / perPage : (count / perPage) + 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return pageCount;
+    }
+
 
 
     public static VenueDoc parseOpenAlexVenueInfo(JSONObject venueJSON){

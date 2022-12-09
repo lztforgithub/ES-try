@@ -38,9 +38,18 @@ public class VenueStorage {
         }
     }
 
+
+    @RequestMapping(value = "/storeAllPageVenues", method = RequestMethod.PUT)
     public void storeVenuesByURL(String url, int num) {
-        int page = 1;
-        int page_num = 25;
+        int totalPage = VenueCrawler.getTotalPageCount(url);
+        int tries = 0;
+        for (int i = 1; i <= totalPage; i++) {
+            String requestUrl = url + "&page=" + i;
+            ArrayList<VenueDoc> venueDocs = VenueCrawler.getVenuesByURL(requestUrl);
+            for (VenueDoc venueDoc : venueDocs){
+                addDoc("venue", venueDoc);
+            }
+        }
     }
 
     @RequestMapping(value = "/searchVenuesById", method = RequestMethod.GET)
