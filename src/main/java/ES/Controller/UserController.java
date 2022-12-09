@@ -36,4 +36,10 @@ public class UserController {
         pwd = map.get("password");
         return userService.login(username,pwd);
     }
+
+    //发起入驻申请
+    @PostMapping("/user/AA")
+    public Response<Object> userAA(){
+        return Response.fail("发起失败!");
+    }
 }

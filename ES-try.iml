@@ -27,7 +27,6 @@
     <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-core:7.6.2" level="project" />
     <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-secure-sm:7.6.2" level="project" />
     <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-x-content:7.6.2" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.12.4" level="project" />
@@ -56,7 +55,6 @@
     <orderEntry type="library" name="Maven: org.elasticsearch:jna:4.5.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.springframework.boot:spring-boot-devtools:2.5.4" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.5.4" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:2.5.4" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-jpa:2.4.5" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-aop:2.5.4" level="project" />
@@ -82,9 +80,7 @@
     <orderEntry type="library" name="Maven: com.sun.istack:istack-commons-runtime:3.0.12" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.activation:jakarta.activation:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-jpa:2.5.4" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-commons:2.5.4" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-orm:5.3.9" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-tx:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aspects:5.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0" level="project" />
@@ -130,5 +126,15 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.15" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-elasticsearch:3.0.5.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.9" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-tx:5.3.9" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-commons:2.5.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
+    <orderEntry type="library" name="Maven: org.elasticsearch.client:transport:7.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.elasticsearch.plugin:reindex-client:7.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.elasticsearch:elasticsearch-ssl-config:7.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.elasticsearch.plugin:percolator-client:7.12.1" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.4" level="project" />
   </component>
 </module>

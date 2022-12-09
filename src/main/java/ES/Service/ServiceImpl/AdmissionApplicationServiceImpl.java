@@ -29,5 +29,6 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
         if (admissionApplicationDao.update(aa_id,acc,opinion)>0){
             return Response.success("审核成功");
         }
+        return Response.fail("审核失败!");
     }
 }
