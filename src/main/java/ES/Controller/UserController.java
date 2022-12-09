@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Repeatable;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class UserController {
 
     //发起入驻申请
     @PostMapping("/user/AA")
-    public Response<Object> userAA(@RequestBody Map<String, String> map){
+    public Response<Object> userAA(HttpServletRequest request, @RequestBody Map<String, String> map){
 
         return Response.fail("发起失败!");
     }
