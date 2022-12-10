@@ -1,9 +1,9 @@
 datasource:
   druid:
     #url: jdbc:mysql://49.232.135.90:3306/Inkbook?allowMultiQueries=true # 暂时用远程，在部署时IP地址改成127.0.0.1
-    url: jdbc:mysql://127.0.0.1:3306/Inkbook?allowMultiQueries=true
+    url: jdbc:mysql://116.204.69.134:31000/ace_database?allowMultiQueries=true
     username: root
-    password: 221408
+    password: 7igePMdVWr3JQXQ
     initial-size: 1
     min-idle: 1
     max-active: 20
@@ -19,6 +19,11 @@ datasource:
   jpa:
     hibernate:
       ddl-auto: update
+
+mybatis:
+  mapper-locations: classpath:Mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 server:
   port: 8081

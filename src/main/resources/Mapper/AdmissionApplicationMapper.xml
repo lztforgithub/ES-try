@@ -9,7 +9,7 @@
     </select>
     <update id="update">
         update admission_application set AAccept = #{acc},
-                                         opinion = #{opinion}
+                                         AOpinion = #{opinion},
                                          AAlastUpdateTime = #{lastUpdateTime}
                                       where AAID = #{aa_id}
     </update>
