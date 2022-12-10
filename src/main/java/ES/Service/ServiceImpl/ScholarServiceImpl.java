@@ -18,7 +18,7 @@ import java.util.Map;
 @Service
 public class ScholarServiceImpl implements ScholarService {
 
-    @Autowired
+    @Autowired(required = false)
     ScholarDao scholarDao;
 
     @Autowired

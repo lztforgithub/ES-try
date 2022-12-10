@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class SearchServiceImpl implements SearchService {
 
-    @Autowired
+    @Autowired(required = false)
     EsUtileService esUtileService = new EsUtileService();
 
     @Override
