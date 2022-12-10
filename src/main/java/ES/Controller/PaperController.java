@@ -80,4 +80,12 @@ public class PaperController {
         String comment_id = map.get("CID");
         return paperService.unlike(user_id,comment_id);
     }
+
+
+    @PostMapping("/recommend")
+    private Response<Object> getRecommendWork(HttpServletRequest request, @RequestBody Map<String, String> map)
+    {
+        String type = map.get("type");
+        return paperService.getRecommendWork(type);
+    }
 }

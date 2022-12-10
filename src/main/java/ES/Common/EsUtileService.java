@@ -5,6 +5,7 @@ import ES.Document.InstitutionDoc;
 import ES.Document.VenueDoc;
 import ES.Document.WorkDoc;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -389,6 +390,45 @@ public class EsUtileService {
             e.printStackTrace();
         }
 
+    }
+
+    public ArrayList<Object> getVInfo(String vid) {
+        ArrayList<Object> ret = new ArrayList<>();
+        JSONObject venueDoc = queryDocById("venue", vid);
+        JSONArray vabbrnames = venueDoc.getJSONArray("valtername");
+        String s = vabbrnames.getString(0);
+        for(int i=0; i<vabbrnames.size(); i++)
+        {
+            String temp = vabbrnames.getString(i);
+            if(temp.length()<s.length())
+            {
+                s = temp;
+            }
+        }
+        if(s.length()<=10)
+        {
+            ret.add(s);
+        }
+        else
+        {
+            ret.add(null);
+        }
+        JSONArray vcitesAccumulate = venueDoc.getJSONArray("vcitesAccumulate");
+        int citeNum = -1;
+        if(vcitesAccumulate.size()>=3)
+        {
+            citeNum = Integer.parseInt(vcitesAccumulate.getString(2));
+        }
+        else if(vcitesAccumulate.size()>=2)
+        {
+            citeNum = Integer.parseInt(vcitesAccumulate.getString(1));
+        }
+        else if(vcitesAccumulate.size()>=1)
+        {
+            citeNum = Integer.parseInt(vcitesAccumulate.getString(0));
+        }
+        ret.add(citeNum);
+        return ret;
     }
 }
 
