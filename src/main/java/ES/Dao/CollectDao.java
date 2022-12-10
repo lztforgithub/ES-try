@@ -16,4 +16,6 @@ public interface CollectDao {
     void deleteCollectRecords(@Param("user_id") String user_id,@Param("paper_id") String paper_id);
 
     int insertCollectRecords(CollectRecords collectRecords);
+
+    int insertCollected(Collected collected);
 }

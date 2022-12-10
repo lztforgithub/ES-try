@@ -45,4 +45,13 @@ public class CollectController {
         return collectService.CollectPaper(user_id,paper_id,collect_id);
     }
 
+    //新建收藏夹
+    @PostMapping("/user/AddCollect")
+    private Response<Object> AddCollect(HttpServletRequest request, @RequestBody Map<String, String> map){
+        String token = request.getHeader("token");
+        String user_id = JwtUtil.getUserId(token);
+        String collect_name = map.get("CTname");
+        return collectService.AddCollect(user_id,collect_name);
+    }
+
 }

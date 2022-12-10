@@ -49,4 +49,13 @@ public class CollectServiceImpl implements CollectService {
         }
         return Response.fail("收藏失败!");
     }
+
+    @Override
+    public Response<Object> AddCollect(String user_id, String collect_name){
+        Collected collected = new Collected(user_id, collect_name);
+        if (collectDao.insertCollected(collected)>0){
+            return Response.success("新建收藏夹成功!",collected);
+        }
+        return Response.fail("新建收藏夹失败!");
+    }
 }

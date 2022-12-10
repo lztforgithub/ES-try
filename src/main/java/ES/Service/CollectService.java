@@ -8,4 +8,6 @@ public interface CollectService {
     Response<Object> viewPaperCollect(String user_id, String paper_id);
 
     Response<Object> CollectPaper(String user_id, String paper_id, String collect_id);
+
+    Response<Object> AddCollect(String user_id, String collect_name);
 }

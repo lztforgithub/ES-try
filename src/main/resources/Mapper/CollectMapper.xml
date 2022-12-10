@@ -16,4 +16,8 @@
         insert into collect_records(CRID,CR_CTID,CR_PID)
             values(#{collectRecords_id},#{collect_id},#{pid})
     </insert>
+    <insert id="insertCollected" parameterType="ES.Entity.Collected">
+        insert into collected(CTID,CTname,CT_UID)
+            values(#{collected_id},#{name},#{uid})
+    </insert>
 </mapper>
