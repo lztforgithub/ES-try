@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ public class SearchController {
 
     //默认搜索
     @PostMapping("/DefaultSearchResults")
-    public Response<Object> defaultSearch(HttpServletRequest request, @RequestBody Map<String,Object> map){
+    public Response<Object> defaultSearch(HttpServletRequest request, @RequestBody Map<String,Object> map) throws IOException {
         //取用户id,判断是否收藏,未登录则user_id=""
         String token = request.getHeader("token");
         String user_id;
@@ -37,9 +38,9 @@ public class SearchController {
         Timestamp start_time = (Timestamp) map.get("startTime");
         Timestamp end_time = (Timestamp) map.get("endTime");
         //包含作者
-        List<String> filterAuthors = (List<String>) map.get("filterAuthors");
+        String filterAuthors = (String) map.get("filterAuthors");
         //包含出版类型
-        List<String> filterPublicationTypes = (List<String>) map.get("filterPublicationTypes");
+        String filterPublicationTypes = (String) map.get("filterPublicationTypes");
         //sort,排序方式
         String sort = (String) map.get("sort");
 
@@ -48,6 +49,45 @@ public class SearchController {
                 normalSearch,
                 start_time,
                 end_time,
+                filterAuthors,
+                filterPublicationTypes,
+                sort
+        );
+    }
+
+    //默认搜索
+    @PostMapping("/AdvancedSearchResults")
+    public Response<Object> AdvancedSearch(HttpServletRequest request, @RequestBody Map<String,Object> map) throws IOException {
+        //取用户id,判断是否收藏,未登录则user_id=""
+        String token = request.getHeader("token");
+        String user_id;
+        if (token==null){
+            user_id="";
+        }
+        else{
+            user_id=JwtUtil.getUserId(token);
+        }
+        //搜索关键词
+        List<Object> advancedSearch = (List<Object>) map.get("advancedSearch");
+        //起止时间，存疑
+        Timestamp start_time = (Timestamp) map.get("startTime");
+        Timestamp end_time = (Timestamp) map.get("endTime");
+        Timestamp adv_start_time = (Timestamp) map.get("advStartTime");
+        Timestamp adv_end_time = (Timestamp) map.get("advEndTime");
+        Timestamp from = start_time;
+        Timestamp to = end_time;
+        //包含作者
+        String filterAuthors = (String) map.get("filterAuthors");
+        //包含出版类型
+        String filterPublicationTypes = (String) map.get("filterPublicationTypes");
+        //sort,排序方式
+        String sort = (String) map.get("sort");
+
+        return searchService.advancedSearch(
+                user_id,
+                advancedSearch,
+                from,
+                to,
                 filterAuthors,
                 filterPublicationTypes,
                 sort
