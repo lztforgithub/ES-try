@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.IDN;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -240,13 +241,75 @@ public class EsUtileService {
      * 高级搜索，map类型的参数都为空时，默认查询全部
      *
      */
-    public PageResult<JSONObject> advancedSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> notMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, Map<String, Object> dimNotMap) throws IOException {
+    public PageResult<JSONObject> advancedSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> notMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, Map<String, Object> dimNotMap,Timestamp from,Timestamp to) throws IOException {
         SearchRequest searchRequest = new SearchRequest(indexName);
         // 索引不存在时不报错
         searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
         //构造搜索条件
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, notMap, dimAndMap, dimOrMap, dimNotMap);
+        //构造时间限制
+        boolQueryBuilder.filter(QueryBuilders.rangeQuery("Pdate").from(from).to(to));
+        sourceBuilder.query(boolQueryBuilder);
+        //高亮处理
+        if (!StringUtils.isEmpty(highName)) {
+            buildHighlight(sourceBuilder, highName);
+        }
+        //分页处理
+        buildPageLimit(sourceBuilder, pageNum, pageSize);
+        //超时设置
+        sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
+        searchRequest.source(sourceBuilder);
+
+        //执行搜索
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        SearchHits searchHits = searchResponse.getHits();
+        List<JSONObject> resultList = new ArrayList<>();
+        for (SearchHit hit : searchHits) {
+            //原始查询结果数据
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            //高亮处理
+            if (!StringUtils.isEmpty(highName)) {
+                Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+                HighlightField highlightField = highlightFields.get(highName);
+                if (highlightField != null) {
+                    Text[] fragments = highlightField.fragments();
+                    StringBuilder value = new StringBuilder();
+                    for (Text text : fragments) {
+                        value.append(text);
+                    }
+                    sourceAsMap.put(highName, value.toString());
+                }
+            }
+            JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
+            resultList.add(jsonObject);
+        }
+
+        long total = searchHits.getTotalHits().value;
+        PageResult<JSONObject> pageResult = new PageResult<>();
+        pageResult.setPageNum(pageNum);
+        pageResult.setPageSize(pageSize);
+        pageResult.setTotal(total);
+        pageResult.setList(resultList);
+        pageResult.setTotalPage(total==0?0: (int) (total % pageSize == 0 ? total / pageSize : (total / pageSize) + 1));
+
+        return pageResult;
+    }
+
+    /**
+     * 默认搜索，map类型的参数都为空时，默认查询全部
+     *
+     */
+    public PageResult<JSONObject> defaultSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> notMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, Map<String, Object> dimNotMap, Timestamp from,Timestamp to) throws IOException {
+        SearchRequest searchRequest = new SearchRequest(indexName);
+        // 索引不存在时不报错
+        searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
+        //构造搜索条件
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, notMap, dimAndMap, dimOrMap, dimNotMap);
+        //构造时间限制
+        boolQueryBuilder.filter(QueryBuilders.rangeQuery("Pdate").from(from).to(to));
+
         sourceBuilder.query(boolQueryBuilder);
         //高亮处理
         if (!StringUtils.isEmpty(highName)) {
