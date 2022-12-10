@@ -22,9 +22,9 @@ public class InstituteController {
     }
 
     @PostMapping("/institute/info")
-    public Response<Object> getScholarInfo(HttpServletRequest request, @RequestBody Map<String, String> map)
+    public Response<Object> getInstitutionInfo(HttpServletRequest request, @RequestBody Map<String, String> map)
     {
         String IID = map.get("IID");
-        return instituteService.getScholarInfo(IID);
+        return instituteService.getInstitutionInfo(IID);
     }
 }

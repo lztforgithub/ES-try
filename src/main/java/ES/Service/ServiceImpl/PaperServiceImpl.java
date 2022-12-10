@@ -3,10 +3,7 @@ package ES.Service.ServiceImpl;
 import ES.Common.EsUtileService;
 import ES.Common.Response;
 import ES.Dao.PaperDao;
-import ES.Entity.Comment;
-import ES.Entity.LikeRecords;
-import ES.Entity.PInfo;
-import ES.Entity.Recommend;
+import ES.Entity.*;
 import ES.Ret.CommentRet;
 import ES.Service.PaperService;
 import com.alibaba.fastjson.JSON;
@@ -149,7 +146,7 @@ public class PaperServiceImpl implements PaperService {
         int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
-        String next_url = "https://api.openalex.org/works?sort=cited_by_count:desc&per_page=25&filter=concepts.id:"+Cid;
+        String next_url = "https://api.openalex.org/works?sort=cited_by_count:desc&per_page=5&filter=concepts.id:"+Cid;
         try {
             content = new StringBuffer();
             URLConnection connection = new URL(next_url).openConnection();
@@ -189,7 +186,7 @@ public class PaperServiceImpl implements PaperService {
 
         JSONArray results = jsonObject1.getJSONArray("results");
         int i=0;
-        for(; i<results.size()&&i<5; i++)
+        for(; i<5; i++)
         {
             JSONObject result = results.getJSONObject(i);
             String pName = result.getString("display_name");
@@ -205,5 +202,289 @@ public class PaperServiceImpl implements PaperService {
         ret.setCount(i);
         ret.setcName(cName);
         return Response.success("返回推荐文献成功", ret);
+    }
+
+    @Override
+    public Response<Object> getRecommendConf() {
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
+
+        InputStreamReader reader = null;
+        BufferedReader in = null;
+        StringBuffer content = new StringBuffer();
+
+        try {
+            URLConnection connection = new URL(first_url).openConnection();
+            connection.setConnectTimeout(1000);
+            reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+            in = new BufferedReader(reader);
+
+            String line = null;
+
+            while ((line = in.readLine())!=null)
+            {
+                content.append(line);
+            }
+            System.out.println("crawl "+first_url+" done.");
+        } catch (IOException e) {
+            System.out.println("can't crawl "+first_url);;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close buffered reader!!!");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close inputstream reader!!!");
+                }
+            }
+        }
+
+        JSONObject jsonObject = JSON.parseObject(content.toString());
+        int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
+        int choose = (int) (Math.random() * total);
+        String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
+        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=25&filter=concepts.id:"+Cid;
+        try {
+            content = new StringBuffer();
+            URLConnection connection = new URL(next_url).openConnection();
+            connection.setConnectTimeout(1000);
+            reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+            in = new BufferedReader(reader);
+
+            String line = null;
+
+            while ((line = in.readLine())!=null)
+            {
+                content.append(line);
+            }
+            System.out.println("crawl "+next_url+" done.");
+        } catch (IOException e) {
+            System.out.println("can't crawl "+next_url);;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close buffered reader!!!");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close inputstream reader!!!");
+                }
+            }
+        }
+
+
+        int count = 0;
+        JSONObject jsonObject1 = JSON.parseObject(content.toString());
+
+        Recommend ret = new Recommend();
+
+        JSONArray results = jsonObject1.getJSONArray("results");
+        int i=0;
+        for(; i<results.size()&&count<5; i++)
+        {
+            JSONObject result = results.getJSONObject(i);
+            String type = result.getString("type");
+            if(!type.equals("conference"))
+            {
+                continue;
+            }
+            ConfInfo confInfo = new ConfInfo();
+            String vName = result.getString("display_name");
+            String vID = "V"+result.getString("id").split("V")[1];
+            JSONObject venueInfo = esUtileService.queryDocById("venue", vID);
+            JSONArray vAbbrnames = venueInfo.getJSONArray("valtername");
+            String abbr = vAbbrnames.getString(0);
+            for(int j=0; j<vAbbrnames.size(); j++)
+            {
+                String temp = vAbbrnames.getString(j);
+                if(temp.length()<abbr.length())
+                {
+                    abbr = temp;
+                }
+            }
+            if(abbr.length()<10)
+            {
+                confInfo.setvAbbrname(abbr);
+            }
+            else
+            {
+                confInfo.setvAbbrname(null);
+            }
+            confInfo.setvName(vName);
+            int vCite = -1;
+            JSONArray vCites = venueInfo.getJSONArray("vcitesAccumulate");
+            if(vCites.size()>=3)
+            {
+                vCite = Integer.parseInt(vCites.getString(2));
+            }
+            else if(vCites.size()>=2)
+            {
+                vCite = Integer.parseInt(vCites.getString(1));
+            }
+            else if(vCites.size()>=1)
+            {
+                vCite = Integer.parseInt(vCites.getString(0));
+            }
+            confInfo.setvCite(vCite);
+            ret.addPaperResults(confInfo);
+        }
+
+        JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        String cName = conceptInfo.getString("cname");
+        ret.setCount(i);
+        ret.setcName(cName);
+        return Response.success("返回推荐会议成功", ret);
+    }
+
+    @Override
+    public Response<Object> getRecommendJournal() {
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
+
+        InputStreamReader reader = null;
+        BufferedReader in = null;
+        StringBuffer content = new StringBuffer();
+
+        try {
+            URLConnection connection = new URL(first_url).openConnection();
+            connection.setConnectTimeout(1000);
+            reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+            in = new BufferedReader(reader);
+
+            String line = null;
+
+            while ((line = in.readLine())!=null)
+            {
+                content.append(line);
+            }
+            System.out.println("crawl "+first_url+" done.");
+        } catch (IOException e) {
+            System.out.println("can't crawl "+first_url);;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close buffered reader!!!");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close inputstream reader!!!");
+                }
+            }
+        }
+
+        JSONObject jsonObject = JSON.parseObject(content.toString());
+        int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
+        int choose = (int) (Math.random() * total);
+        String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
+        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=25&filter=concepts.id:"+Cid;
+        try {
+            content = new StringBuffer();
+            URLConnection connection = new URL(next_url).openConnection();
+            connection.setConnectTimeout(1000);
+            reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+            in = new BufferedReader(reader);
+
+            String line = null;
+
+            while ((line = in.readLine())!=null)
+            {
+                content.append(line);
+            }
+            System.out.println("crawl "+next_url+" done.");
+        } catch (IOException e) {
+            System.out.println("can't crawl "+next_url);;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close buffered reader!!!");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close inputstream reader!!!");
+                }
+            }
+        }
+
+
+        int count = 0;
+        JSONObject jsonObject1 = JSON.parseObject(content.toString());
+
+        Recommend ret = new Recommend();
+
+        JSONArray results = jsonObject1.getJSONArray("results");
+        int i=0;
+        for(; i<results.size()&&count<5; i++)
+        {
+            JSONObject result = results.getJSONObject(i);
+            String type = result.getString("type");
+            if(!type.equals("journal"))
+            {
+                continue;
+            }
+            ConfInfo confInfo = new ConfInfo();
+            String vName = result.getString("display_name");
+            String vID = "V"+result.getString("id").split("V")[1];
+            JSONObject venueInfo = esUtileService.queryDocById("venue", vID);
+            JSONArray vAbbrnames = venueInfo.getJSONArray("valtername");
+            String abbr = vAbbrnames.getString(0);
+            for(int j=0; j<vAbbrnames.size(); j++)
+            {
+                String temp = vAbbrnames.getString(j);
+                if(temp.length()<abbr.length())
+                {
+                    abbr = temp;
+                }
+            }
+            if(abbr.length()<10)
+            {
+                confInfo.setvAbbrname(abbr);
+            }
+            else
+            {
+                confInfo.setvAbbrname(null);
+            }
+            confInfo.setvName(vName);
+            int vCite = -1;
+            JSONArray vCites = venueInfo.getJSONArray("vcitesAccumulate");
+            if(vCites.size()>=3)
+            {
+                vCite = Integer.parseInt(vCites.getString(2));
+            }
+            else if(vCites.size()>=2)
+            {
+                vCite = Integer.parseInt(vCites.getString(1));
+            }
+            else if(vCites.size()>=1)
+            {
+                vCite = Integer.parseInt(vCites.getString(0));
+            }
+            confInfo.setvCite(vCite);
+            ret.addPaperResults(confInfo);
+        }
+
+        JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        String cName = conceptInfo.getString("cname");
+        ret.setCount(i);
+        ret.setcName(cName);
+        return Response.success("返回推荐期刊成功", ret);
     }
 }

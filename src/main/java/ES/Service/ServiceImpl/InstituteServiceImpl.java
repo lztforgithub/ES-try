@@ -38,11 +38,13 @@ public class InstituteServiceImpl implements InstituteService {
     }
 
     @Override
-    public Response<Object> getScholarInfo(String iid) {
+    public Response<Object> getInstitutionInfo(String iid) {
         JSONObject jsonObject = esUtileService.queryDocById("institutions", iid);
         if (jsonObject==null){
             return Response.fail("IID错误!");
         }
+        int IschNum = jsonObject.getJSONArray("iresearchers").size();
+        jsonObject.put("IschNum", IschNum);
         return Response.success("机构信息如下:",
                 jsonObject);
     }

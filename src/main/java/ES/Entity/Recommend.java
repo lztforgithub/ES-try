@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Recommend {
     private int count;
     private String cName;
-    private ArrayList<PInfo> paperResults = new ArrayList<PInfo>();
+    private ArrayList<Object> paperResults = new ArrayList<>();
 
     public int getCount() {
         return count;
@@ -23,15 +23,16 @@ public class Recommend {
         this.cName = cName;
     }
 
-    public ArrayList<PInfo> getPaperResults() {
+    public ArrayList<Object> getPaperResults() {
         return paperResults;
     }
 
-    public void setPaperResults(ArrayList<PInfo> paperResults) {
+    public void setPaperResults(ArrayList<Object> paperResults) {
         this.paperResults = paperResults;
     }
 
-    public void addPaperResults(PInfo pInfo) {
-        this.paperResults.add(pInfo);
+    public void addPaperResults(Object o)
+    {
+        this.paperResults.add(o);
     }
 }
