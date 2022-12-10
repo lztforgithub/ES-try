@@ -38,10 +38,4 @@ public class UserController {
         return userService.login(username,pwd);
     }
 
-    //发起入驻申请
-    @PostMapping("/user/AA")
-    public Response<Object> userAA(HttpServletRequest request, @RequestBody Map<String, String> map){
-
-        return Response.fail("发起失败!");
-    }
 }

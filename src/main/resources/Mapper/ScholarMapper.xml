@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ES.Dao.ScholarDao">
+    <insert id="applyPortal" parameterType="ES.Entity.AdmissionApplication">
+        insert into admission_application(
+            AAID,
+            AAtype,
+            AA_UID,
+            AA_RID,
+            AAtime,
+            AAlastUpdateTime,
+            AAname,
+            AAinstitution,
+            AAemail,
+            AAinterestedAreas,
+            AAhomepage,
+            AAintroduction,
+            AAccept,
+            AOpinion
+        )
+            values(
+                #{admissionApplication_id},
+                #{type},
+                #{uid},
+                #{rid},
+                #{time},
+                #{lastUpdateTime},
+                #{name},
+                #{institution},
+                #{email},
+                #{interestedareas},
+                #{homepage},
+                #{introduction},
+                #{accept},
+                #{opinion}
+            )
+    </insert>
+</mapper>

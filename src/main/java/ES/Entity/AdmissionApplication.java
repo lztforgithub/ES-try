@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -36,7 +38,7 @@ public class AdmissionApplication {
 
     //最后处理时间 通过于。。/拒绝于。。
     @Column(name = "AAlastUpdateTime", nullable = false)
-    String lastUpdateTime;
+    Timestamp lastUpdateTime;
 
     @Column(name = "AAname", nullable = false)
     String name;
@@ -65,5 +67,31 @@ public class AdmissionApplication {
 
     @Column(name = "AOpinion", nullable = true)
     String opinion;
+
+    public AdmissionApplication(
+            String user_id,
+            String researcher_id,
+            String researcher_name,
+            String institute,
+            String contact,
+            String interestedAreas,
+            String homepage,
+            String introduction
+    ){
+        this.admissionApplication_id = UUID.randomUUID().toString();
+        this.type = 1;
+        this.uid = user_id;
+        this.rid = researcher_id;
+        this.time = new Timestamp(new Date().getTime());
+        this.lastUpdateTime = this.time;
+        this.name = researcher_name;
+        this.institution = institute;
+        this.email = contact;
+        this.interestedareas = interestedAreas;
+        this.homepage = homepage;
+        this.introduction = introduction;
+        this.accept = 0;
+        this.opinion = "";
+    }
 
 }
