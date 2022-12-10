@@ -17,6 +17,7 @@ public class VenueDoc {
     private ArrayList<Integer> VworksAccumulate;
     private ArrayList<Integer> Vcitesyear;
     private ArrayList<Integer> VcitesAccumulate;
+    private int VciteThree;
 
 
     public String getVID() {
@@ -121,5 +122,13 @@ public class VenueDoc {
 
     public void setVcitesAccumulate(ArrayList<Integer> vcitesAccumulate) {
         VcitesAccumulate = vcitesAccumulate;
+    }
+
+    public int getVciteThree() {
+        return VciteThree;
+    }
+
+    public void setVciteThree(int vciteThree) {
+        VciteThree = vciteThree;
     }
 }

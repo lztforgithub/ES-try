@@ -1,9 +1,6 @@
 package ES.Common;
 
-import ES.Document.ConceptDoc;
-import ES.Document.InstitutionDoc;
-import ES.Document.VenueDoc;
-import ES.Document.WorkDoc;
+import ES.Document.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpHost;
@@ -352,7 +349,7 @@ public class EsUtileService {
 
     /**
      * 将新的出版物放入ES中。
-     * @param indexName 索引名称，应该为concepts。
+     * @param indexName 索引名称，应该为concept。
      * @param venueDoc 出版物Doc实例。
      */
     public void addDoc(String indexName, VenueDoc venueDoc) {
@@ -367,6 +364,23 @@ public class EsUtileService {
         }
     }
 
+
+    /**
+     * 将新的学者放入ES中。
+     * @param indexName 索引名称，应该为researcher。
+     * @param researcherDoc 学者Doc实例。
+     */
+    public void addDoc(String indexName, ResearcherDoc researcherDoc) {
+        IndexRequest request = new IndexRequest(indexName)
+                .id(researcherDoc.getRID())
+                .source(JSONObject.toJSONString(researcherDoc), XContentType.JSON);
+        try {
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+            System.out.println("Successfully added new researcher: " + researcherDoc.getRID() + " with name " + researcherDoc.getRname());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public void deleteDuplicateDoc(String indexName, String IDName, String ID) {
         CountRequest countRequest = new CountRequest(indexName);
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();

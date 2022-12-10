@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionApplicationService {
 
-    @Autowired
+    @Autowired(required = false)
     AdmissionApplicationDao admissionApplicationDao;
 
     @Override

@@ -53,7 +53,7 @@ public class VenueStorage {
     }
 
     @RequestMapping(value = "/searchVenuesById", method = RequestMethod.GET)
-    public JSONObject searchConceptById(String indexName, String ID) {
-        return esUtileService.queryDocById(indexName, ID);
+    public JSONObject searchConceptById( String ID) {
+        return esUtileService.queryDocById("venue", ID);
     }
 }

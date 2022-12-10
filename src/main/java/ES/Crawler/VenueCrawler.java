@@ -134,6 +134,7 @@ public class VenueCrawler {
             ret.setVworksAccumulate(VworksAccumulate);
             ret.setVcitesyear(citesByYearList);
             ret.setVcitesAccumulate(VcitesAccumulate);
+            ret.setVciteThree(VcitesAccumulate.get(2));
 //        System.out.println(retJSON);
 
         } catch (Exception e) {

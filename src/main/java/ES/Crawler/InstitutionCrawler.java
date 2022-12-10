@@ -1,5 +1,8 @@
 package ES.Crawler;
 
+import ES.Common.AlexUtils;
+import ES.Common.HttpUtils;
+import ES.Common.PageResult;
 import ES.Document.InstitutionDoc;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -10,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 public class InstitutionCrawler {
     private String url;
@@ -55,12 +59,31 @@ public class InstitutionCrawler {
         return content.toString();
     }
 
+    public ArrayList<InstitutionDoc> crawlInstitutions(String url) {
+        String response = HttpUtils.handleRequestURL(url);
+        JSONObject responseJSON;
+        ArrayList<InstitutionDoc> institutionDocs = new ArrayList<>();
+        try {
+            responseJSON = JSONObject.parseObject(response);
+            JSONArray arr = responseJSON.getJSONArray("results");
+            for (int i = 0; i < arr.size(); i++) {
+                String singleInstitution = arr.getJSONObject(i).toString();
+                System.out.println("Crawing Institute: " + arr.getJSONObject(i).getString("display_name"));
+                institutionDocs.add(json2Doc(singleInstitution));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return institutionDocs;
+
+    }
+
     public InstitutionDoc json2Doc(String jsonStr)
     {
         InstitutionDoc institutionDoc = new InstitutionDoc();
         JSONObject jsonObject = JSON.parseObject(jsonStr);
 
-        String id = jsonObject.getString("id");
+        String id = AlexUtils.getRawID(jsonObject.getString("id"));
         institutionDoc.setIID(id);
 
         String displayName = jsonObject.getString("display_name");

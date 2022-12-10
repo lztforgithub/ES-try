@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
+    @Autowired(required = false)
     UserDao userDao;
 
     @Override
