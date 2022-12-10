@@ -28,14 +28,17 @@ public class VenueServiceImpl implements VenueService {
         if (jsonObject==null){
             return Response.fail("VID错误!");
         }
+        //return Response.success("测试",jsonObject);
         List<String> CID = new ArrayList<>();
         List<String> Cname = new ArrayList<>();
-        Object q = jsonObject.get("VconceptIDs");
+        Object q = jsonObject.get("vconceptIDs");
         CID = castList(q,String.class);
+
+        //return Response.success("测试",CID);
 
         for (String i: CID){
             JSONObject t = esUtileService.queryDocById("concept",i);
-            Cname.add(t.getString("Cname"));
+            if (t!=null) Cname.add(t.getString("cname"));
         }
 
         jsonObject.put("Cname",Cname);

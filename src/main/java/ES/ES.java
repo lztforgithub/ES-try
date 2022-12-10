@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class
-        //SecurityAutoConfiguration.class
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class,
+        SecurityAutoConfiguration.class
 })
 public class ES {
     public static void main(String[] args) {

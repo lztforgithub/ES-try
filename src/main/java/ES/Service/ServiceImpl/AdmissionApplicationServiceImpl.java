@@ -7,6 +7,7 @@ import ES.Dao.AdmissionApplicationDao;
 import ES.Dao.UserDao;
 import ES.Entity.AdmissionApplication;
 import ES.Ret.BaseRet;
+import ES.Service.AdmissionApplicationService;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionApplicationService {
+public class AdmissionApplicationServiceImpl implements AdmissionApplicationService {
 
     @Autowired
     AdmissionApplicationDao admissionApplicationDao;
@@ -80,7 +81,7 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
 
         PageResult<JSONObject> t;
         Map<String,Object> map = new HashMap<>();
-        map.put("R_UID","*");
+        map.put("r_UID","*");
         t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
         int iScholarSum = (int) t.getTotal();
 
