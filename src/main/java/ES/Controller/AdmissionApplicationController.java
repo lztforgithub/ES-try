@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.util.Map;
 
@@ -56,4 +57,15 @@ public class AdmissionApplicationController {
         return Response.fail("无权限!");
     }
 
+    //获取已入驻学者列表
+    @RequestMapping("RUID")
+    public Response<Object> RUID(HttpServletRequest request) throws IOException {
+        return admissionApplicationService.RUID();
+    }
+
+    //获取平台基本信息
+    @RequestMapping("base")
+    public Response<Object> base(HttpServletRequest request) throws IOException{
+        return admissionApplicationService.base();
+    }
 }

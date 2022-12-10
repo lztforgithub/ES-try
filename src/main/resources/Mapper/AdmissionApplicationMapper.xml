@@ -10,6 +10,13 @@
     <update id="update">
         update admission_application set AAccept = #{acc},
                                          opinion = #{opinion}
+                                         AAlastUpdateTime = #{lastUpdateTime}
                                       where AAID = #{aa_id}
     </update>
+    <select id="selectById" resultType="ES.Entity.AdmissionApplication">
+        select * from admission_application where AAID = #{aa_id}
+    </select>
+    <select id="countUser">
+        select count(*) from user
+    </select>
 </mapper>

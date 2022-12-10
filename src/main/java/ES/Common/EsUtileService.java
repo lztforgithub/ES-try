@@ -2,6 +2,7 @@ package ES.Common;
 
 import ES.Document.*;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -185,7 +186,64 @@ public class EsUtileService {
         searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
         //构造搜索条件
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, dimAndMap, dimOrMap);
+        BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, dimAndMap, dimOrMap, null, null);
+        sourceBuilder.query(boolQueryBuilder);
+        //高亮处理
+        if (!StringUtils.isEmpty(highName)) {
+            buildHighlight(sourceBuilder, highName);
+        }
+        //分页处理
+        buildPageLimit(sourceBuilder, pageNum, pageSize);
+        //超时设置
+        sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
+        searchRequest.source(sourceBuilder);
+
+        //执行搜索
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        SearchHits searchHits = searchResponse.getHits();
+        List<JSONObject> resultList = new ArrayList<>();
+        for (SearchHit hit : searchHits) {
+            //原始查询结果数据
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            //高亮处理
+            if (!StringUtils.isEmpty(highName)) {
+                Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+                HighlightField highlightField = highlightFields.get(highName);
+                if (highlightField != null) {
+                    Text[] fragments = highlightField.fragments();
+                    StringBuilder value = new StringBuilder();
+                    for (Text text : fragments) {
+                        value.append(text);
+                    }
+                    sourceAsMap.put(highName, value.toString());
+                }
+            }
+            JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
+            resultList.add(jsonObject);
+        }
+
+        long total = searchHits.getTotalHits().value;
+        PageResult<JSONObject> pageResult = new PageResult<>();
+        pageResult.setPageNum(pageNum);
+        pageResult.setPageSize(pageSize);
+        pageResult.setTotal(total);
+        pageResult.setList(resultList);
+        pageResult.setTotalPage(total==0?0: (int) (total % pageSize == 0 ? total / pageSize : (total / pageSize) + 1));
+
+        return pageResult;
+    }
+
+    /**
+     * 高级搜索，map类型的参数都为空时，默认查询全部
+     *
+     */
+    public PageResult<JSONObject> advancedSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> notMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, Map<String, Object> dimNotMap) throws IOException {
+        SearchRequest searchRequest = new SearchRequest(indexName);
+        // 索引不存在时不报错
+        searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
+        //构造搜索条件
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, notMap, dimAndMap, dimOrMap, dimNotMap);
         sourceBuilder.query(boolQueryBuilder);
         //高亮处理
         if (!StringUtils.isEmpty(highName)) {
@@ -236,7 +294,7 @@ public class EsUtileService {
      * 构造多条件查询
      *
      */
-    public BoolQueryBuilder buildMultiQuery(Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap) {
+    public BoolQueryBuilder buildMultiQuery(Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> notMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, Map<String, Object> dimNotMap) {
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
         //该值为true时搜索全部
         boolean searchAllFlag = true;
@@ -256,6 +314,14 @@ public class EsUtileService {
             }
             searchAllFlag = false;
         }
+        //精确查询，not
+        if (!CollectionUtils.isEmpty(notMap)) {
+            for (Map.Entry<String, Object> entry : notMap.entrySet()) {
+                MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
+                boolQueryBuilder.mustNot(matchQueryBuilder);
+            }
+            searchAllFlag = false;
+        }
         //模糊查询，and
         if (!CollectionUtils.isEmpty(dimAndMap)) {
             for (Map.Entry<String, Object> entry : dimAndMap.entrySet()) {
@@ -269,6 +335,14 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : dimOrMap.entrySet()) {
                 WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.should(wildcardQueryBuilder);
+            }
+            searchAllFlag = false;
+        }
+        //模糊查询，not
+        if (!CollectionUtils.isEmpty(dimOrMap)) {
+            for (Map.Entry<String, Object> entry : dimNotMap.entrySet()) {
+                WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
+                boolQueryBuilder.mustNot(wildcardQueryBuilder);
             }
             searchAllFlag = false;
         }
@@ -403,6 +477,45 @@ public class EsUtileService {
             e.printStackTrace();
         }
 
+    }
+
+    public ArrayList<Object> getVInfo(String vid) {
+        ArrayList<Object> ret = new ArrayList<>();
+        JSONObject venueDoc = queryDocById("venue", vid);
+        JSONArray vabbrnames = venueDoc.getJSONArray("valtername");
+        String s = vabbrnames.getString(0);
+        for(int i=0; i<vabbrnames.size(); i++)
+        {
+            String temp = vabbrnames.getString(i);
+            if(temp.length()<s.length())
+            {
+                s = temp;
+            }
+        }
+        if(s.length()<=10)
+        {
+            ret.add(s);
+        }
+        else
+        {
+            ret.add(null);
+        }
+        JSONArray vcitesAccumulate = venueDoc.getJSONArray("vcitesAccumulate");
+        int citeNum = -1;
+        if(vcitesAccumulate.size()>=3)
+        {
+            citeNum = Integer.parseInt(vcitesAccumulate.getString(2));
+        }
+        else if(vcitesAccumulate.size()>=2)
+        {
+            citeNum = Integer.parseInt(vcitesAccumulate.getString(1));
+        }
+        else if(vcitesAccumulate.size()>=1)
+        {
+            citeNum = Integer.parseInt(vcitesAccumulate.getString(0));
+        }
+        ret.add(citeNum);
+        return ret;
     }
 }
 

@@ -122,7 +122,7 @@ public class WorkCrawler {
             return null;
         }
 
-        String id = jsonObject.getString("id");
+        String id = "W"+jsonObject.getString("id").split("W")[1];
         workDoc.setPID(id);
 
         String doi = jsonObject.getString("doi");
@@ -134,7 +134,7 @@ public class WorkCrawler {
         JSONObject host_venue = jsonObject.getJSONObject("host_venue");
         if(host_venue!=null)
         {
-            String hostVID = host_venue.getString("id");
+            String hostVID = "V"+host_venue.getString("id").split("V")[1];
             workDoc.setP_VID(hostVID);
             String hostVname = host_venue.getString("publisher");
             workDoc.setP_Vname(hostVname);
@@ -162,7 +162,7 @@ public class WorkCrawler {
         {
             JSONObject authorinfo = authors.getJSONObject(i);
             JSONObject author = authorinfo.getJSONObject("author");
-            String authorID = author.getString("id");
+            String authorID = "A"+author.getString("id").split("A")[1];
             workDoc.addPauthor(authorID);
         }
 

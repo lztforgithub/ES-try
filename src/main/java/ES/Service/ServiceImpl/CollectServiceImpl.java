@@ -39,4 +39,23 @@ public class CollectServiceImpl implements CollectService {
         }
         return Response.fail("文档未收藏!");
     }
+
+    @Override
+    public Response<Object> CollectPaper(String user_id, String paper_id, String collect_id){
+        collectDao.deleteCollectRecords(user_id,paper_id);
+        CollectRecords collectRecords = new CollectRecords(collect_id,paper_id);
+        if (collectDao.insertCollectRecords(collectRecords)>0){
+            return Response.success("收藏成功!",collectRecords);
+        }
+        return Response.fail("收藏失败!");
+    }
+
+    @Override
+    public Response<Object> AddCollect(String user_id, String collect_name){
+        Collected collected = new Collected(user_id, collect_name);
+        if (collectDao.insertCollected(collected)>0){
+            return Response.success("新建收藏夹成功!",collected);
+        }
+        return Response.fail("新建收藏夹失败!");
+    }
 }

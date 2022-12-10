@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +25,10 @@ public class Collected {
 
     @Column(name = "CT_UID", nullable = false)
     String uid;
+
+    public Collected(String uid,String name){
+        this.collected_id = UUID.randomUUID().toString();
+        this.name = name;
+        this.uid = uid;
+    }
 }

@@ -153,7 +153,7 @@ public class InstitutionCrawler {
             for(int i=0; i<associate.size(); i++)
             {
                 JSONObject assoInfo = associate.getJSONObject(i);
-                String assoID = assoInfo.getString("id");
+                String assoID = "I"+assoInfo.getString("id").split("I")[1];
                 institutionDoc.addIassociations(assoID);
                 String assoRelation = assoInfo.getString("relationship");
                 institutionDoc.addIrelation(assoRelation);
@@ -217,7 +217,7 @@ public class InstitutionCrawler {
     }
 
     public static void main(String[] args) {
-        InstitutionCrawler instituteCrawler = new InstitutionCrawler("https://api.openalex.org/institutions/I114027177");
+        InstitutionCrawler instituteCrawler = new InstitutionCrawler("https://api.openalex.org/institutions?filter=display_name.search:Tsinghua+University");
         instituteCrawler.run();
     }
 }

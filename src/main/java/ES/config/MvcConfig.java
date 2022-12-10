@@ -23,7 +23,9 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtInterceptor())
                 .addPathPatterns("/AA/**")
                 .excludePathPatterns("/user/**")
-                .excludePathPatterns("/comment/**");
+                .excludePathPatterns("/comment/**")
+                .excludePathPatterns("/author/**");
+
     }
 
     /**
