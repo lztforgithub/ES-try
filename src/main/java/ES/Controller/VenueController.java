@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -27,7 +28,7 @@ public class VenueController {
 
     //查看出版物的论文
     @PostMapping("/venue/paper")
-    public Response<Object> paper(HttpServletRequest request, @RequestBody Map<String, String> map){
+    public Response<Object> paper(HttpServletRequest request, @RequestBody Map<String, String> map) throws IOException {
         String venue_id = map.get("VID");
         return venueService.paper(venue_id);
     }
