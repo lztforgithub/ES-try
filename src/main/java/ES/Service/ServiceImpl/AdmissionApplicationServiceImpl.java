@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,8 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
         if (acc==1){
             admissionApplication = admissionApplicationDao.selectById(aa_id);
         }
-        if (admissionApplicationDao.update(aa_id,acc,opinion)>0){
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        if (admissionApplicationDao.update(aa_id,acc,opinion,timestamp)>0){
             if (acc==1){
                 //update学者门户
                 JSONObject jsonObject = esUtileService.queryDocById("researcher",admissionApplication.getRid());
