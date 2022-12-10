@@ -54,5 +54,15 @@ public class SearchServiceImpl implements SearchService {
         return Response.success("搜索结果如下:",t);
     }
 
-
+    @Override
+    public Response<Object> advancedSearch(
+            String user_id,
+            List<Object> advancedSearch,
+            Timestamp from,
+            Timestamp to,
+            String filterAuthors,
+            String filterPublicationTypes,
+            String sort){
+        return  Response.fail("GG");
+    }
 }
