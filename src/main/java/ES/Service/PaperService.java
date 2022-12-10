@@ -15,5 +15,5 @@ public interface PaperService {
 
     Response<Object> unlike(String user_id, String comment_id);
 
-    Response<Object> getRecommendWork(String type);
+    Response<Object> getRecommendWork();
 }

@@ -5,6 +5,7 @@ import ES.Common.Response;
 import ES.Dao.PaperDao;
 import ES.Entity.Comment;
 import ES.Entity.LikeRecords;
+import ES.Entity.PInfo;
 import ES.Entity.Recommend;
 import ES.Ret.CommentRet;
 import ES.Service.PaperService;
@@ -105,7 +106,7 @@ public class PaperServiceImpl implements PaperService {
     }
 
     @Override
-    public Response<Object> getRecommendWork(String type) {
+    public Response<Object> getRecommendWork() {
         String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
 
         InputStreamReader reader = null;
@@ -182,49 +183,27 @@ public class PaperServiceImpl implements PaperService {
             }
         }
 
-        int count = 0;
         JSONObject jsonObject1 = JSON.parseObject(content.toString());
 
         Recommend ret = new Recommend();
 
         JSONArray results = jsonObject1.getJSONArray("results");
-        for(int i=0; i<results.size()&&count<5; i++)
+        int i=0;
+        for(; i<results.size()&&i<5; i++)
         {
             JSONObject result = results.getJSONObject(i);
-            if(type!=null)
-            {
-                JSONObject host_venue = result.getJSONObject("host_venue");
-                String host_venue_type = host_venue.getString("type");
-                if(!host_venue_type.equals(type))
-                {
-                    continue;
-                }
-                else
-                {
-                    if(type.equals("journal"))
-                    {
-                        String vname = host_venue.getString("display_name");
-                        ret.addJournalResults(vname);
-                        String vid = "V"+host_venue.getString("id").split("V")[1];
-                        ArrayList<Object> vinfo = esUtileService.getVInfo(vid);
-                        ret.addJournalResults(vinfo.get(0));
-                        ret.addJournalResults(vinfo.get(1));
-                    }
-                    else
-                    {
-                        String vname = host_venue.getString("display_name");
-                        ret.addConferenceResults(vname);
-                        String vid = "V"+host_venue.getString("id").split("V")[1];
-                        ArrayList<Object> vinfo = esUtileService.getVInfo(vid);
-                        ret.addConferenceResults(vinfo.get(0));
-                        ret.addConferenceResults(vinfo.get(1));
-                    }
-                }
-                String pName = result.getString("display_name");
-                ret.addPaperResults(pName);
-
-            }
+            String pName = result.getString("display_name");
+            String host_name = result.getJSONObject("host_venue").getString("display_name");
+            PInfo pInfo = new PInfo();
+            pInfo.setpName(pName);
+            pInfo.setpVName(host_name);
+            ret.addPaperResults(pInfo);
         }
 
+        JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        String cName = conceptInfo.getString("cname");
+        ret.setCount(i);
+        ret.setcName(cName);
+        return Response.success("返回推荐文献成功", ret);
     }
 }

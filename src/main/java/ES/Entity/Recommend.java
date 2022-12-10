@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 public class Recommend {
     private int count;
-    private String type;
-    private ArrayList<Object> conferenceResults = new ArrayList<>();
-    private ArrayList<Object> journalResults = new ArrayList<>();
-    private ArrayList<Object> paperResults = new ArrayList<>();
+    private String cName;
+    private ArrayList<PInfo> paperResults = new ArrayList<PInfo>();
 
     public int getCount() {
         return count;
@@ -17,50 +15,23 @@ public class Recommend {
         this.count = count;
     }
 
-    public String getType() {
-        return type;
+    public String getcName() {
+        return cName;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setcName(String cName) {
+        this.cName = cName;
     }
 
-    public ArrayList<Object> getConferenceResults() {
-        return conferenceResults;
-    }
-
-    public void setConferenceResults(ArrayList<Object> conferenceResults) {
-        this.conferenceResults = conferenceResults;
-    }
-
-    public void addConferenceResults(Object o)
-    {
-        this.conferenceResults.add(o);
-    }
-
-    public ArrayList<Object> getJournalResults() {
-        return journalResults;
-    }
-
-    public void setJournalResults(ArrayList<Object> journalResults) {
-        this.journalResults = journalResults;
-    }
-
-    public void addJournalResults(Object o)
-    {
-        this.journalResults.add(o);
-    }
-
-    public ArrayList<Object> getPaperResults() {
+    public ArrayList<PInfo> getPaperResults() {
         return paperResults;
     }
 
-    public void setPaperResults(ArrayList<Object> paperResults) {
+    public void setPaperResults(ArrayList<PInfo> paperResults) {
         this.paperResults = paperResults;
     }
 
-    public void addPaperResults(Object o)
-    {
-        this.paperResults.add(o);
+    public void addPaperResults(PInfo pInfo) {
+        this.paperResults.add(pInfo);
     }
 }

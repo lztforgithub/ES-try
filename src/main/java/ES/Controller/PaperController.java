@@ -85,7 +85,6 @@ public class PaperController {
     @PostMapping("/recommend")
     private Response<Object> getRecommendWork(HttpServletRequest request, @RequestBody Map<String, String> map)
     {
-        String type = map.get("type");
-        return paperService.getRecommendWork(type);
+        return paperService.getRecommendWork();
     }
 }
