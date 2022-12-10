@@ -25,7 +25,6 @@ public class MvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/user/**")
                 .excludePathPatterns("/comment/**")
                 .excludePathPatterns("/author/**");
-
     }
 
     /**
