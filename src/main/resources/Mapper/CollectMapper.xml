@@ -8,7 +8,7 @@
         select * from collect_records where CR_CTID = #{collect_id} and CR_PID = #{paper_id}
     </select>
     <delete id="deleteCollectRecords">
-        delete * from collect_records where
+        delete from collect_records where
                 CR_CTID in (select CTID from collected where CT_UID = #{user_id})
                 and CR_PID = #{paper_id}
     </delete>
