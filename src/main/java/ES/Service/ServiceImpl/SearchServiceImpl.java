@@ -3,10 +3,7 @@ package ES.Service.ServiceImpl;
 import ES.Common.EsUtileService;
 import ES.Common.PageResult;
 import ES.Common.Response;
-import ES.Ret.CoAuthor;
-import ES.Ret.SearchResultRet;
-import ES.Ret.SimpleAuthor;
-import ES.Ret.SimpleVenue;
+import ES.Ret.*;
 import ES.Service.SearchService;
 import ES.config.ElasticSearchConfig;
 import com.alibaba.fastjson.JSON;
@@ -40,25 +37,17 @@ public class SearchServiceImpl implements SearchService {
             String filterAuthors,
             String filterPublicationTypes,
             String sort) throws IOException {
-        //try {
-            Map<String, Object> ormap = new HashMap<>();
+        try {
             Map<String, Object> andmap = new HashMap<>();
-            ormap.put("pname", normalSearch);
-            //ormap.put("pabstract", normalSearch);
-            //ormap.put("pconcepts", normalSearch);
-            boolean flag = false;
+            andmap.put("pname", normalSearch);
             if (filterAuthors != null) {
                 List<String> tmp = new ArrayList<>();
                 tmp.add(filterAuthors);
                 andmap.put("pauthor", tmp);
-                flag = true;
-            }
-            if (!flag) {
-                andmap = null;
             }
 
             //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 100, 20, "", ormap, null, null, null, null, null, start_time, end_time);
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 100, 20, "", andmap, null, null, null, null, null, start_time, end_time);
             System.out.println(t.getTotal());
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
@@ -190,7 +179,6 @@ public class SearchServiceImpl implements SearchService {
                 if (now >= max3) {
                     id3 = i;
                     max3 = now;
-                    continue;
                 }
             }
             List<SimpleVenue> simpleVenues = new ArrayList<>();
@@ -201,18 +189,49 @@ public class SearchServiceImpl implements SearchService {
             //计算总数量
             int totalNumber = (int) t.getTotal();
 
+
+            //recommendation
+            //author
+            andmap = new HashMap<>();
+            andmap.put("rname",normalSearch);
+            List<JSONObject> author = new ArrayList<>();
+            t = esUtileService.defaultSearch("researcher",100,20,"",null,null,null,andmap,null,null,start_time,end_time);
+            int nums = 0;
+            for (JSONObject i:t.getList()){
+                nums++;
+                if (nums>3){
+                    break;
+                }
+                author.add(i);
+            }
+
+            //institute
+            andmap = new HashMap<>();
+            andmap.put("iname",normalSearch);
+            List<JSONObject> institute = new ArrayList<>();
+            t = esUtileService.defaultSearch("institutions",100,20,"",null,null,null,andmap,null,null,start_time,end_time);
+            nums = 0;
+            for (JSONObject i:t.getList()){
+                nums++;
+                if (nums>3){
+                    break;
+                }
+                institute.add(i);
+            }
+
             //整合
             SearchResultRet searchResultRet = new SearchResultRet(
                     result,
                     simpleAuthors,
                     simpleVenues,
-                    totalNumber
+                    totalNumber,
+                    new Recommendation(author,institute)
             );
 
             return Response.success("搜索结果如下:", searchResultRet);
-        //}catch (Exception e){
-        //    return Response.fail("网络错误!");
-        //}
+        }catch (Exception e){
+            return Response.fail("网络错误!");
+        }
     }
 
     @Override
@@ -565,7 +584,8 @@ public class SearchServiceImpl implements SearchService {
                     result,
                     simpleAuthors,
                     simpleVenues,
-                    totalNumber
+                    totalNumber,
+                    null
             );
 
             return Response.success("搜索结果如下:", t);
