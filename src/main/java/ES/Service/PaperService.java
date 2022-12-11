@@ -2,6 +2,8 @@ package ES.Service;
 
 import ES.Common.Response;
 
+import java.io.IOException;
+
 public interface PaperService {
     Response<Object> view(String paper_id);
 
@@ -22,4 +24,6 @@ public interface PaperService {
     Response<Object> getRecommendJournal();
 
     Response<Object> systemTags(String paper_id);
+
+    void crawlWorkURLByAuthor() throws IOException;
 }

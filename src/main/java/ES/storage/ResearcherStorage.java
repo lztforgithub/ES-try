@@ -10,6 +10,7 @@ import ES.Document.ResearcherDoc;
 import ES.Service.ServiceImpl.VenueServiceImpl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.junit.Test;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +34,7 @@ public class ResearcherStorage {
     {
         esUtileService.addDoc(indexName, researcherDoc);
     }
+
 
     @RequestMapping(value = "/storeResearchers", method = RequestMethod.PUT)
     public void storeResearcherByURL(String url) {
@@ -144,6 +146,7 @@ public class ResearcherStorage {
         return ret;
     }
 
+    public ResearcherStorage() {}
 
     public static void main(String[] args) {
 

@@ -1,6 +1,8 @@
 package ES.Crawler;
 
 import ES.Document.WorkDoc;
+import ES.storage.ResearcherStorage;
+import ES.storage.WorkStorage;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -18,6 +20,8 @@ import java.util.Set;
 
 public class WorkCrawler {
     private String url;
+
+    private int layer = 0;
 
     private WorkDoc workDoc;
 
@@ -162,7 +166,9 @@ public class WorkCrawler {
             JSONObject authorinfo = authors.getJSONObject(i);
             JSONObject author = authorinfo.getJSONObject("author");
             String authorID = "A"+author.getString("id").split("A")[1];
+            String authorName = author.getString("display_name");
             workDoc.addPauthor(authorID);
+            workDoc.addPauthorname(authorName);
         }
 
         Date date = null;
@@ -223,6 +229,7 @@ public class WorkCrawler {
             for(int i=0; i< referenced_works.size(); i++)
             {
                 String refer = referenced_works.getString(i);
+                String referID = "W"+refer.split("W")[1];
                 workDoc.addPreference(refer);
             }
         }
@@ -233,6 +240,7 @@ public class WorkCrawler {
             for(int i=0; i< related_works.size(); i++)
             {
                 String relate = related_works.getString(i);
+                String relateID = "W"+relate.split("W")[1];
                 workDoc.addPrelated(relate);
             }
         }
@@ -342,6 +350,12 @@ public class WorkCrawler {
     public WorkCrawler(String url)
     {
         this.url = url;
+    }
+
+    public WorkCrawler(String url, int layer)
+    {
+        this.url = url;
+        this.layer = layer;
     }
 
     public WorkDoc run()

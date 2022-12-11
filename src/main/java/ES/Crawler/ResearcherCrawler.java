@@ -156,7 +156,13 @@ public class ResearcherCrawler {
         String baseURL = "https://api.openalex.org/works?filter=openalex:";
         HashMap<String, Integer> counter = new HashMap<>();
         HashMap<String, String> information = new HashMap<>();
+        int crawlCounter = 0;
         for (String topPaperID : firstFivePapers) {
+            crawlCounter += 1;
+            if(crawlCounter>3)
+            {
+                break;
+            }
             String request = baseURL + topPaperID;
             String response = HttpUtils.handleRequestURL(request);
             JSONObject object = JSONObject.parseObject(response);
