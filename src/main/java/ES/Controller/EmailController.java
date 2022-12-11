@@ -83,7 +83,7 @@ public class EmailController {
         return Response.success("发送成功");
     }
 
-    @PostMapping("/sendEmail")
+    @PostMapping("/sendEmail2")
     public Response<Object> commonEmail2(@RequestBody Map<String, Object> map, HttpServletRequest request) {
         String to = (String) map.get("to");
 
