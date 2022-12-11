@@ -51,17 +51,19 @@ public class PaperServiceImpl implements PaperService {
         Object q = jsonObject.get("preferences");
         PreferencesID = castList(q,String.class);
 
-        for (String i:PreferencesID){
-            JSONObject t = esUtileService.queryDocById("works",i);
-            if (t!=null){
-                Preferences.add(new Rpaper(
-                        i,
-                        t.getString("pname"),
-                        t.getString("plink"),
-                        t.getString("pdate"),
-                        t.getString("pcite"),
-                        t.getString("pauthor")
-                ));
+        if (PreferencesID!=null) {
+            for (String i : PreferencesID) {
+                JSONObject t = esUtileService.queryDocById("works", i);
+                if (t != null) {
+                    Preferences.add(new Rpaper(
+                            i,
+                            t.getString("pname"),
+                            t.getString("plink"),
+                            t.getString("pdate"),
+                            t.getString("pcite"),
+                            t.getString("pauthor")
+                    ));
+                }
             }
         }
         jsonObject.put("Preferences",Preferences);
@@ -72,17 +74,19 @@ public class PaperServiceImpl implements PaperService {
         q = jsonObject.get("prelated");
         PrelatedID = castList(q,String.class);
 
-        for (String i:PrelatedID){
-            JSONObject t = esUtileService.queryDocById("works",i);
-            if (t!=null){
-                Prelateds.add(new Rpaper(
-                        i,
-                        t.getString("pname"),
-                        t.getString("plink"),
-                        t.getString("pdate"),
-                        t.getString("pcite"),
-                        t.getString("pauthor")
-                ));
+        if (PreferencesID!=null) {
+            for (String i : PrelatedID) {
+                JSONObject t = esUtileService.queryDocById("works", i);
+                if (t != null) {
+                    Prelateds.add(new Rpaper(
+                            i,
+                            t.getString("pname"),
+                            t.getString("plink"),
+                            t.getString("pdate"),
+                            t.getString("pcite"),
+                            t.getString("pauthor")
+                    ));
+                }
             }
         }
         jsonObject.put("Prelateds",Prelateds);
@@ -92,16 +96,17 @@ public class PaperServiceImpl implements PaperService {
         List<CoAuthor> Pauthors = new ArrayList<>();
         q = jsonObject.get("pauthor");
         PauthorID = castList(q,String.class);
-
-        for (String i:PauthorID){
-            JSONObject t = esUtileService.queryDocById("researcher",i);
-            if (t!=null){
-                Pauthors.add(new CoAuthor(
-                        t.getString("rinstitute"),
-                        i,
-                        t.getString("rname"),
-                        t.getString("ravatar")
-                ));
+        if (PauthorID!=null) {
+            for (String i : PauthorID) {
+                JSONObject t = esUtileService.queryDocById("researcher", i);
+                if (t != null) {
+                    Pauthors.add(new CoAuthor(
+                            t.getString("rinstitute"),
+                            i,
+                            t.getString("rname"),
+                            t.getString("ravatar")
+                    ));
+                }
             }
         }
 
