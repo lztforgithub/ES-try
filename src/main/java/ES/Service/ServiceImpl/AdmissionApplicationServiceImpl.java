@@ -48,19 +48,19 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
         if (admissionApplicationDao.update(aa_id,acc,opinion,timestamp)>0){
             if (acc==1){
                 //update学者门户
-                JSONObject jsonObject = esUtileService.queryDocById("researcher",admissionApplication.getRid());
-                jsonObject.put("r_UID",admissionApplication.getUid());
+                JSONObject jsonObject = esUtileService.queryDocById("researcher",admissionApplication.getAA_RID());
+                jsonObject.put("r_UID",admissionApplication.getAA_UID());
                 jsonObject.put("rverifytime",new Time(new Date().getTime()));
-                jsonObject.put("rcustomconcepts",admissionApplication.getInterestedareas());
+                jsonObject.put("rcustomconcepts",admissionApplication.getAAinterestedareas());
                 //jsonObject.put("Rinstitute",admissionApplication.getInstitution());
-                jsonObject.put("rcontact",admissionApplication.getEmail());
-                if (admissionApplication.getHomepage()!=null) {
+                jsonObject.put("rcontact",admissionApplication.getAAemail());
+                if (admissionApplication.getAAhomepage()!=null) {
                     //可能为空
-                    jsonObject.put("rpersonalPage", admissionApplication.getHomepage());
+                    jsonObject.put("rpersonalPage", admissionApplication.getAAhomepage());
                 }
-                jsonObject.put("rgateinfo",admissionApplication.getIntroduction());
+                jsonObject.put("rgateinfo",admissionApplication.getAAintroduction());
 
-                esUtileService.updateDoc("researcher",admissionApplication.getRid(),jsonObject);
+                esUtileService.updateDoc("researcher",admissionApplication.getAA_RID(),jsonObject);
 
             }
             return Response.success("审核成功");

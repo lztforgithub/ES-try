@@ -21,52 +21,52 @@ import java.util.UUID;
 public class AdmissionApplication {
     @Id
     @Column(name = "AAID", nullable = false)
-    String admissionApplication_id;
+    String AAID;
 
     @Column(name = "AAtype", nullable = false)
-    int type;
+    int AAtype;
 
     @Column(name = "AA_UID", nullable = false)
-    String uid;
+    String AA_UID;
 
     //学者id 学者在es上
     @Column(name = "AA_RID", nullable = false)
-    String rid;
+    String AA_RID;
 
     @Column(name = "AAtime", nullable = false)
-    Timestamp time;
+    Timestamp AAtime;
 
     //最后处理时间 通过于。。/拒绝于。。
     @Column(name = "AAlastUpdateTime", nullable = false)
-    Timestamp lastUpdateTime;
+    Timestamp AAlastUpdateTime;
 
     @Column(name = "AAname", nullable = false)
-    String name;
+    String AAname;
 
     //研究单位，申请者自行填写
     @Column(name = "AAinstitution", nullable = false)
-    String institution;
+    String AAinstitution;
 
     @Column(name = "AAemail", nullable = false)
-    String email;
+    String AAemail;
 
     //研究领域，申请者自行填写
     @Column(name = "AAinterestedareas", nullable = false)
-    String interestedareas;
+    String AAinterestedareas;
 
     //主页链接，申请者自行填写,可不填
     @Column(name = "AAhomepage", nullable = true)
-    String homepage;
+    String AAhomepage;
 
     @Column(name = "AAintroduction", nullable = false)
-    String introduction;
+    String AAintroduction;
 
     //0 待审核 1 通过 2 拒绝
     @Column(name = "AAccept", nullable = false)
-    int accept;
+    int AAccept;
 
     @Column(name = "AOpinion", nullable = true)
-    String opinion;
+    String AOpinion;
 
     public AdmissionApplication(
             String user_id,
@@ -78,20 +78,20 @@ public class AdmissionApplication {
             String homepage,
             String introduction
     ){
-        this.admissionApplication_id = UUID.randomUUID().toString();
-        this.type = 1;
-        this.uid = user_id;
-        this.rid = researcher_id;
-        this.time = new Timestamp(new Date().getTime());
-        this.lastUpdateTime = this.time;
-        this.name = researcher_name;
-        this.institution = institute;
-        this.email = contact;
-        this.interestedareas = interestedAreas;
-        this.homepage = homepage;
-        this.introduction = introduction;
-        this.accept = 0;
-        this.opinion = "";
+        this.AAID = UUID.randomUUID().toString();
+        this.AAtype = 1;
+        this.AA_UID = user_id;
+        this.AA_RID = researcher_id;
+        this.AAtime = new Timestamp(new Date().getTime());
+        this.AAlastUpdateTime = this.AAtime;
+        this.AAname = researcher_name;
+        this.AAinstitution = institute;
+        this.AAemail = contact;
+        this.AAinterestedareas = interestedAreas;
+        this.AAhomepage = homepage;
+        this.AAintroduction = introduction;
+        this.AAccept = 0;
+        this.AOpinion = "";
     }
 
 }
