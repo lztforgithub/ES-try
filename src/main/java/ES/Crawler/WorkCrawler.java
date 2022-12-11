@@ -132,7 +132,7 @@ public class WorkCrawler {
         workDoc.setPname(title);
 
         JSONObject host_venue = jsonObject.getJSONObject("host_venue");
-        if(host_venue!=null)
+        if(host_venue.getString("id")!=null)
         {
             String hostVID = "V"+host_venue.getString("id").split("V")[1];
             workDoc.setP_VID(hostVID);
