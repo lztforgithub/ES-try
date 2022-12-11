@@ -20,4 +20,6 @@ public interface PaperService {
     Response<Object> getRecommendConf();
 
     Response<Object> getRecommendJournal();
+
+    Response<Object> systemTags(String paper_id);
 }
