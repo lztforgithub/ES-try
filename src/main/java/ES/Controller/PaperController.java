@@ -29,12 +29,12 @@ public class PaperController {
         return paperService.cite(paper_id);
     }
 
-    /*所属领域
-    @PostMapping("/paper/cite")
-    private Response<Object> cite(HttpServletRequest request, @RequestBody Map<String, String> map){
+    //所属领域
+    @PostMapping("/paper/systemTags")
+    private Response<Object> systemTags(HttpServletRequest request, @RequestBody Map<String, String> map){
         String paper_id = map.get("PID");
-        return paperService.cite(paper_id);
-    }*/
+        return paperService.systemTags(paper_id);
+    }
 
     //获取评论
     @PostMapping("/paper/viewComment")

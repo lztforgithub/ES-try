@@ -15,9 +15,9 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "admission_application")
+@NoArgsConstructor
 public class AdmissionApplication {
     @Id
     @Column(name = "AAID", nullable = false)

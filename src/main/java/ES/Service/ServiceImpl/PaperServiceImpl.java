@@ -122,6 +122,16 @@ public class PaperServiceImpl implements PaperService {
     }
 
     @Override
+    public Response<Object> systemTags(String paper_id){
+        JSONObject jsonObject = esUtileService.queryDocById("works",paper_id);
+        if (jsonObject==null){
+            return Response.fail("PID错误!");
+        }
+        return Response.success("标签如下:",
+                jsonObject.getString("psystemTags"));
+    }
+
+    @Override
     public Response<Object> viewComment(String paper_id, String user_id){
         List<Comment> comments = paperDao.selectByPID(paper_id);
         List<CommentRet> commentRets = new ArrayList<>();

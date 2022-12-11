@@ -11,36 +11,36 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "user")
+@NoArgsConstructor
 public class User {
     @Id
-    @Column(name = "UID", nullable = false)
-    String user_id;
+    @Column(name = "UID")
+    String UID;
 
-    @Column(name = "Uname", nullable = false)
-    String username;
+    @Column(name = "Uname")
+    String Uname;
 
-    @Column(name = "Upassword", nullable = false)
-    String passwd;
+    @Column(name = "Upassword")
+    String Upassword;
 
-    @Column(name = "Uemail", nullable = false)
-    String email;
+    @Column(name = "Uemail")
+    String Uemail;
 
-    @Column(name = "Ubio", nullable = true)
-    String info;
+    @Column(name = "Ubio")
+    String Ubio;
 
-    @Column(name = "Utype", nullable = false)
-    String type;
+    @Column(name = "Utype")
+    String Utype;
 
     public User(String username, String passwd, String email, String bio){
-        this.user_id = UUID.randomUUID().toString();
-        this.username = username;
-        this.passwd = passwd;
-        this.email = email;
-        this.info = bio;
-        this.type = "default";
+        this.UID = UUID.randomUUID().toString();
+        this.Uname = username;
+        this.Upassword = passwd;
+        this.Uemail = email;
+        this.Ubio = bio;
+        this.Utype = "default";
     }
+
 }
