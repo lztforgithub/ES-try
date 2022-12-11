@@ -4,9 +4,7 @@ import ES.Common.JwtUtil;
 import ES.Common.Response;
 import ES.Service.PaperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -94,8 +92,8 @@ public class PaperController {
         return paperService.getRecommendConf();
     }
 
-    @PostMapping("/recommendJournals")
-    private Response<Object> getRecommendJournal(HttpServletRequest request, @RequestBody Map<String, String> map)
+    @RequestMapping("/recommendJournals")
+    private Response<Object> getRecommendJournal(HttpServletRequest request)
     {
         return paperService.getRecommendJournal();
     }

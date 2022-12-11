@@ -511,7 +511,13 @@ public class PaperServiceImpl implements PaperService {
             String vName = result.getString("display_name");
             String vID = "V"+result.getString("id").split("V")[1];
             JSONObject venueInfo = esUtileService.queryDocById("venue", vID);
-            JSONArray vAbbrnames = venueInfo.getJSONArray("valtername");
+            JSONArray vAbbrnames;
+            if (venueInfo!=null){
+                vAbbrnames = venueInfo.getJSONArray("valtername");
+            }
+            else{
+                return Response.fail("GG");
+            }
             String abbr = vAbbrnames.getString(0);
             for(int j=0; j<vAbbrnames.size(); j++)
             {

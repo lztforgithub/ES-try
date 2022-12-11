@@ -11,6 +11,7 @@ public class CorsConfiguration {
         org.springframework.web.cors.CorsConfiguration corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
         //允许任何域名使用
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedOrigin("https://api.openalex.org");
         //允许任何头
         corsConfiguration.addAllowedHeader("*");
         //允许任何方法（post、get等）
