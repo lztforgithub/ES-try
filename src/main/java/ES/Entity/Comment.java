@@ -20,36 +20,36 @@ import java.util.UUID;
 public class Comment {
     @Id
     @Column(name = "CID", nullable = false)
-    String comment_id;
+    String CID;
 
     @Column(name = "C_UID", nullable = false)
-    String uid;
+    String C_UID;
 
     //对应论文id，论文存在es
     @Column(name = "C_PID", nullable = false)
-    String pid;
+    String C_PID;
 
     @Column(name = "Ccontent", nullable = false)
-    String content;
+    String Ccontent;
 
     @Column(name = "Ctime", nullable = false)
-    Timestamp time;
+    Timestamp Ctime;
 
     // 点赞数
     @Column(name = "Clikes", nullable = false)
-    int likes;
+    int Clikes;
 
     // 是否置顶
     @Column(name = "Ctop", nullable = false)
-    boolean top;
+    boolean Ctop;
 
     public Comment(String paper_id, String user_id, String content){
-        this.comment_id = UUID.randomUUID().toString();
-        this.uid = user_id;
-        this.pid = paper_id;
-        this.content = content;
-        this.time = new Timestamp(new Date().getTime());
-        this.likes = 0;
-        this.top = false;
+        this.CID = UUID.randomUUID().toString();
+        this.C_UID = user_id;
+        this.C_PID = paper_id;
+        this.Ccontent = content;
+        this.Ctime = new Timestamp(new Date().getTime());
+        this.Clikes = 0;
+        this.Ctop = false;
     }
 }
