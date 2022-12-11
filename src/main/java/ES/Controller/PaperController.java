@@ -80,19 +80,19 @@ public class PaperController {
     }
 
 
-    @PostMapping("/recommendPapers")
-    private Response<Object> getRecommendWork(HttpServletRequest request, @RequestBody Map<String, String> map)
+    @GetMapping("/recommendPapers")
+    private Response<Object> getRecommendWork(HttpServletRequest request)
     {
         return paperService.getRecommendWork();
     }
 
-    @PostMapping("/recommendConferences")
-    private Response<Object> getRecommendConf(HttpServletRequest request, @RequestBody Map<String, String> map)
+    @GetMapping("/recommendConferences")
+    private Response<Object> getRecommendConf(HttpServletRequest request)
     {
         return paperService.getRecommendConf();
     }
 
-    @RequestMapping("/recommendJournals")
+    @RequestMapping(value = "/recommendJournals", method=RequestMethod.GET)
     private Response<Object> getRecommendJournal(HttpServletRequest request)
     {
         return paperService.getRecommendJournal();

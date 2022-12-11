@@ -1,6 +1,7 @@
 package ES.Service.ServiceImpl;
 
 import ES.Common.EsUtileService;
+import ES.Common.PageResult;
 import ES.Common.Response;
 import ES.Dao.PaperDao;
 import ES.Entity.*;
@@ -8,10 +9,12 @@ import ES.Ret.CoAuthor;
 import ES.Ret.CommentRet;
 import ES.Ret.Rpaper;
 import ES.Service.PaperService;
+import ES.storage.WorkStorage;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.elasticsearch.common.recycler.Recycler;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -570,4 +573,68 @@ public class PaperServiceImpl implements PaperService {
         ret.setcName(cName);
         return Response.success("返回推荐期刊成功", JSON.toJSON(ret));
     }
+
+    @Test
+    public void crawlWorkURLByAuthor() throws IOException {
+        ArrayList<String> rIDs = new ArrayList<>();
+        ArrayList<String> wIDs = new ArrayList<>();
+        WorkStorage workStorage = new WorkStorage();
+        PageResult<JSONObject> authors = esUtileService.conditionSearch("researcher", 1, 500, "", null, null, null, null);
+        for(JSONObject authorObj:authors.getList())
+        {
+            rIDs.add((String) authorObj.get("rID"));
+        }
+        String URL = "https://api.openalex.org/works?sort=cited_by_count:desc&per_page=5&filter=author.id:";
+        for(String id:rIDs)
+        {
+            String url = URL+id;
+            InputStreamReader reader = null;
+            BufferedReader in = null;
+            StringBuffer content = new StringBuffer();
+
+            try {
+                URLConnection connection = new URL(url).openConnection();
+                connection.setConnectTimeout(1000);
+                reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+                in = new BufferedReader(reader);
+
+                String line = null;
+
+                while ((line = in.readLine())!=null)
+                {
+                    content.append(line);
+                }
+                System.out.println("crawl "+url+" done.");
+            } catch (IOException e) {
+                System.out.println("can't crawl "+url);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        System.out.println("cannot close buffered reader!!!");
+                    }
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        System.out.println("cannot close inputstream reader!!!");
+                    }
+                }
+            }
+
+            JSONObject jsonObject = JSON.parseObject(content.toString());
+            JSONArray results = jsonObject.getJSONArray("results");
+            for(int i=0; i<results.size(); i++)
+            {
+                JSONObject result = results.getJSONObject(i);
+                String wID = "https://api.openalex.org/works/W"+result.getString("id").split("W")[1];
+                workStorage.storeWork(wID);
+                wIDs.add(wID);
+            }
+        }
+        System.out.println("----done----");
+    }
+
 }
