@@ -47,13 +47,15 @@ public class SearchServiceImpl implements SearchService {
         ormap.put("pconcepts",normalSearch);
         boolean flag = false;
         if (filterAuthors!=null){
-            andmap.put("pauthor",filterAuthors);
+            List<String> tmp = new ArrayList<>();
+            tmp.add(filterAuthors);
+            andmap.put("pauthor",tmp);
             flag = true;
         }
-        if (filterPublicationTypes!=null){
+        /*if (filterPublicationTypes!=null){
             andmap.put("p_VID",filterPublicationTypes);
             flag = true;
-        }
+        }*/
         if (!flag){
             andmap = null;
         }
@@ -76,7 +78,24 @@ public class SearchServiceImpl implements SearchService {
         //临时变量
         int qs; JSONObject p;
         for (JSONObject i:t.getList()){
-            result_i = i;
+            //出版类型统计
+            String v = i.getString("p_VID");
+            p = esUtileService.queryDocById("venue",v);
+            v = p.getString("vtype");
+            //不同的出版类型忽略
+            if (filterPublicationTypes!=null){
+                if (!v.equals(filterPublicationTypes)){
+                    continue;
+                }
+            }
+            if (V_map.containsKey(v)){
+                qs = V_map.get(v);
+                V_map.put(v,qs+1);
+            }
+            else{
+                V_map.put(v,1);
+            }
+            //学者统计
             coAuthors = new ArrayList<>();
             q = i.get("pauthor");
             now_authors = castList(q,String.class);
@@ -99,19 +118,11 @@ public class SearchServiceImpl implements SearchService {
                     }
                 }
             }
+            result_i = i;
             result_i.put("PAuthor",coAuthors);
             result.add(result_i);
 
-            String v = i.getString("p_VID");
-            p = esUtileService.queryDocById("venue",v);
-            v = p.getString("vtype");
-            if (V_map.containsKey(v)){
-                qs = V_map.get(v);
-                V_map.put(v,qs+1);
-            }
-            else{
-                V_map.put(v,1);
-            }
+
         }
         //计算前三的学者
         int max1=0,max2=0,max3=0,now;
