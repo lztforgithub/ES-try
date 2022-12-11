@@ -632,9 +632,15 @@ public class PaperServiceImpl implements PaperService {
                 String wID = "https://api.openalex.org/works/W"+result.getString("id").split("W")[1];
                 workStorage.storeWork(wID);
                 wIDs.add(wID);
+                System.out.println(wIDs.size());
             }
         }
         System.out.println("----done----");
+    }
+
+    public static void main(String[] args) throws IOException {
+        PaperServiceImpl paperService = new PaperServiceImpl();
+        paperService.crawlWorkURLByAuthor();
     }
 
 }

@@ -11,6 +11,7 @@ public class WorkDoc {
     private String P_Vname;
     private String P_Vurl;
     private ArrayList<String> Pauthor = new ArrayList<>();
+    private ArrayList<String> Pauthorname = new ArrayList<>();
     private Date Pdate;
     private int Pcite;
     private String Plink;
@@ -217,5 +218,18 @@ public class WorkDoc {
     public void addPsystemTags(String s)
     {
         PsystemTags.add(s);
+    }
+
+    public ArrayList<String> getPauthorname() {
+        return Pauthorname;
+    }
+
+    public void setPauthorname(ArrayList<String> pauthorname) {
+        Pauthorname = pauthorname;
+    }
+
+    public void addPauthorname(String n)
+    {
+        Pauthorname.add(n);
     }
 }

@@ -22,6 +22,8 @@ import java.util.Locale;
 @RestController
 public class WorkStorage {
 
+    private int layer = 0;
+
     EsUtileService esUtileService = new EsUtileService();
 
     @RequestMapping(value = "/addIndex", method = RequestMethod.PUT)
@@ -34,11 +36,22 @@ public class WorkStorage {
     @RequestMapping(value="/storeWork", method = RequestMethod.PUT)
     public void storeWork(String url)
     {
-        WorkCrawler workCrawler = new WorkCrawler("https://api.openalex.org/works/W2156062569");
-        WorkStorage workStorage = new WorkStorage();
-        WorkDoc workDoc = workCrawler.run();
-        workStorage.addDoc("works", workDoc);
-        System.out.println("store "+"https://api.openalex.org/works/W2156062569"+" doc done.");
+        if(layer==0)
+        {
+            WorkCrawler workCrawler = new WorkCrawler(url);
+            WorkStorage workStorage = new WorkStorage();
+            WorkDoc workDoc = workCrawler.run();
+            workStorage.addDoc("works", workDoc);
+            System.out.println("store "+url+" doc done.");
+        }
+        else
+        {
+            WorkCrawler workCrawler = new WorkCrawler(url, 1);
+            WorkStorage workStorage = new WorkStorage();
+            WorkDoc workDoc = workCrawler.run();
+            workStorage.addDoc("works", workDoc);
+            System.out.println("store "+url+" doc done.");
+        }
     }
 
     public void addDoc(String indexName, WorkDoc workDoc)
@@ -52,6 +65,12 @@ public class WorkStorage {
     {
         return esUtileService.queryDocById(indexName, ID);
     }
+
+    public WorkStorage(int layer) {
+        this.layer = layer;
+    }
+
+    public WorkStorage() {}
 
     public static void main(String[] args) throws IOException {
         FileReader fileReader = new FileReader("C:\\Users\\1\\IdeaProjects\\1129\\ES-try\\works_urls.txt");
