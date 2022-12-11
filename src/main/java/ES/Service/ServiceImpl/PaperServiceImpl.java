@@ -137,7 +137,7 @@ public class PaperServiceImpl implements PaperService {
         List<CommentRet> commentRets = new ArrayList<>();
         LikeRecords likeRecords;
         for (Comment i:comments){
-            likeRecords=paperDao.isLike(i.getComment_id(),user_id);
+            likeRecords=paperDao.isLike(i.getCID(),user_id);
             if (likeRecords!=null){
                 commentRets.add(new CommentRet(i,true));
             }
