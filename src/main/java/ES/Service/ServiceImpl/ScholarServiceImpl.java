@@ -45,7 +45,7 @@ public class ScholarServiceImpl implements ScholarService {
             flag = false;
         }
 
-        //共著学者信息
+        /*共著学者信息
         List<String> RCOID = new ArrayList<>();
         List<CoAuthor> RcoauthorList = new ArrayList<>();
         Object q = jsonObject.get("rcoauthor");
@@ -64,7 +64,7 @@ public class ScholarServiceImpl implements ScholarService {
                 RcoauthorList.add(coAuthor);
             }
         }
-        jsonObject.put("RcoauthorList",RcoauthorList);
+        jsonObject.put("RcoauthorList",RcoauthorList);*/
 
         //代表论文信息
         Map<String, Object> map = new HashMap<>();

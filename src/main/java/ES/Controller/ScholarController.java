@@ -71,4 +71,12 @@ public class ScholarController {
         );
         return scholarService.applyPortal(admissionApplication);
     }
+
+    //编辑门户
+    @PostMapping("/editPortal")
+    public Response<Object> editPortal(HttpServletRequest request, @RequestBody Map<String, String> map){
+
+        return Response.fail("没写完");
+    }
+
 }
