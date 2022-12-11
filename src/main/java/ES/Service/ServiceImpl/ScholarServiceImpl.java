@@ -92,4 +92,13 @@ public class ScholarServiceImpl implements ScholarService {
         }
         return Response.fail("申请失败!");
     }
+
+    @Override
+    public Response<Object> editPortal(String researcher_id){
+        JSONObject jsonObject = esUtileService.queryDocById("researcher", researcher_id);
+        if (jsonObject == null){
+            return Response.fail("RID错误");
+        }
+        return Response.success("学者信息如下:",jsonObject);
+    }
 }

@@ -11,4 +11,6 @@ public interface ScholarService {
     Response<Object> selectResearcherByNameAndInstitute(String researcher_name, String institute) throws IOException;
 
     Response<Object> applyPortal(AdmissionApplication admissionApplication);
+
+    Response<Object> editPortal(String researcher_id);
 }

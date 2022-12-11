@@ -72,11 +72,11 @@ public class ScholarController {
         return scholarService.applyPortal(admissionApplication);
     }
 
-    //编辑门户
+    //编辑门户,通过接收到的RID返回对应的值
     @PostMapping("/editPortal")
     public Response<Object> editPortal(HttpServletRequest request, @RequestBody Map<String, String> map){
-
-        return Response.fail("没写完");
+        String researcher_id = map.get("RID");
+        return scholarService.editPortal(researcher_id);
     }
 
 }
