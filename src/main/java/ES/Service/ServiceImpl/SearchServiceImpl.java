@@ -16,7 +16,6 @@ import org.springframework.jdbc.support.incrementer.HanaSequenceMaxValueIncremen
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.lang.runtime.SwitchBootstraps;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
