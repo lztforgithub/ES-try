@@ -72,4 +72,22 @@ public class UserServiceImpl implements UserService {
             return Response.success("找到用户密码信息", password);
         }
     }
+
+    @Override
+    public Response<Object> setInfos(String uid, String password, String email) {
+        if(password!=null && email!=null)
+        {
+            userDao.setPasswordAndEmail(uid, password, email);
+        }
+        else if(password!=null && email==null)
+        {
+            userDao.setPassword(uid, password);
+        }
+        else if(email!=null && password==null)
+        {
+            userDao.setEmail(uid, email);
+        }
+        return Response.success("修改成功");
+    }
+
 }

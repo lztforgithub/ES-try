@@ -5,6 +5,21 @@
         insert into user(UID,Uname,Upassword,Uemail,Ubio,Utype)
         values(#{UID},#{Uname},#{Upassword},#{Uemail},#{Ubio},#{Utype})
     </insert>
+    <update id="setPasswordAndEmail">
+        update user
+        set Upassword=#{Upassword}, Uemail=#{Uemail}
+        where UID=#{UID}
+    </update>
+    <update id="setPassword">
+        update user
+        set Upassword=#{Upassword}
+        where UID=#{UID}
+    </update>
+    <update id="setEmail">
+        update user
+        set Uemail=#{Uemail}
+        where UID=#{UID}
+    </update>
     <select id="selectByUsername" resultType="ES.Entity.User">
         select * from user where Uname = #{username}
     </select>

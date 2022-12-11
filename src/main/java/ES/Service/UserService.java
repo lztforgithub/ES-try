@@ -10,4 +10,6 @@ public interface UserService {
     Response<Object> getEmail(String uid);
 
     Response<Object> getPassword(String uid);
+
+    Response<Object> setInfos(String uid, String password, String email);
 }

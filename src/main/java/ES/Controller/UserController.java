@@ -52,7 +52,13 @@ public class UserController {
         return userService.getPassword(uid);
     }
 
-    /*@PostMapping("/personInfo/accountedit2")
-    public Response<Object>
-*/
+    @PostMapping("/personInfo/accountedit2")
+    public Response<Object> setInfos(@RequestBody Map<String, String> map)
+    {
+        String uid = map.get("UID");
+        String password = map.get("Upassword");
+        String email = map.get("Uemail");
+        return userService.setInfos(uid, password, email);
+    }
+
 }
