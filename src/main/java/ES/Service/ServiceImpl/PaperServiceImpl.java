@@ -124,7 +124,7 @@ public class PaperServiceImpl implements PaperService {
         if (jsonObject==null){
             return Response.fail("PID错误!");
         }
-        return Response.success("引用格式如下:",
+        return Response.success("标签如下:",
                 jsonObject.getString("psystemTags"));
     }
 
