@@ -71,7 +71,8 @@ public class PreCrawl {
         System.out.println(concept_urls.size());
     }
 
-    public void crawlVenueURL() {
+    public void crawlVenueURL() throws IOException {
+        FileWriter fileWriter = new FileWriter("venue_urls.txt");
         for(String s:concept_urls)
         {
             String URL = "https://api.openalex.org/venues?sort=cited_by_count:desc&filter=concept.id:"+s+"&per_page=50";    // computer science
@@ -126,6 +127,7 @@ public class PreCrawl {
                     String id = obj.getString("id");
                     String venue_id = id.split("V")[1];
                     venue_urls.add(venue_id);
+                    fileWriter.write(venue_id+"\n");
                 }
 
 //            appendix = jsonObject.getJSONObject("meta").getString("next_cursor");
@@ -135,6 +137,7 @@ public class PreCrawl {
             }
             System.out.println("venue size is "+this.venue_urls.size());
         }
+        fileWriter.close();
     }
 
     public void crawlWorkURL() throws IOException {

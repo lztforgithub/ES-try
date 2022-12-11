@@ -26,7 +26,7 @@ public class InstituteServiceImpl implements InstituteService {
         }
         List<String> RID = new ArrayList<>();
         List<JSONObject> RInfo = new ArrayList<>();
-        Object q = jsonObject.get("Iresearchers");
+        Object q = jsonObject.get("iresearchers");
         RID = castList(q,String.class);
 
         for (String i: RID){
