@@ -446,13 +446,16 @@ public class EsUtileService {
     }
 
     public void addDoc(String indexName, WorkDoc workDoc) {
-        IndexRequest request = new IndexRequest(indexName).id(workDoc.getPID()).source(JSONObject.toJSONString(workDoc), XContentType.JSON);
-        try {
-            restHighLevelClient.index(request, RequestOptions.DEFAULT);
-            System.out.println("add doc "+workDoc.getPID()+" success.");
-        } catch (IOException e) {
+        if(workDoc!=null)
+        {
+            IndexRequest request = new IndexRequest(indexName).id(workDoc.getPID()).source(JSONObject.toJSONString(workDoc), XContentType.JSON);
+            try {
+                restHighLevelClient.index(request, RequestOptions.DEFAULT);
+                System.out.println("add doc "+workDoc.getPID()+" success.");
+            } catch (IOException e) {
 //            System.out.println("add doc "+workDoc.getPID()+" failed.");
-            System.out.println(e);
+                System.out.println(e);
+            }
         }
     }
 

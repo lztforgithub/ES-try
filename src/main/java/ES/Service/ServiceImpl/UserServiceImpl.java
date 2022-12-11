@@ -46,4 +46,30 @@ public class UserServiceImpl implements UserService {
         }
         return Response.fail("密码错误");
     }
+
+    @Override
+    public Response<Object> getEmail(String uid) {
+        String email = userDao.getEmail(uid);
+        if(email==null)
+        {
+            return Response.fail("用户不存在");
+        }
+        else
+        {
+            return Response.success("找到用户邮箱信息", email);
+        }
+    }
+
+    @Override
+    public Response<Object> getPassword(String uid) {
+        String password = userDao.getPassword(uid);
+        if(password==null)
+        {
+            return Response.fail("用户不存在");
+        }
+        else
+        {
+            return Response.success("找到用户密码信息", password);
+        }
+    }
 }
