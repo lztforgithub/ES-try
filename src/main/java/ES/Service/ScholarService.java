@@ -13,4 +13,6 @@ public interface ScholarService {
     Response<Object> applyPortal(AdmissionApplication admissionApplication);
 
     Response<Object> editPortal(String researcher_id);
+
+    Response<Object> editPortal2(String researcher_id, String avatar, String contact, String interestedAreas, String homepage, String introduction);
 }

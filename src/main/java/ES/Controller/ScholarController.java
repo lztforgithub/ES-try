@@ -79,4 +79,23 @@ public class ScholarController {
         return scholarService.editPortal(researcher_id);
     }
 
+    //编辑门户2，更改门户值
+    @PostMapping("/editPortal2")
+    public Response<Object> editPortal2(HttpServletRequest request, @RequestBody Map<String, String> map){
+        String researcher_id = map.get("RID");
+        String avatar = map.get("Ravatar");
+        String contact = map.get("Rcontact");
+        String interestedAreas = map.get("Rconcepts");
+        String homepage = map.get("RpersonalPage");
+        String introduction = map.get("Rgateinfo");
+        return scholarService.editPortal2(
+                researcher_id,
+                avatar,
+                contact,
+                interestedAreas,
+                homepage,
+                introduction
+        );
+    }
+
 }

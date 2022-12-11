@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Time;
+import java.util.*;
 
 import static ES.Common.EsUtileService.castList;
 
@@ -100,5 +98,29 @@ public class ScholarServiceImpl implements ScholarService {
             return Response.fail("RID错误");
         }
         return Response.success("学者信息如下:",jsonObject);
+    }
+
+    @Override
+    public Response<Object> editPortal2(
+            String researcher_id,
+            String avatar,
+            String contact,
+            String interestedAreas,
+            String homepage,
+            String introduction){
+
+            JSONObject jsonObject = esUtileService.queryDocById("researcher",researcher_id);
+            jsonObject.put("ravatar",avatar);
+            jsonObject.put("rcustomconcepts",interestedAreas);
+            jsonObject.put("rcontact",contact);
+        if (!homepage.equals("")) {
+            //可能为空
+            jsonObject.put("rpersonalPage", homepage);
+        }
+        jsonObject.put("rgateinfo",introduction);
+
+        esUtileService.updateDoc("researcher",researcher_id,jsonObject);
+
+        return Response.success("更新成功!",jsonObject);
     }
 }
