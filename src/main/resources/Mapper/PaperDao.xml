@@ -9,11 +9,11 @@
     </select>
     <insert id="insertComment" parameterType="ES.Entity.Comment">
         insert into comment(CID,C_UID,C_PID,Ccontent,Ctime,Clikes,Ctop)
-            values(#{comment_id},#{uid},#{pid},#{content},#{time},#{likes},#{top})
+            values(#{CID},#{C_UID},#{C_PID},#{Ccontent},#{Ctime},#{Clikes},#{Ctop})
     </insert>
     <insert id="insertLikeRecords" parameterType="ES.Entity.LikeRecords">
         insert into like_records(LRID,LR_CID,LR_UID)
-            values(#{likeRecords_id},#{comment_id},#{user_id})
+            values(#{LRID},#{LR_CID},#{LR_UID})
     </insert>
     <update id="updateLike">
         update comment set Clikes=Clikes+1

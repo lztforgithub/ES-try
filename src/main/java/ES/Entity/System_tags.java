@@ -17,8 +17,8 @@ import javax.persistence.Table;
 public class System_tags {
     @Id
     @Column(name = "ST_ID", nullable = false)
-    String systemTags_id;
+    String ST_ID;
 
     @Column(name = "STname", nullable = false)
-    String name;
+    String STname;
 }

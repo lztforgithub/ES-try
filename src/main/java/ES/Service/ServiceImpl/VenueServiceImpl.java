@@ -3,6 +3,7 @@ package ES.Service.ServiceImpl;
 import ES.Common.EsUtileService;
 import ES.Common.PageResult;
 import ES.Common.Response;
+import ES.Ret.VConcepts;
 import ES.Service.VenueService;
 import com.alibaba.fastjson.JSONObject;
 import org.elasticsearch.common.recycler.Recycler;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ES.Common.EsUtileService.castList;
+
 @Service
 public class VenueServiceImpl implements VenueService {
 
@@ -28,44 +31,38 @@ public class VenueServiceImpl implements VenueService {
         if (jsonObject==null){
             return Response.fail("VID错误!");
         }
+        //return Response.success("测试",jsonObject);
         List<String> CID = new ArrayList<>();
-        List<String> Cname = new ArrayList<>();
-        Object q = jsonObject.get("VconceptIDs");
+        List<VConcepts> VC = new ArrayList<>();
+        Object q = jsonObject.get("vconceptIDs");
         CID = castList(q,String.class);
+
+        //return Response.success("测试",CID);
 
         for (String i: CID){
             JSONObject t = esUtileService.queryDocById("concept",i);
-            Cname.add(t.getString("Cname"));
+            if (t!=null) VC.add(new VConcepts(
+                    i,
+                    t.getString("cname")
+            ));
         }
 
-        jsonObject.put("Cname",Cname);
+        jsonObject.put("VConcepts",VC);
         return Response.success("出版物信息如下:",
                 jsonObject);
     }
 
     @Override
     public Response<Object> paper(String venue_id) throws IOException {
+        JSONObject jsonObject = esUtileService.queryDocById("venue",venue_id);
+        if (jsonObject==null){
+            return Response.fail("VID错误!");
+        }
+
         Map<String,Object> map = new HashMap<>();
-        map.put("P_VID",venue_id);
+        map.put("p_VID",venue_id);
         PageResult<JSONObject> t = esUtileService.conditionSearch("works",100,20,"",map,null,null,null);
         return Response.success("出版物论文如下:",t);
-    }
-
-
-
-
-    public static <T> List<T> castList(Object obj, Class<T> clazz)
-    {
-        List<T> result = new ArrayList<T>();
-        if(obj instanceof List<?>)
-        {
-            for (Object o : (List<?>) obj)
-            {
-                result.add(clazz.cast(o));
-            }
-            return result;
-        }
-        return null;
     }
 
 

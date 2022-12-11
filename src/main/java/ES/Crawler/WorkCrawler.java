@@ -113,9 +113,9 @@ public class WorkCrawler {
         JSONObject jsonObject = JSON.parseObject(jsonStr);
 
         String is_retracted = jsonObject.getString("is_retracted");
-        boolean retracted = is_retracted.equals("true");
+        boolean retracted = is_retracted!=null && is_retracted.equals("true");
         String is_paratext = jsonObject.getString("is_paratext");
-        boolean paratext = is_paratext.equals("true");
+        boolean paratext = is_paratext!=null && is_paratext.equals("true");
 
         if(retracted || paratext)
         {
@@ -132,7 +132,7 @@ public class WorkCrawler {
         workDoc.setPname(title);
 
         JSONObject host_venue = jsonObject.getJSONObject("host_venue");
-        if(host_venue!=null)
+        if(host_venue.getString("id")!=null)
         {
             String hostVID = "V"+host_venue.getString("id").split("V")[1];
             workDoc.setP_VID(hostVID);

@@ -28,18 +28,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<Object> login(String username, String pwd){
-        User user = userDao.selectByUsername(username);
+        User user = new User();
+        user = userDao.selectByUsername(username);
+        System.out.println(user);
         if (user == null){
             return Response.fail("用户名不存在");
         }
-        if (user.getPasswd().equals(pwd)){
+        if (user.getUpassword().equals(pwd)){
             //准备存放在IWT中的自定义数据
             Map<String, Object> info = new HashMap<>();
-            info.put("type", user.getType());
+            info.put("type", user.getUtype());
             info.put("username", username);
 
             //生成JWT字符串
-            String token = JwtUtil.sign(user.getUser_id(), info);
+            String token = JwtUtil.sign(user.getUID(), info);
             return Response.success("登录成功",token);
         }
         return Response.fail("密码错误");

@@ -32,7 +32,7 @@ public class CollectServiceImpl implements CollectService {
         }
         CollectRecords collectRecords;
         for (Collected i:collectedList){
-            collectRecords = collectDao.selectByCTIDandPID(i.getCollected_id(),paper_id);
+            collectRecords = collectDao.selectByCTIDandPID(i.getCTID(),paper_id);
             if (collectRecords!=null){
                 return Response.success("位于收藏夹:",i);
             }

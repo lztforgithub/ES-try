@@ -7,6 +7,7 @@ import ES.Dao.AdmissionApplicationDao;
 import ES.Dao.UserDao;
 import ES.Entity.AdmissionApplication;
 import ES.Ret.BaseRet;
+import ES.Service.AdmissionApplicationService;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionApplicationService {
+public class AdmissionApplicationServiceImpl implements AdmissionApplicationService {
 
     @Autowired(required = false)
     AdmissionApplicationDao admissionApplicationDao;
@@ -47,16 +48,19 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
         if (admissionApplicationDao.update(aa_id,acc,opinion,timestamp)>0){
             if (acc==1){
                 //update学者门户
-                JSONObject jsonObject = esUtileService.queryDocById("researcher",admissionApplication.getRid());
-                jsonObject.put("R_UID",admissionApplication.getUid());
-                jsonObject.put("Rverifytime",new Time(new Date().getTime()));
-                jsonObject.put("Rcustomconcepts",admissionApplication.getInterestedareas());
+                JSONObject jsonObject = esUtileService.queryDocById("researcher",admissionApplication.getAA_RID());
+                jsonObject.put("r_UID",admissionApplication.getAA_UID());
+                jsonObject.put("rverifytime",new Time(new Date().getTime()));
+                jsonObject.put("rcustomconcepts",admissionApplication.getAAinterestedareas());
                 //jsonObject.put("Rinstitute",admissionApplication.getInstitution());
-                jsonObject.put("Rcontact",admissionApplication.getEmail());
-                jsonObject.put("RpersonalPage",admissionApplication.getHomepage()); //可能为空
-                jsonObject.put("Rgateinfo",admissionApplication.getIntroduction());
+                jsonObject.put("rcontact",admissionApplication.getAAemail());
+                if (admissionApplication.getAAhomepage()!=null) {
+                    //可能为空
+                    jsonObject.put("rpersonalPage", admissionApplication.getAAhomepage());
+                }
+                jsonObject.put("rgateinfo",admissionApplication.getAAintroduction());
 
-                esUtileService.updateDoc("researcher",admissionApplication.getRid(),jsonObject);
+                esUtileService.updateDoc("researcher",admissionApplication.getAA_RID(),jsonObject);
 
             }
             return Response.success("审核成功");
@@ -68,7 +72,7 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
     public Response<Object> RUID() throws IOException {
         PageResult<JSONObject> t;
         Map<String,Object> map = new HashMap<>();
-        map.put("R_UID","*");
+        map.put("r_UID","*");
         t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
         return Response.success("已入驻学者名单如下:",t);
     }
@@ -80,7 +84,7 @@ public class AdmissionApplicationServiceImpl implements ES.Service.AdmissionAppl
 
         PageResult<JSONObject> t;
         Map<String,Object> map = new HashMap<>();
-        map.put("R_UID","*");
+        map.put("r_UID","*");
         t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
         int iScholarSum = (int) t.getTotal();
 

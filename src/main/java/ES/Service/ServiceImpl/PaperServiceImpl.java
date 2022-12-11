@@ -1,15 +1,20 @@
 package ES.Service.ServiceImpl;
 
 import ES.Common.EsUtileService;
+import ES.Common.PageResult;
 import ES.Common.Response;
 import ES.Dao.PaperDao;
 import ES.Entity.*;
+import ES.Ret.CoAuthor;
 import ES.Ret.CommentRet;
+import ES.Ret.Rpaper;
 import ES.Service.PaperService;
+import ES.storage.WorkStorage;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.elasticsearch.common.recycler.Recycler;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static ES.Common.EsUtileService.castList;
 
 @Service
 public class PaperServiceImpl implements PaperService {
@@ -37,6 +44,69 @@ public class PaperServiceImpl implements PaperService {
         if (jsonObject==null){
             return Response.fail("PID错误!");
         }
+
+        //参考文献
+        List<String> PreferencesID = new ArrayList<>();
+        List<Rpaper> Preferences = new ArrayList<>();
+        Object q = jsonObject.get("preferences");
+        PreferencesID = castList(q,String.class);
+
+        for (String i:PreferencesID){
+            JSONObject t = esUtileService.queryDocById("works",i);
+            if (t!=null){
+                Preferences.add(new Rpaper(
+                        i,
+                        t.getString("pname"),
+                        t.getString("plink"),
+                        t.getString("pdate"),
+                        t.getString("pcite"),
+                        t.getString("pauthor")
+                ));
+            }
+        }
+        jsonObject.put("Preferences",Preferences);
+
+        //相关文献
+        List<String> PrelatedID = new ArrayList<>();
+        List<Rpaper> Prelateds = new ArrayList<>();
+        q = jsonObject.get("prelated");
+        PrelatedID = castList(q,String.class);
+
+        for (String i:PrelatedID){
+            JSONObject t = esUtileService.queryDocById("works",i);
+            if (t!=null){
+                Prelateds.add(new Rpaper(
+                        i,
+                        t.getString("pname"),
+                        t.getString("plink"),
+                        t.getString("pdate"),
+                        t.getString("pcite"),
+                        t.getString("pauthor")
+                ));
+            }
+        }
+        jsonObject.put("Prelateds",Prelateds);
+
+        //共著作者
+        List<String> PauthorID = new ArrayList<>();
+        List<CoAuthor> Pauthors = new ArrayList<>();
+        q = jsonObject.get("pauthor");
+        PauthorID = castList(q,String.class);
+
+        for (String i:PauthorID){
+            JSONObject t = esUtileService.queryDocById("researcher",i);
+            if (t!=null){
+                Pauthors.add(new CoAuthor(
+                        t.getString("rinstitute"),
+                        i,
+                        t.getString("rname"),
+                        t.getString("ravatar")
+                ));
+            }
+        }
+
+        jsonObject.put("Pauthor",Pauthors);
+
         return Response.success("文献详情如下:",
                 jsonObject);
     }
@@ -48,7 +118,17 @@ public class PaperServiceImpl implements PaperService {
             return Response.fail("PID错误!");
         }
         return Response.success("引用格式如下:",
-                jsonObject.getString("Pbecited"));
+                jsonObject.getString("pbecited"));
+    }
+
+    @Override
+    public Response<Object> systemTags(String paper_id){
+        JSONObject jsonObject = esUtileService.queryDocById("works",paper_id);
+        if (jsonObject==null){
+            return Response.fail("PID错误!");
+        }
+        return Response.success("标签如下:",
+                jsonObject.getString("psystemTags"));
     }
 
     @Override
@@ -57,7 +137,7 @@ public class PaperServiceImpl implements PaperService {
         List<CommentRet> commentRets = new ArrayList<>();
         LikeRecords likeRecords;
         for (Comment i:comments){
-            likeRecords=paperDao.isLike(i.getComment_id(),user_id);
+            likeRecords=paperDao.isLike(i.getCID(),user_id);
             if (likeRecords!=null){
                 commentRets.add(new CommentRet(i,true));
             }
@@ -201,7 +281,7 @@ public class PaperServiceImpl implements PaperService {
         String cName = conceptInfo.getString("cname");
         ret.setCount(i);
         ret.setcName(cName);
-        return Response.success("返回推荐文献成功", ret);
+        return Response.success("返回推荐文献成功", JSON.toJSON(ret));
     }
 
     @Override
@@ -343,7 +423,7 @@ public class PaperServiceImpl implements PaperService {
         String cName = conceptInfo.getString("cname");
         ret.setCount(i);
         ret.setcName(cName);
-        return Response.success("返回推荐会议成功", ret);
+        return Response.success("返回推荐会议成功", JSON.toJSON(ret));
     }
 
     @Override
@@ -444,7 +524,13 @@ public class PaperServiceImpl implements PaperService {
             String vName = result.getString("display_name");
             String vID = "V"+result.getString("id").split("V")[1];
             JSONObject venueInfo = esUtileService.queryDocById("venue", vID);
-            JSONArray vAbbrnames = venueInfo.getJSONArray("valtername");
+            JSONArray vAbbrnames;
+            if (venueInfo!=null){
+                vAbbrnames = venueInfo.getJSONArray("valtername");
+            }
+            else{
+                return Response.fail("GG");
+            }
             String abbr = vAbbrnames.getString(0);
             for(int j=0; j<vAbbrnames.size(); j++)
             {
@@ -485,6 +571,70 @@ public class PaperServiceImpl implements PaperService {
         String cName = conceptInfo.getString("cname");
         ret.setCount(i);
         ret.setcName(cName);
-        return Response.success("返回推荐期刊成功", ret);
+        return Response.success("返回推荐期刊成功", JSON.toJSON(ret));
     }
+
+    @Test
+    public void crawlWorkURLByAuthor() throws IOException {
+        ArrayList<String> rIDs = new ArrayList<>();
+        ArrayList<String> wIDs = new ArrayList<>();
+        WorkStorage workStorage = new WorkStorage();
+        PageResult<JSONObject> authors = esUtileService.conditionSearch("researcher", 1, 500, "", null, null, null, null);
+        for(JSONObject authorObj:authors.getList())
+        {
+            rIDs.add((String) authorObj.get("rID"));
+        }
+        String URL = "https://api.openalex.org/works?sort=cited_by_count:desc&per_page=5&filter=author.id:";
+        for(String id:rIDs)
+        {
+            String url = URL+id;
+            InputStreamReader reader = null;
+            BufferedReader in = null;
+            StringBuffer content = new StringBuffer();
+
+            try {
+                URLConnection connection = new URL(url).openConnection();
+                connection.setConnectTimeout(1000);
+                reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+                in = new BufferedReader(reader);
+
+                String line = null;
+
+                while ((line = in.readLine())!=null)
+                {
+                    content.append(line);
+                }
+                System.out.println("crawl "+url+" done.");
+            } catch (IOException e) {
+                System.out.println("can't crawl "+url);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        System.out.println("cannot close buffered reader!!!");
+                    }
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        System.out.println("cannot close inputstream reader!!!");
+                    }
+                }
+            }
+
+            JSONObject jsonObject = JSON.parseObject(content.toString());
+            JSONArray results = jsonObject.getJSONArray("results");
+            for(int i=0; i<results.size(); i++)
+            {
+                JSONObject result = results.getJSONObject(i);
+                String wID = "https://api.openalex.org/works/W"+result.getString("id").split("W")[1];
+                workStorage.storeWork(wID);
+                wIDs.add(wID);
+            }
+        }
+        System.out.println("----done----");
+    }
+
 }

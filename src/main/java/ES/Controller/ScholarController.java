@@ -26,9 +26,17 @@ public class ScholarController {
 
     //学者门户
     @PostMapping("/scholarPortal")
-    public Response<Object> scholarPortal(HttpServletRequest request, @RequestBody Map<String, String> map){
+    public Response<Object> scholarPortal(HttpServletRequest request, @RequestBody Map<String, String> map) throws IOException {
+        String token = request.getHeader("token");
+        String user_id;
+        if (token == null){
+            user_id = "";
+        }
+        else{
+            user_id = JwtUtil.getUserId(token);
+        }
         String researcher_id = map.get("RID");
-        return scholarService.scholarPortal(researcher_id);
+        return scholarService.scholarPortal(researcher_id,user_id);
     }
 
     //申请入驻1，查询所有同名学者
@@ -63,4 +71,31 @@ public class ScholarController {
         );
         return scholarService.applyPortal(admissionApplication);
     }
+
+    //编辑门户,通过接收到的RID返回对应的值
+    @PostMapping("/editPortal")
+    public Response<Object> editPortal(HttpServletRequest request, @RequestBody Map<String, String> map){
+        String researcher_id = map.get("RID");
+        return scholarService.editPortal(researcher_id);
+    }
+
+    //编辑门户2，更改门户值
+    @PostMapping("/editPortal2")
+    public Response<Object> editPortal2(HttpServletRequest request, @RequestBody Map<String, String> map){
+        String researcher_id = map.get("RID");
+        String avatar = map.get("Ravatar");
+        String contact = map.get("Rcontact");
+        String interestedAreas = map.get("Rconcepts");
+        String homepage = map.get("RpersonalPage");
+        String introduction = map.get("Rgateinfo");
+        return scholarService.editPortal2(
+                researcher_id,
+                avatar,
+                contact,
+                interestedAreas,
+                homepage,
+                introduction
+        );
+    }
+
 }

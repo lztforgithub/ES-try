@@ -3,7 +3,7 @@
 <mapper namespace="ES.Dao.UserDao">
     <insert id="insertUser" parameterType="ES.Entity.User">
         insert into user(UID,Uname,Upassword,Uemail,Ubio,Utype)
-        values(#{user_id},#{username},#{passwd},#{email},#{info},#{type})
+        values(#{UID},#{Uname},#{Upassword},#{Uemail},#{Ubio},#{Utype})
     </insert>
     <select id="selectByUsername" resultType="ES.Entity.User">
         select * from user where Uname = #{username}

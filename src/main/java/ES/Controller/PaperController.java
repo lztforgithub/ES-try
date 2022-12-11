@@ -4,9 +4,7 @@ import ES.Common.JwtUtil;
 import ES.Common.Response;
 import ES.Service.PaperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -31,12 +29,12 @@ public class PaperController {
         return paperService.cite(paper_id);
     }
 
-    /*所属领域
-    @PostMapping("/paper/cite")
-    private Response<Object> cite(HttpServletRequest request, @RequestBody Map<String, String> map){
+    //所属领域
+    @PostMapping("/paper/systemTags")
+    private Response<Object> systemTags(HttpServletRequest request, @RequestBody Map<String, String> map){
         String paper_id = map.get("PID");
-        return paperService.cite(paper_id);
-    }*/
+        return paperService.systemTags(paper_id);
+    }
 
     //获取评论
     @PostMapping("/paper/viewComment")
@@ -82,20 +80,20 @@ public class PaperController {
     }
 
 
-    @PostMapping("/recommendPapers")
-    private Response<Object> getRecommendWork(HttpServletRequest request, @RequestBody Map<String, String> map)
+    @GetMapping("/recommendPapers")
+    private Response<Object> getRecommendWork(HttpServletRequest request)
     {
         return paperService.getRecommendWork();
     }
 
-    @PostMapping("/recommendConferences")
-    private Response<Object> getRecommendConf(HttpServletRequest request, @RequestBody Map<String, String> map)
+    @GetMapping("/recommendConferences")
+    private Response<Object> getRecommendConf(HttpServletRequest request)
     {
         return paperService.getRecommendConf();
     }
 
-    @PostMapping("/recommendJournals")
-    private Response<Object> getRecommendJournal(HttpServletRequest request, @RequestBody Map<String, String> map)
+    @RequestMapping(value = "/recommendJournals", method=RequestMethod.GET)
+    private Response<Object> getRecommendJournal(HttpServletRequest request)
     {
         return paperService.getRecommendJournal();
     }
