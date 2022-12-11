@@ -33,6 +33,9 @@ public class ScholarServiceImpl implements ScholarService {
     @Override
     public Response<Object> scholarPortal(String researcher_id,String user_id) throws IOException {
         JSONObject jsonObject = esUtileService.queryDocById("researcher", researcher_id);
+        if (jsonObject == null){
+            return Response.fail("RID出错!");
+        }
         String s = jsonObject.getString("r_UID");
         boolean flag = true;
         if (s == null) {

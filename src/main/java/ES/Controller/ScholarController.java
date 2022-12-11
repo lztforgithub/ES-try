@@ -28,9 +28,12 @@ public class ScholarController {
     @PostMapping("/scholarPortal")
     public Response<Object> scholarPortal(HttpServletRequest request, @RequestBody Map<String, String> map) throws IOException {
         String token = request.getHeader("token");
-        String user_id= JwtUtil.getUserId(token);
-        if (user_id == null){
+        String user_id;
+        if (token == null){
             user_id = "";
+        }
+        else{
+            user_id = JwtUtil.getUserId(token);
         }
         String researcher_id = map.get("RID");
         return scholarService.scholarPortal(researcher_id,user_id);

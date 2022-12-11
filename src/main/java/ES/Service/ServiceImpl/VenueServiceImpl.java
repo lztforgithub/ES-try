@@ -3,6 +3,7 @@ package ES.Service.ServiceImpl;
 import ES.Common.EsUtileService;
 import ES.Common.PageResult;
 import ES.Common.Response;
+import ES.Ret.VConcepts;
 import ES.Service.VenueService;
 import com.alibaba.fastjson.JSONObject;
 import org.elasticsearch.common.recycler.Recycler;
@@ -32,7 +33,7 @@ public class VenueServiceImpl implements VenueService {
         }
         //return Response.success("测试",jsonObject);
         List<String> CID = new ArrayList<>();
-        List<String> Cname = new ArrayList<>();
+        List<VConcepts> VC = new ArrayList<>();
         Object q = jsonObject.get("vconceptIDs");
         CID = castList(q,String.class);
 
@@ -40,16 +41,24 @@ public class VenueServiceImpl implements VenueService {
 
         for (String i: CID){
             JSONObject t = esUtileService.queryDocById("concept",i);
-            if (t!=null) Cname.add(t.getString("cname"));
+            if (t!=null) VC.add(new VConcepts(
+                    i,
+                    t.getString("cname")
+            ));
         }
 
-        jsonObject.put("Cname",Cname);
+        jsonObject.put("VConcepts",VC);
         return Response.success("出版物信息如下:",
                 jsonObject);
     }
 
     @Override
     public Response<Object> paper(String venue_id) throws IOException {
+        JSONObject jsonObject = esUtileService.queryDocById("venue",venue_id);
+        if (jsonObject==null){
+            return Response.fail("VID错误!");
+        }
+
         Map<String,Object> map = new HashMap<>();
         map.put("p_VID",venue_id);
         PageResult<JSONObject> t = esUtileService.conditionSearch("works",100,20,"",map,null,null,null);

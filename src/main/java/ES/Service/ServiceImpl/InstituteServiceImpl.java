@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ES.Service.ServiceImpl.VenueServiceImpl.castList;
+import static ES.Common.EsUtileService.castList;
 
 @Service
 public class InstituteServiceImpl implements InstituteService {
