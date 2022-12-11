@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ES.Common.EsUtileService.castList;
+
 @Service
 public class VenueServiceImpl implements VenueService {
 
@@ -49,26 +51,9 @@ public class VenueServiceImpl implements VenueService {
     @Override
     public Response<Object> paper(String venue_id) throws IOException {
         Map<String,Object> map = new HashMap<>();
-        map.put("P_VID",venue_id);
+        map.put("p_VID",venue_id);
         PageResult<JSONObject> t = esUtileService.conditionSearch("works",100,20,"",map,null,null,null);
         return Response.success("出版物论文如下:",t);
-    }
-
-
-
-
-    public static <T> List<T> castList(Object obj, Class<T> clazz)
-    {
-        List<T> result = new ArrayList<T>();
-        if(obj instanceof List<?>)
-        {
-            for (Object o : (List<?>) obj)
-            {
-                result.add(clazz.cast(o));
-            }
-            return result;
-        }
-        return null;
     }
 
 

@@ -26,9 +26,14 @@ public class ScholarController {
 
     //学者门户
     @PostMapping("/scholarPortal")
-    public Response<Object> scholarPortal(HttpServletRequest request, @RequestBody Map<String, String> map){
+    public Response<Object> scholarPortal(HttpServletRequest request, @RequestBody Map<String, String> map) throws IOException {
+        String token = request.getHeader("token");
+        String user_id= JwtUtil.getUserId(token);
+        if (user_id == null){
+            user_id = "";
+        }
         String researcher_id = map.get("RID");
-        return scholarService.scholarPortal(researcher_id);
+        return scholarService.scholarPortal(researcher_id,user_id);
     }
 
     //申请入驻1，查询所有同名学者
