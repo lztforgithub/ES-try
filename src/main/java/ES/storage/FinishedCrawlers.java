@@ -1,6 +1,7 @@
 package ES.storage;
 
 import ES.Common.HttpUtils;
+import ES.Common.WebITS;
 import ES.Crawler.ConceptCrawler;
 import ES.Document.ConceptDoc;
 import com.alibaba.fastjson.JSONArray;
@@ -70,5 +71,18 @@ public class FinishedCrawlers {
 //                break;
 //            }
         }
+
+    }
+
+    public JSONObject testTranslate(String originText, String originLanguage, String targetLanguage) {
+        JSONObject ret = new JSONObject();
+        try {
+            String result = WebITS.translate(originText, originLanguage, targetLanguage);
+            System.out.println(result);
+            ret.put("result", result);
+        } catch (Exception e) {
+
+        }
+        return ret;
     }
 }

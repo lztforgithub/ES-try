@@ -1,9 +1,6 @@
 package ES.storage;
 
-import ES.Common.AlexUtils;
-import ES.Common.EsUtileService;
-import ES.Common.HttpUtils;
-import ES.Common.PageResult;
+import ES.Common.*;
 import ES.Crawler.ConceptCrawler;
 import ES.Crawler.InstitutionCrawler;
 import ES.Crawler.ResearcherCrawler;
