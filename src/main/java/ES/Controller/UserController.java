@@ -18,12 +18,11 @@ public class UserController {
     //注册
     @PostMapping("/register")
     public Response<Object> register(@RequestBody Map<String, String> map){
-        String username,pwd,email,bio;
+        String username,pwd,email;
         username = map.get("username");
         pwd = map.get("password");
         email = map.get("email");
-        bio = map.get("bio");
-        return userService.register(username,pwd,email,bio);
+        return userService.register(username,pwd,email);
     }
 
     //登录

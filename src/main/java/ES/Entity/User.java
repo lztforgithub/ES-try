@@ -28,18 +28,22 @@ public class User {
     @Column(name = "Uemail")
     String Uemail;
 
-    @Column(name = "Ubio")
-    String Ubio;
+    @Column(name = "Ufield")
+    String Ufield;
 
     @Column(name = "Utype")
     String Utype;
 
-    public User(String username, String passwd, String email, String bio){
+    @Column(name = "Uinterest")
+    String Uinterest;
+
+    public User(String username, String passwd, String email){
         this.UID = UUID.randomUUID().toString();
         this.Uname = username;
         this.Upassword = passwd;
         this.Uemail = email;
-        this.Ubio = bio;
+        this.Ufield = "";
+        this.Uinterest = "";
         this.Utype = "default";
     }
 

@@ -17,4 +17,6 @@ public interface UserDao {
     void setPassword(String uid, String password);
 
     void setEmail(String uid, String email);
+
+    User selectByEmail(String email);
 }

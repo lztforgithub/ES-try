@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ES.Dao.UserDao">
     <insert id="insertUser" parameterType="ES.Entity.User">
-        insert into user(UID,Uname,Upassword,Uemail,Ubio,Utype)
-        values(#{UID},#{Uname},#{Upassword},#{Uemail},#{Ubio},#{Utype})
+        insert into user(UID,Uname,Upassword,Uemail,Ufield,Utype,Uinterest)
+        values(#{UID},#{Uname},#{Upassword},#{Uemail},#{Ufield},#{Uinterest})
     </insert>
     <update id="setPasswordAndEmail">
         update user
@@ -28,5 +28,8 @@
     </select>
     <select id="getPassword" resultType="java.lang.String">
         select Upassword from user where UID=#{uid}
+    </select>
+    <select id="selectByEmail" resultType="java.lang.String">
+        select * from user where Uemail=#{Uemail}
     </select>
 </mapper>
