@@ -18,17 +18,17 @@ import java.util.UUID;
 public class LikeRecords {
     @Id
     @Column(name = "LR_ID", nullable = false)
-    String likeRecords_id;
+    String LR_ID;
 
     @Column(name = "C_ID", nullable = false)
-    String comment_id;
+    String C_ID;
 
     @Column(name = "UID", nullable = false)
-    String user_id;
+    String UID;
 
     public LikeRecords(String user_id, String comment_id){
-        this.likeRecords_id = UUID.randomUUID().toString();
-        this.user_id = user_id;
-        this.comment_id = comment_id;
+        this.LR_ID = UUID.randomUUID().toString();
+        this.UID = user_id;
+        this.C_ID = comment_id;
     }
 }
