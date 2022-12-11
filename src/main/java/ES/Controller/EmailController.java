@@ -82,4 +82,42 @@ public class EmailController {
         }
         return Response.success("发送成功");
     }
+
+    @PostMapping("/sendEmail")
+    public Response<Object> commonEmail2(@RequestBody Map<String, Object> map, HttpServletRequest request) {
+        String to = (String) map.get("to");
+
+//        创建邮件消息
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom(from);
+
+        //message.setTo(toEmail.getTos());
+        message.setTo(to);
+
+        message.setSubject("您本次的验证码是");
+
+        String verCode = VerCodeGenerateUtil.generateVerCode();
+
+        message.setText("尊敬的AceGate用户,您好:\n"
+                + "\n本次找回请求的邮件验证码为:" + verCode + ",本验证码 5 分钟内有效，请及时输入。（请勿泄露此验证码）\n"
+                + "\n如您更改过  AceGate  的密码，请忽略该邮件。\n(这是一封通过自动发送的邮件，请不要直接回复）");
+        try{
+            mailSender.send(message);
+        }catch (Exception e){
+            return Response.fail("邮箱不合法！");
+        }
+
+        ToEmail toEmail = toEmailService.selectByEmail(to);
+        if (toEmail == null){
+            toEmail = new ToEmail(to, verCode);
+            toEmailService.insertEmail(toEmail);
+        }
+        else{
+            toEmail.setVercode(verCode);
+            toEmail.setCode_time(new Timestamp(new Date().getTime()));
+            toEmailService.updateEmail(toEmail);
+        }
+        return Response.success("发送成功");
+    }
 }
