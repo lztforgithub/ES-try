@@ -55,7 +55,7 @@ public class SearchController {
         );
     }
 
-    //默认搜索
+    //高级搜索
     @PostMapping("/AdvancedSearchResults")
     public Response<Object> AdvancedSearch(HttpServletRequest request, @RequestBody Map<String,Object> map) throws IOException {
         //取用户id,判断是否收藏,未登录则user_id=""
