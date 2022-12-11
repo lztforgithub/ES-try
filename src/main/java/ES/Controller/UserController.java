@@ -78,8 +78,8 @@ public class UserController {
         String token = request.getHeader("token");
         String uid = JwtUtil.getUserId(token);
         String password = map.get("Upassword");
-        String email = map.get("Uemail");
-        return userService.setInfos(uid, password, email);
+        //String email = map.get("Uemail");
+        return userService.setInfos(uid, password, null);
     }
 
 }
