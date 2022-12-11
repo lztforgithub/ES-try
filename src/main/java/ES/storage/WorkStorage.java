@@ -34,12 +34,13 @@ public class WorkStorage {
     @RequestMapping(value="/storeWork", method = RequestMethod.PUT)
     public void storeWork(String url)
     {
-        WorkCrawler workCrawler = new WorkCrawler(url);
+        WorkCrawler workCrawler = new WorkCrawler("https://api.openalex.org/works/W2156062569");
         WorkStorage workStorage = new WorkStorage();
         WorkDoc workDoc = workCrawler.run();
         workStorage.addDoc("works", workDoc);
-        System.out.println("store "+url+" doc done.");
+        System.out.println("store "+"https://api.openalex.org/works/W2156062569"+" doc done.");
     }
+
     public void addDoc(String indexName, WorkDoc workDoc)
     {
         esUtileService.addDoc(indexName, workDoc);

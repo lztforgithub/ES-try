@@ -103,7 +103,6 @@ public class WorkCrawler {
                 }
             }
         }
-
         return content.toString();
     }
 
@@ -349,6 +348,7 @@ public class WorkCrawler {
     {
         WorkCrawler workCrawler = new WorkCrawler(url);
         String jsonStr = workCrawler.crawlWork();
+//        System.out.println(jsonStr);
         return workCrawler.json2Doc(jsonStr);
     }
 

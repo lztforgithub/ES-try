@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 public class InstituteController {
-    @Autowired
+    @Autowired(required = false)
     InstituteService instituteService;
     @PostMapping("/institute/scholarlist")
     public Response<Object> getScholarList(HttpServletRequest request, @RequestBody Map<String, String> map)

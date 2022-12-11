@@ -28,7 +28,7 @@ import static ES.Common.EsUtileService.castList;
 @Service
 public class SearchServiceImpl implements SearchService {
 
-    @Autowired
+    @Autowired(required = false)
     EsUtileService esUtileService = new EsUtileService();
 
     @Override

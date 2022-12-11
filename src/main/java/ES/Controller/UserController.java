@@ -38,4 +38,21 @@ public class UserController {
         return userService.login(username,pwd);
     }
 
+    @PostMapping("/personInfo/account")
+    public Response<Object> getEmail(@RequestBody Map<String, String> map)
+    {
+        String uid = map.get("UID");
+        return userService.getEmail(uid);
+    }
+
+    @PostMapping("/personInfo/accountedit")
+    public Response<Object> getPassword(@RequestBody Map<String, String> map)
+    {
+        String uid = map.get("UID");
+        return userService.getPassword(uid);
+    }
+
+    /*@PostMapping("/personInfo/accountedit2")
+    public Response<Object>
+*/
 }

@@ -35,7 +35,7 @@ public class PaperServiceImpl implements PaperService {
 
     @Autowired
     EsUtileService esUtileService = new EsUtileService();
-    @Autowired
+    @Autowired(required = false)
     PaperDao paperDao;
 
     @Override

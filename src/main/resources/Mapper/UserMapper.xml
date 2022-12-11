@@ -8,4 +8,10 @@
     <select id="selectByUsername" resultType="ES.Entity.User">
         select * from user where Uname = #{username}
     </select>
+    <select id="getEmail" resultType="java.lang.String">
+        select Uemail from user where UID=#{uid}
+    </select>
+    <select id="getPassword" resultType="java.lang.String">
+        select Upassword from user where UID=#{uid}
+    </select>
 </mapper>

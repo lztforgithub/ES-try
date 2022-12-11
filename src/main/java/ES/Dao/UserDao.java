@@ -7,4 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 public interface UserDao {
     int insertUser(User user);
     User selectByUsername(String username);
+
+    String getEmail(String uid);
+
+    String getPassword(String uid);
 }

@@ -1,9 +1,6 @@
 package ES.Common;
 
-import ES.Document.ConceptDoc;
-import ES.Document.InstitutionDoc;
-import ES.Document.VenueDoc;
-import ES.Document.WorkDoc;
+import ES.Document.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -449,13 +446,16 @@ public class EsUtileService {
     }
 
     public void addDoc(String indexName, WorkDoc workDoc) {
-        IndexRequest request = new IndexRequest(indexName).id(workDoc.getPID()).source(JSONObject.toJSONString(workDoc), XContentType.JSON);
-        try {
-            restHighLevelClient.index(request, RequestOptions.DEFAULT);
-            System.out.println("add doc "+workDoc.getPID()+" success.");
-        } catch (IOException e) {
+        if(workDoc!=null)
+        {
+            IndexRequest request = new IndexRequest(indexName).id(workDoc.getPID()).source(JSONObject.toJSONString(workDoc), XContentType.JSON);
+            try {
+                restHighLevelClient.index(request, RequestOptions.DEFAULT);
+                System.out.println("add doc "+workDoc.getPID()+" success.");
+            } catch (IOException e) {
 //            System.out.println("add doc "+workDoc.getPID()+" failed.");
-            System.out.println(e);
+                System.out.println(e);
+            }
         }
     }
 
@@ -483,13 +483,13 @@ public class EsUtileService {
             restHighLevelClient.index(request, RequestOptions.DEFAULT);
             System.out.println("Successfully added new concept: " + conceptDoc.getCID() + " with name " + conceptDoc.getCname());
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
     /**
      * 将新的出版物放入ES中。
-     * @param indexName 索引名称，应该为concepts。
+     * @param indexName 索引名称，应该为concept。
      * @param venueDoc 出版物Doc实例。
      */
     public void addDoc(String indexName, VenueDoc venueDoc) {
@@ -504,6 +504,23 @@ public class EsUtileService {
         }
     }
 
+
+    /**
+     * 将新的学者放入ES中。
+     * @param indexName 索引名称，应该为researcher。
+     * @param researcherDoc 学者Doc实例。
+     */
+    public void addDoc(String indexName, ResearcherDoc researcherDoc) {
+        IndexRequest request = new IndexRequest(indexName)
+                .id(researcherDoc.getRID())
+                .source(JSONObject.toJSONString(researcherDoc), XContentType.JSON);
+        try {
+            restHighLevelClient.index(request, RequestOptions.DEFAULT);
+        } catch (Exception e) {
+            // e.printStackTrace();
+        }
+        System.out.println("Successfully added new researcher: " + researcherDoc.getRID() + " with name " + researcherDoc.getRname());
+    }
     public void deleteDuplicateDoc(String indexName, String IDName, String ID) {
         CountRequest countRequest = new CountRequest(indexName);
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
