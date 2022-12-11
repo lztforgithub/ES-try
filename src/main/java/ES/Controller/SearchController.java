@@ -4,16 +4,16 @@ import ES.Common.EsUtileService;
 import ES.Common.JwtUtil;
 import ES.Common.Response;
 import ES.Service.SearchService;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+
+import static ES.Common.EsUtileService.castList;
 
 @RestController
 public class SearchController {
@@ -68,14 +68,22 @@ public class SearchController {
             user_id=JwtUtil.getUserId(token);
         }
         //搜索关键词
-        List<Object> advancedSearch = (List<Object>) map.get("advancedSearch");
+        Object q = map.get("advancedSearch");
+        List<JSONObject> advancedSearch = new ArrayList<>();
+        advancedSearch = castList(q,JSONObject.class);
         //起止时间，存疑
         Timestamp start_time = (Timestamp) map.get("startTime");
         Timestamp end_time = (Timestamp) map.get("endTime");
         Timestamp adv_start_time = (Timestamp) map.get("advStartTime");
         Timestamp adv_end_time = (Timestamp) map.get("advEndTime");
         Timestamp from = start_time;
+        if (start_time.before(adv_start_time)){
+            from = adv_start_time;
+        }
         Timestamp to = end_time;
+        if (adv_end_time.before(end_time)){
+            to = adv_end_time;
+        }
         //包含作者
         String filterAuthors = (String) map.get("filterAuthors");
         //包含出版类型
