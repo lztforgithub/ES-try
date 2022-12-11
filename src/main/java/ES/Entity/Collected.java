@@ -18,17 +18,17 @@ import java.util.UUID;
 public class Collected {
     @Id
     @Column(name = "CTID", nullable = false)
-    String collected_id;
+    String CTID;
 
     @Column(name = "CTname", nullable = false)
-    String name;
+    String CTname;
 
     @Column(name = "CT_UID", nullable = false)
-    String uid;
+    String CT_UID;
 
     public Collected(String uid,String name){
-        this.collected_id = UUID.randomUUID().toString();
-        this.name = name;
-        this.uid = uid;
+        this.CTID = UUID.randomUUID().toString();
+        this.CTname = name;
+        this.CT_UID = uid;
     }
 }
