@@ -3,7 +3,7 @@
 <mapper namespace="ES.Dao.UserDao">
     <insert id="insertUser" parameterType="ES.Entity.User">
         insert into user(UID,Uname,Upassword,Uemail,Ufield,Utype,Uinterest)
-        values(#{UID},#{Uname},#{Upassword},#{Uemail},#{Ufield},#{Uinterest})
+        values(#{UID},#{Uname},#{Upassword},#{Uemail},#{Ufield},#{Utype},#{Uinterest})
     </insert>
     <update id="setPasswordAndEmail">
         update user

@@ -30,7 +30,7 @@ public class UserController {
         pwd = map.get("password");
         email = map.get("email");
         //验证验证码,5分钟有效
-        String verCode = (String) map.get("verCode");
+        String verCode = (String) map.get("vercode");
         ToEmail toEmail = toEmailService.selectByEmail(email);
         if (toEmail == null){
             return Response.fail("验证码未发送！");
