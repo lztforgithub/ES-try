@@ -5,6 +5,7 @@ import ES.Common.Response;
 import ES.Dao.PaperDao;
 import ES.Entity.*;
 import ES.Ret.CommentRet;
+import ES.Ret.Rpaper;
 import ES.Service.PaperService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static ES.Common.EsUtileService.castList;
+
 @Service
 public class PaperServiceImpl implements PaperService {
 
@@ -37,6 +40,69 @@ public class PaperServiceImpl implements PaperService {
         if (jsonObject==null){
             return Response.fail("PID错误!");
         }
+
+        //参考文献
+        List<String> PreferencesID = new ArrayList<>();
+        List<Rpaper> Preferences = new ArrayList<>();
+        Object q = jsonObject.get("preferences");
+        PreferencesID = castList(q,String.class);
+
+        for (String i:PreferencesID){
+            JSONObject t = esUtileService.queryDocById("works",i);
+            if (t!=null){
+                Preferences.add(new Rpaper(
+                        i,
+                        t.getString("pname"),
+                        t.getString("plink"),
+                        t.getString("pdate"),
+                        t.getString("pcite"),
+                        t.getString("pauthor")
+                ));
+            }
+        }
+        jsonObject.put("Preferences",Preferences);
+
+        //相关文献
+        List<String> PrelatedID = new ArrayList<>();
+        List<Rpaper> Prelateds = new ArrayList<>();
+        q = jsonObject.get("prelated");
+        PrelatedID = castList(q,String.class);
+
+        for (String i:PrelatedID){
+            JSONObject t = esUtileService.queryDocById("works",i);
+            if (t!=null){
+                Prelateds.add(new Rpaper(
+                        i,
+                        t.getString("pname"),
+                        t.getString("plink"),
+                        t.getString("pdate"),
+                        t.getString("pcite"),
+                        t.getString("pauthor")
+                ));
+            }
+        }
+        jsonObject.put("Prelateds",Prelateds);
+
+        //共著作者
+        List<String> PauthorID = new ArrayList<>();
+        List<Rpaper> Pauthors = new ArrayList<>();
+        q = jsonObject.get("pauthor");
+        PauthorID = castList(q,String.class);
+
+        for (String i:PauthorID){
+            JSONObject t = esUtileService.queryDocById("researcher",i);
+            if (t!=null){
+                Pauthors.add(new Rpaper(
+                        i,
+                        t.getString("pname"),
+                        t.getString("plink"),
+                        t.getString("pdate"),
+                        t.getString("pcite"),
+                        t.getString("pauthor")
+                ));
+            }
+        }
+
         return Response.success("文献详情如下:",
                 jsonObject);
     }
@@ -48,7 +114,7 @@ public class PaperServiceImpl implements PaperService {
             return Response.fail("PID错误!");
         }
         return Response.success("引用格式如下:",
-                jsonObject.getString("Pbecited"));
+                jsonObject.getString("pbecited"));
     }
 
     @Override

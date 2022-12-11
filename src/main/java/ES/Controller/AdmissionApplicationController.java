@@ -21,7 +21,7 @@ public class AdmissionApplicationController {
     AdmissionApplicationService admissionApplicationService;
 
     //获取未审核入驻申请列表
-    @RequestMapping("/AA/getList0")
+    @RequestMapping("/manage/unchecklist")
     public Response<Object> getList0(HttpServletRequest request){
         String token = request.getHeader("token");
         Map<String, Object> info = JwtUtil.getInfo(token);
@@ -33,7 +33,7 @@ public class AdmissionApplicationController {
 
 
     //获取已审核入驻申请列表
-    @RequestMapping("/AA/getList1")
+    @RequestMapping("/manage/checkedlist")
     public Response<Object> getList1(HttpServletRequest request){
         String token = request.getHeader("token");
         Map<String, Object> info = JwtUtil.getInfo(token);
@@ -44,7 +44,7 @@ public class AdmissionApplicationController {
     }
 
     //审核入驻申请
-    @PostMapping("/AA/accept")
+    @PostMapping("/manage/check")
     public Response<Object> accept(HttpServletRequest request, @RequestBody Map<String, Object> map){
         String token = request.getHeader("token");
         Map<String, Object> info = JwtUtil.getInfo(token);
@@ -58,13 +58,13 @@ public class AdmissionApplicationController {
     }
 
     //获取已入驻学者列表
-    @RequestMapping("/RUID")
+    @RequestMapping("/manage/ischolars")
     public Response<Object> RUID(HttpServletRequest request) throws IOException {
         return admissionApplicationService.RUID();
     }
 
     //获取平台基本信息
-    @RequestMapping("/base")
+    @RequestMapping("/manage/info")
     public Response<Object> base(HttpServletRequest request) throws IOException{
         return admissionApplicationService.base();
     }

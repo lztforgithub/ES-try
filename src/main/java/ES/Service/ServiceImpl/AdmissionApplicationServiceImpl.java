@@ -49,13 +49,16 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
             if (acc==1){
                 //update学者门户
                 JSONObject jsonObject = esUtileService.queryDocById("researcher",admissionApplication.getRid());
-                jsonObject.put("R_UID",admissionApplication.getUid());
-                jsonObject.put("Rverifytime",new Time(new Date().getTime()));
-                jsonObject.put("Rcustomconcepts",admissionApplication.getInterestedareas());
+                jsonObject.put("r_UID",admissionApplication.getUid());
+                jsonObject.put("rverifytime",new Time(new Date().getTime()));
+                jsonObject.put("rcustomconcepts",admissionApplication.getInterestedareas());
                 //jsonObject.put("Rinstitute",admissionApplication.getInstitution());
-                jsonObject.put("Rcontact",admissionApplication.getEmail());
-                jsonObject.put("RpersonalPage",admissionApplication.getHomepage()); //可能为空
-                jsonObject.put("Rgateinfo",admissionApplication.getIntroduction());
+                jsonObject.put("rcontact",admissionApplication.getEmail());
+                if (admissionApplication.getHomepage()!=null) {
+                    //可能为空
+                    jsonObject.put("rpersonalPage", admissionApplication.getHomepage());
+                }
+                jsonObject.put("rgateinfo",admissionApplication.getIntroduction());
 
                 esUtileService.updateDoc("researcher",admissionApplication.getRid(),jsonObject);
 
@@ -69,7 +72,7 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
     public Response<Object> RUID() throws IOException {
         PageResult<JSONObject> t;
         Map<String,Object> map = new HashMap<>();
-        map.put("R_UID","*");
+        map.put("r_UID","*");
         t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
         return Response.success("已入驻学者名单如下:",t);
     }
