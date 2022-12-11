@@ -54,8 +54,9 @@ public class PaperServiceImpl implements PaperService {
 
         if (PreferencesID!=null) {
             for (String i : PreferencesID) {
-                JSONObject t = esUtileService.queryDocById("works", i);
+                JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
+                    System.out.println(i);
                     Preferences.add(new Rpaper(
                             i,
                             t.getString("pname"),
@@ -77,7 +78,7 @@ public class PaperServiceImpl implements PaperService {
 
         if (PreferencesID!=null) {
             for (String i : PrelatedID) {
-                JSONObject t = esUtileService.queryDocById("works", i);
+                JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
                     Prelateds.add(new Rpaper(
                             i,
