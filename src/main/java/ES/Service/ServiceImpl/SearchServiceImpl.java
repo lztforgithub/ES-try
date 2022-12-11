@@ -40,11 +40,11 @@ public class SearchServiceImpl implements SearchService {
             String filterAuthors,
             String filterPublicationTypes,
             String sort) throws IOException {
-        try {
+        //try {
             Map<String, Object> ormap = new HashMap<>();
             Map<String, Object> andmap = new HashMap<>();
             ormap.put("pname", normalSearch);
-            ormap.put("pabstract", normalSearch);
+            //ormap.put("pabstract", normalSearch);
             //ormap.put("pconcepts", normalSearch);
             boolean flag = false;
             if (filterAuthors != null) {
@@ -53,16 +53,13 @@ public class SearchServiceImpl implements SearchService {
                 andmap.put("pauthor", tmp);
                 flag = true;
             }
-        /*if (filterPublicationTypes!=null){
-            andmap.put("p_VID",filterPublicationTypes);
-            flag = true;
-        }*/
             if (!flag) {
                 andmap = null;
             }
-            //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 100, 20, "", andmap, ormap, null, null, null, null, start_time, end_time);
 
+            //搜索
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 100, 20, "", ormap, null, null, null, null, null, start_time, end_time);
+            System.out.println(t.getTotal());
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
             JSONObject result_i;
@@ -71,59 +68,68 @@ public class SearchServiceImpl implements SearchService {
             List<String> now_authors = new ArrayList<>();
             List<CoAuthor> coAuthors = new ArrayList<>();
             Object q;
+
             //学者
             Map<String, Integer> R_map = new HashMap<>();
             Map<String, String> R_map_name = new HashMap<>();
+
             //出版物
             Map<String, Integer> V_map = new HashMap<>();
+
             //临时变量
             int qs;
             JSONObject p;
+
+            //return Response.success("GG",t.getList());
+
             for (JSONObject i : t.getList()) {
                 //出版类型统计
                 String v = i.getString("p_VID");
                 p = esUtileService.queryDocById("venue", v);
-                v = p.getString("vtype");
-                //不同的出版类型忽略
-                if (filterPublicationTypes != null) {
-                    if (!v.equals(filterPublicationTypes)) {
-                        continue;
+                if (p!=null) {
+                    v = p.getString("vtype");
+                    //不同的出版类型忽略
+                    if (filterPublicationTypes != null) {
+                        if (!v.equals(filterPublicationTypes)) {
+                            continue;
+                        }
                     }
-                }
-                if (V_map.containsKey(v)) {
-                    qs = V_map.get(v);
-                    V_map.put(v, qs + 1);
-                } else {
-                    V_map.put(v, 1);
+                    if (V_map.containsKey(v)) {
+                        qs = V_map.get(v);
+                        V_map.put(v, qs + 1);
+                    } else {
+                        V_map.put(v, 1);
+                    }
                 }
                 //学者统计
                 coAuthors = new ArrayList<>();
                 q = i.get("pauthor");
                 now_authors = castList(q, String.class);
-                for (String nowAuthor : now_authors) {
-                    p = esUtileService.queryDocById("researcher", nowAuthor);
-                    if (p != null) {
-                        coAuthors.add(new CoAuthor(
-                                p.getString("rinstitute"),
-                                nowAuthor,
-                                p.getString("rname"),
-                                p.getString("ravatar")
-                        ));
-                        if (R_map.containsKey(nowAuthor)) {
-                            qs = R_map.get(nowAuthor);
-                            R_map.put(nowAuthor, qs + 1);
-                        } else {
-                            R_map.put(nowAuthor, 1);
-                            R_map_name.put(nowAuthor, p.getString("rname"));
+                if (now_authors!=null) {
+                    for (String nowAuthor : now_authors) {
+                        p = esUtileService.queryDocById("researcher", nowAuthor);
+                        if (p != null) {
+                            coAuthors.add(new CoAuthor(
+                                    p.getString("rinstitute"),
+                                    nowAuthor,
+                                    p.getString("rname"),
+                                    p.getString("ravatar")
+                            ));
+                            if (R_map.containsKey(nowAuthor)) {
+                                qs = R_map.get(nowAuthor);
+                                R_map.put(nowAuthor, qs + 1);
+                            } else {
+                                R_map.put(nowAuthor, 1);
+                                R_map_name.put(nowAuthor, p.getString("rname"));
+                            }
                         }
                     }
                 }
                 result_i = i;
                 result_i.put("PAuthor", coAuthors);
                 result.add(result_i);
-
-
             }
+
             //计算前三的学者
             int max1 = 0, max2 = 0, max3 = 0, now;
             String id1 = "", id2 = "", id3 = "";
@@ -203,10 +209,10 @@ public class SearchServiceImpl implements SearchService {
                     totalNumber
             );
 
-            return Response.success("搜索结果如下:", t);
-        }catch (Exception e){
-            return Response.fail("网络错误!");
-        }
+            return Response.success("搜索结果如下:", searchResultRet);
+        //}catch (Exception e){
+        //    return Response.fail("网络错误!");
+        //}
     }
 
     @Override

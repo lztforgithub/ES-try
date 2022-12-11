@@ -305,15 +305,14 @@ public class EsUtileService {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, notMap, dimAndMap, dimOrMap, dimNotMap);
         //构造时间限制
-        boolQueryBuilder.filter(QueryBuilders.rangeQuery("Pdate").from(from).to(to));
+        //boolQueryBuilder.filter(QueryBuilders.rangeQuery("pdate").from("2017-01-01T10:10:01").to("2017-12-31T10:10:01"));
 
         sourceBuilder.query(boolQueryBuilder);
+
         //高亮处理
         if (!StringUtils.isEmpty(highName)) {
             buildHighlight(sourceBuilder, highName);
         }
-        //分页处理
-        buildPageLimit(sourceBuilder, pageNum, pageSize);
         //超时设置
         sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
         searchRequest.source(sourceBuilder);
@@ -325,30 +324,14 @@ public class EsUtileService {
         for (SearchHit hit : searchHits) {
             //原始查询结果数据
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-            //高亮处理
-            if (!StringUtils.isEmpty(highName)) {
-                Map<String, HighlightField> highlightFields = hit.getHighlightFields();
-                HighlightField highlightField = highlightFields.get(highName);
-                if (highlightField != null) {
-                    Text[] fragments = highlightField.fragments();
-                    StringBuilder value = new StringBuilder();
-                    for (Text text : fragments) {
-                        value.append(text);
-                    }
-                    sourceAsMap.put(highName, value.toString());
-                }
-            }
             JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
             resultList.add(jsonObject);
         }
 
         long total = searchHits.getTotalHits().value;
         PageResult<JSONObject> pageResult = new PageResult<>();
-        pageResult.setPageNum(pageNum);
-        pageResult.setPageSize(pageSize);
         pageResult.setTotal(total);
         pageResult.setList(resultList);
-        pageResult.setTotalPage(total==0?0: (int) (total % pageSize == 0 ? total / pageSize : (total / pageSize) + 1));
 
         return pageResult;
     }
@@ -366,6 +349,7 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : andMap.entrySet()) {
                 MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
                 boolQueryBuilder.must(matchQueryBuilder);
+                System.out.println("and"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
@@ -374,6 +358,7 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : orMap.entrySet()) {
                 MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
                 boolQueryBuilder.should(matchQueryBuilder);
+                System.out.println("or"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
@@ -382,6 +367,7 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : notMap.entrySet()) {
                 MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
                 boolQueryBuilder.mustNot(matchQueryBuilder);
+                System.out.println("not"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
@@ -390,6 +376,7 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : dimAndMap.entrySet()) {
                 WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.must(wildcardQueryBuilder);
+                System.out.println("dimAnd"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
@@ -398,14 +385,16 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : dimOrMap.entrySet()) {
                 WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.should(wildcardQueryBuilder);
+                System.out.println("dimOr"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
         //模糊查询，not
-        if (!CollectionUtils.isEmpty(dimOrMap)) {
+        if (!CollectionUtils.isEmpty(dimNotMap)) {
             for (Map.Entry<String, Object> entry : dimNotMap.entrySet()) {
                 WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.mustNot(wildcardQueryBuilder);
+                System.out.println("dimNot"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
