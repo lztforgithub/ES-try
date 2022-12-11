@@ -113,9 +113,9 @@ public class WorkCrawler {
         JSONObject jsonObject = JSON.parseObject(jsonStr);
 
         String is_retracted = jsonObject.getString("is_retracted");
-        boolean retracted = is_retracted.equals("true");
+        boolean retracted = is_retracted!=null && is_retracted.equals("true");
         String is_paratext = jsonObject.getString("is_paratext");
-        boolean paratext = is_paratext.equals("true");
+        boolean paratext = is_paratext!=null && is_paratext.equals("true");
 
         if(retracted || paratext)
         {
