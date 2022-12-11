@@ -19,20 +19,20 @@
             AOpinion
         )
             values(
-                #{admissionApplication_id},
-                #{type},
-                #{uid},
-                #{rid},
-                #{time},
-                #{lastUpdateTime},
-                #{name},
-                #{institution},
-                #{email},
-                #{interestedareas},
-                #{homepage},
-                #{introduction},
-                #{accept},
-                #{opinion}
+                #{AAID},
+                #{AAtype},
+                #{AA_UID},
+                #{AA_RID},
+                #{AAtime},
+                #{AAlastUpdateTime},
+                #{AAname},
+                #{AAinstitution},
+                #{AAemail},
+                #{AAinterestedAreas},
+                #{AAhomepage},
+                #{AAintroduction},
+                #{AAccept},
+                #{AOpinion}
             )
     </insert>
 </mapper>
