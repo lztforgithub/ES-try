@@ -22,7 +22,7 @@ import static ES.Common.EsUtileService.castList;
 @Service
 public class ScholarServiceImpl implements ScholarService {
 
-    @Autowired(required = false)
+    @Autowired
     ScholarDao scholarDao;
 
     @Autowired

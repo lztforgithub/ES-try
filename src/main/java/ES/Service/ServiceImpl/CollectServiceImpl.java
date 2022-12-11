@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public class CollectServiceImpl implements CollectService {
-    @Autowired(required = false)
+    @Autowired
     CollectDao collectDao;
 
     @Override

@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 public class AdmissionApplicationServiceImpl implements AdmissionApplicationService {
 
-    @Autowired(required = false)
+    @Autowired
     AdmissionApplicationDao admissionApplicationDao;
     @Autowired
     EsUtileService esUtileService = new EsUtileService();
