@@ -4,6 +4,7 @@ import ES.Common.EsUtileService;
 import ES.Common.Response;
 import ES.Dao.PaperDao;
 import ES.Entity.*;
+import ES.Ret.CoAuthor;
 import ES.Ret.CommentRet;
 import ES.Ret.Rpaper;
 import ES.Service.PaperService;
@@ -85,23 +86,23 @@ public class PaperServiceImpl implements PaperService {
 
         //共著作者
         List<String> PauthorID = new ArrayList<>();
-        List<Rpaper> Pauthors = new ArrayList<>();
+        List<CoAuthor> Pauthors = new ArrayList<>();
         q = jsonObject.get("pauthor");
         PauthorID = castList(q,String.class);
 
         for (String i:PauthorID){
             JSONObject t = esUtileService.queryDocById("researcher",i);
             if (t!=null){
-                Pauthors.add(new Rpaper(
+                Pauthors.add(new CoAuthor(
+                        t.getString("rinstitute"),
                         i,
-                        t.getString("pname"),
-                        t.getString("plink"),
-                        t.getString("pdate"),
-                        t.getString("pcite"),
-                        t.getString("pauthor")
+                        t.getString("rname"),
+                        t.getString("ravatar")
                 ));
             }
         }
+
+        jsonObject.put("Pauthor",Pauthors);
 
         return Response.success("文献详情如下:",
                 jsonObject);
