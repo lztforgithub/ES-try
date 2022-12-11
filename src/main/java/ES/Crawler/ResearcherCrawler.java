@@ -20,7 +20,7 @@ import static java.util.Map.Entry.comparingByValue;
 public class ResearcherCrawler {
 
     public static ArrayList<ResearcherDoc> getResearchersByURL(String url) {
-        System.out.println("getResearcher Request url:" + url);
+       //  System.out.println("getResearcher Request url:" + url);
         ArrayList<ResearcherDoc> ret = new ArrayList<>();
         String response = HttpUtils.handleRequestURL(url);
         try {
@@ -100,7 +100,6 @@ public class ResearcherCrawler {
             for(int i = 0; i < 5; i++){
                 JSONObject obj = conceptsJSON.getJSONObject(i);
                 conceptIDs.add(AlexUtils.getRawID(obj.getString("id")));
-                //TODO 检查Concept是否已经在ElasticSearch中
             }
             ret.setRconcepts(conceptIDs);
 
@@ -156,7 +155,13 @@ public class ResearcherCrawler {
         String baseURL = "https://api.openalex.org/works?filter=openalex:";
         HashMap<String, Integer> counter = new HashMap<>();
         HashMap<String, String> information = new HashMap<>();
+        int crawlCounter = 0;
         for (String topPaperID : firstFivePapers) {
+            // 优化，减少40%时间
+            crawlCounter++;
+            if(crawlCounter > 3) {
+                break;
+            }
             String request = baseURL + topPaperID;
             String response = HttpUtils.handleRequestURL(request);
             JSONObject object = JSONObject.parseObject(response);

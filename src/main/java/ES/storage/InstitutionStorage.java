@@ -87,6 +87,29 @@ public class InstitutionStorage {
         return ret;
     }
 
+    @RequestMapping(value = "/searchInstitutionByNameCN", method = RequestMethod.GET)
+    public JSONObject searchInstitutionByNameCN(String nameCN) {
+        HashMap<String, Object> andMap = new HashMap<>();
+        JSONArray arr = new JSONArray();
+        JSONObject ret = new JSONObject();
+        ret.put("count", 0);
+        int count = 0;
+        andMap.put("ichinesename", nameCN);
+        try {
+            PageResult<JSONObject> pageResult = esUtileService.conditionSearch("institutions", 1, 10,  "",
+                    andMap, null, null, null);
+            for(JSONObject object : pageResult) {
+                arr.add(object);
+                count++;
+            }
+            ret.put("results", arr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ret.put("count", count);
+        return ret;
+    }
+
     @RequestMapping(value = "/finalCrawler", method = RequestMethod.GET)
     public JSONObject crawlLargeInstitutionsAndTopAuthors(String continent){
         int page = 1;
@@ -95,7 +118,7 @@ public class InstitutionStorage {
         int tries = 0;
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
         ArrayList<InstitutionDoc> institutionDocs = new ArrayList<>();
-        nameValuePairs.add(0, new BasicNameValuePair("filter", "cited_by_count:>370000,continent:" + continent));
+        nameValuePairs.add(0, new BasicNameValuePair("filter", "cited_by_count:>1000000,continent:" + continent));
         nameValuePairs.add(1, new BasicNameValuePair("sort", "cited_by_count:desc"));
         while (count < totalInstitutionCount) {
             tries ++;
@@ -169,30 +192,30 @@ public class InstitutionStorage {
     }
 
     @RequestMapping(value = "/gs", method = RequestMethod.GET)
-    public void getCoAuthors() {
-        int targetLevel = 4;
+    public void crawlFamousResearchers() {
+        // C41008148
         ConceptStorage conceptStorage = new ConceptStorage();
+        ResearcherStorage researcherStorage = new ResearcherStorage();
         JSONArray currentConcepts = conceptStorage.searchConceptByLevelAndAncestor("C41008148", 1);
         for (int i = 0; i < currentConcepts.size(); i++) {
             JSONObject currentConcept = currentConcepts.getJSONObject(i);
             String Cname = currentConcept.getString("cname");
             String CID = currentConcept.getString("cID");
-            System.out.printf("Ready to crawl level %d concepts whose ancestor is %s", targetLevel, Cname);
-
             int page = 0;
             int count = 0;
             int tries = 0;
-            int totalCrawledConcepts = 25;
+            int totalCrawledResearchers = 75;
             ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
 
-            nameValuePairs.add(0, new BasicNameValuePair("filter", "level:" + targetLevel + ",ancestors.id:" + CID));
-            while(count < totalCrawledConcepts) {
+            nameValuePairs.add(0, new BasicNameValuePair("filter",
+                    "last_known_institution.continent:north_america,cited_by_count:>15000,x_concepts.id:" + CID));
+            while(count < totalCrawledResearchers) {
                 tries++;
                 page++;
                 nameValuePairs.add(1, new BasicNameValuePair("page", Integer.toString(page)));
                 String requestString = "";
                 try {
-                    URI uri = new URIBuilder("https://api.openalex.org/concepts")
+                    URI uri = new URIBuilder("https://api.openalex.org/authors")
                             .addParameters(nameValuePairs)
                             .build();
                     requestString = uri.toString();
@@ -200,21 +223,21 @@ public class InstitutionStorage {
 
                 }
                 nameValuePairs.remove(1);
-                System.out.println("Concept Request: " + requestString);
+                System.out.printf("[%s]Researcher Request: %s" , Cname, requestString);
 
                 String response = HttpUtils.handleRequestURL(requestString);
                 JSONObject responseJSON = JSONObject.parseObject(response);
 
-                totalCrawledConcepts = responseJSON.getJSONObject("meta").getInteger("count");
+                totalCrawledResearchers = responseJSON.getJSONObject("meta").getInteger("count");
                 JSONArray arr = responseJSON.getJSONArray("results");
                 for (int j = 0; j < arr.size(); j++) {
                     JSONObject object = arr.getJSONObject(j);
                     // System.out.println(object);
-                    ConceptDoc conceptDoc = ConceptCrawler.parseOpenAlexConceptInfo(object);
-                    conceptStorage.addDoc("concept", conceptDoc);
+                    ResearcherDoc researcherDoc = ResearcherCrawler.parseOpenAlexResearcherInfo(object);
+                    researcherStorage.addDoc("researcher", researcherDoc);
                     count++;
                 }
-                System.out.printf("Crawl %s's children status %d / %d\n", Cname, count, totalCrawledConcepts);
+                System.out.printf("Crawl status %d / %d\n", count, totalCrawledResearchers);
 //                if (tries >= 1) {
 //                    break;
 //                }

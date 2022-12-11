@@ -55,7 +55,7 @@ public class ConceptStorage {
         HashMap<String, Object> dimAndMap = new HashMap<>();
         dimAndMap.put("cname", name);
         try {
-            PageResult<JSONObject> pageResult = esUtileService.conditionSearch("concept", 1, 10, "",
+            PageResult<JSONObject> pageResult = esUtileService.conditionSearch("concept", 1, 20, "",
                     andMap, null, dimAndMap, null);
             for (JSONObject object : pageResult) {
                 System.out.println(object);
@@ -65,11 +65,14 @@ public class ConceptStorage {
         }
     }
 
+    @RequestMapping(value = "/gs2", method = RequestMethod.GET)
     public JSONArray searchConceptByLevelAndAncestor(String ancestorID, int level) {
         JSONArray ret = new JSONArray();
 
         HashMap<String, Object> andMap = new HashMap<>();
-        andMap.put("cancestorID", ancestorID);
+        if (level != 0){
+            andMap.put("cancestorID", ancestorID);
+        }
         andMap.put("clevel", level);
 
         try {
