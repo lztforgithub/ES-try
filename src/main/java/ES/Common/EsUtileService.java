@@ -480,7 +480,7 @@ public class EsUtileService {
             restHighLevelClient.index(request, RequestOptions.DEFAULT);
             System.out.println("Successfully added new concept: " + conceptDoc.getCID() + " with name " + conceptDoc.getCname());
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -513,10 +513,10 @@ public class EsUtileService {
                 .source(JSONObject.toJSONString(researcherDoc), XContentType.JSON);
         try {
             restHighLevelClient.index(request, RequestOptions.DEFAULT);
-            System.out.println("Successfully added new researcher: " + researcherDoc.getRID() + " with name " + researcherDoc.getRname());
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
+        System.out.println("Successfully added new researcher: " + researcherDoc.getRID() + " with name " + researcherDoc.getRname());
     }
     public void deleteDuplicateDoc(String indexName, String IDName, String ID) {
         CountRequest countRequest = new CountRequest(indexName);

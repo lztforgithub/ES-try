@@ -6,6 +6,7 @@ import ES.Crawler.ConceptCrawler;
 import ES.Document.ConceptDoc;
 import ES.Document.WorkDoc;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,5 +63,26 @@ public class ConceptStorage {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public JSONArray searchConceptByLevelAndAncestor(String ancestorID, int level) {
+        JSONArray ret = new JSONArray();
+
+        HashMap<String, Object> andMap = new HashMap<>();
+        andMap.put("cancestorID", ancestorID);
+        andMap.put("clevel", level);
+
+        try {
+            PageResult<JSONObject> pageResult = esUtileService.conditionSearch("concept", 1, 35, "",
+                    andMap, null, null, null);
+            for (JSONObject object : pageResult) {
+                // System.out.println(object);
+                ret.add(object);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ret;
     }
 }

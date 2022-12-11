@@ -4,6 +4,8 @@ import ES.Common.AlexUtils;
 import ES.Common.HttpUtils;
 import ES.Document.ConceptDoc;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -11,8 +13,6 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -33,9 +33,9 @@ public class ConceptCrawler {
             httpGet.setUri(uri);
             try (CloseableHttpResponse response = httpclient.execute(httpGet)){
                 String result = HttpUtils.handleResponse(response);
-                JSONObject obj = new JSONObject(result);
+                JSONObject obj = JSONObject.parseObject(result);
                 JSONArray concepts = obj.getJSONArray("results");
-                int count = concepts.length();
+                int count = concepts.size();
                 for(int i = 0; i < count; i++){
                     obj = concepts.getJSONObject(i);
                     arr.add(parseOpenAlexConceptInfo(obj));
@@ -79,10 +79,10 @@ public class ConceptCrawler {
                     return ret; // 返回错误信息
                 }
                 // 处理返回信息
-                JSONObject conceptJSON = new JSONObject(responseString);
+                JSONObject conceptJSON = JSONObject.parseObject(responseString);
                 // 如果返回结果异常，则抛出错误信息
                 try {
-                    totalConceptCount = conceptJSON.getJSONObject("meta").getInt("count");
+                    totalConceptCount = conceptJSON.getJSONObject("meta").getInteger("count");
                 } catch (Exception e){
                     System.out.println("Error message from OpenAlex server:");
                     System.out.println(conceptJSON);
@@ -92,7 +92,7 @@ public class ConceptCrawler {
                 }
 
                 JSONArray receivedConcepts = conceptJSON.getJSONArray("results");
-                for (int i = 0; i < receivedConcepts.length(); i++) {
+                for (int i = 0; i < receivedConcepts.size(); i++) {
                     ConceptDoc parsedConcept = parseOpenAlexConceptInfo(receivedConcepts.getJSONObject(i)) ;
                     ret.add(parsedConcept);
                     currentConceptCount++;
@@ -112,9 +112,9 @@ public class ConceptCrawler {
         try {
             String uri = "https://api.openalex.org/concepts";
             String response = HttpUtils.handleRequestWithParams(uri, nameValuePairs);
-            JSONObject responseJSON = new JSONObject(response);
+            JSONObject responseJSON = JSONObject.parseObject(response);
             JSONArray results = responseJSON.getJSONArray("results");
-            for (int i = 0; i < results.length(); i++) {
+            for (int i = 0; i < results.size(); i++) {
                 ret.add(parseOpenAlexConceptInfo(results.getJSONObject(i)));
             }
         } catch (Exception e) {
@@ -128,9 +128,9 @@ public class ConceptCrawler {
         ArrayList<ConceptDoc> ret = new ArrayList<>();
         try {
             String response = HttpUtils.handleRequestURL(url);
-            JSONObject responseJSON = new JSONObject(response);
+            JSONObject responseJSON = JSONObject.parseObject(response);
             JSONArray results = responseJSON.getJSONArray("results");
-            for (int i = 0; i < results.length(); i++) {
+            for (int i = 0; i < results.size(); i++) {
                 ret.add(parseOpenAlexConceptInfo(results.getJSONObject(i)));
             }
         } catch (Exception e) {
@@ -152,11 +152,11 @@ public class ConceptCrawler {
                 System.out.printf("Concept %s has no Chinese name.\n", concept.getString("display_name"));
             }
 
-            ret.setClevel(concept.getInt("level"));
-            if (concept.getInt("level") > 0) {
+            ret.setClevel(concept.getInteger("level"));
+            if (concept.getInteger("level") > 0) {
                 JSONArray ancestors = concept.getJSONArray("ancestors");
                 ArrayList<String> ancestorIDs = new ArrayList<>();
-                for (int i = 0; i < ancestors.length(); i++) {
+                for (int i = 0; i < ancestors.size(); i++) {
                     ancestorIDs.add(AlexUtils.getRawID(ancestors.getJSONObject(i).getString("id")));
                 }
                 ret.setCancestorID(ancestorIDs);
@@ -177,12 +177,12 @@ public class ConceptCrawler {
             ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
             nameValuePairs.add(new BasicNameValuePair("filter", "ids.openalex:" + conceptDoc.getCID()));
             String response = HttpUtils.handleRequestWithParams("https://api.openalex.org/concepts", nameValuePairs);
-            JSONObject responseJSON = new JSONObject(response);
+            JSONObject responseJSON = JSONObject.parseObject(response);
             // 拿取第一个记录
             JSONObject entry = responseJSON.getJSONArray("results").getJSONObject(0);
             JSONArray ancestors = entry.getJSONArray("ancestors");
             ArrayList<String> temp = new ArrayList<>();
-            for (int i = 0; i < ancestors.length(); i++) {
+            for (int i = 0; i < ancestors.size(); i++) {
                 temp.add(AlexUtils.getRawID(ancestors.getJSONObject(i).getString("id")));
             }
             conceptDoc.setCancestorID(temp);
