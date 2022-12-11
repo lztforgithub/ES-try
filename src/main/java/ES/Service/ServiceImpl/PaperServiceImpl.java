@@ -268,7 +268,7 @@ public class PaperServiceImpl implements PaperService {
         String cName = conceptInfo.getString("cname");
         ret.setCount(i);
         ret.setcName(cName);
-        return Response.success("返回推荐文献成功", ret);
+        return Response.success("返回推荐文献成功", JSON.toJSON(ret));
     }
 
     @Override
@@ -410,7 +410,7 @@ public class PaperServiceImpl implements PaperService {
         String cName = conceptInfo.getString("cname");
         ret.setCount(i);
         ret.setcName(cName);
-        return Response.success("返回推荐会议成功", ret);
+        return Response.success("返回推荐会议成功", JSON.toJSON(ret));
     }
 
     @Override
@@ -558,6 +558,6 @@ public class PaperServiceImpl implements PaperService {
         String cName = conceptInfo.getString("cname");
         ret.setCount(i);
         ret.setcName(cName);
-        return Response.success("返回推荐期刊成功", ret);
+        return Response.success("返回推荐期刊成功", JSON.toJSON(ret));
     }
 }
