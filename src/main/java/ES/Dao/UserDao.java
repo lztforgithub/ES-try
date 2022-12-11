@@ -11,4 +11,12 @@ public interface UserDao {
     String getEmail(String uid);
 
     String getPassword(String uid);
+
+    void setPasswordAndEmail(String uid, String password, String email);
+
+    void setPassword(String uid, String password);
+
+    void setEmail(String uid, String email);
+
+    User selectByEmail(String email);
 }

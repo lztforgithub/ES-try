@@ -579,10 +579,18 @@ public class PaperServiceImpl implements PaperService {
         ArrayList<String> rIDs = new ArrayList<>();
         ArrayList<String> wIDs = new ArrayList<>();
         WorkStorage workStorage = new WorkStorage();
-        PageResult<JSONObject> authors = esUtileService.conditionSearch("researcher", 1, 500, "", null, null, null, null);
+        PageResult<JSONObject> authors = esUtileService.conditionSearch("researcher", 5, 500, "", null, null, null, null);
+        boolean flag = false;
         for(JSONObject authorObj:authors.getList())
         {
-            rIDs.add((String) authorObj.get("rID"));
+            if(((String) authorObj.get("rID")).equals("A2114286658"))
+            {
+                flag = true;
+            }
+            if(flag)
+            {
+                rIDs.add((String) authorObj.get("rID"));
+            }
         }
         String URL = "https://api.openalex.org/works?sort=cited_by_count:desc&per_page=5&filter=author.id:";
         for(String id:rIDs)
@@ -636,6 +644,21 @@ public class PaperServiceImpl implements PaperService {
             }
         }
         System.out.println("----done----");
+    }
+
+    public void crawlWorkByRelate() throws IOException {
+        WorkStorage workStorage = new WorkStorage();
+        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 1, 500, "", null, null, null, null);
+        for(JSONObject obj:works.getList())
+        {
+            System.out.println("now is "+obj.get("pID"));
+            JSONArray relates = obj.getJSONArray("prelated");
+            for(int i=0; i<relates.size(); i++)
+            {
+                String url = relates.getString(i);
+                workStorage.storeWork(url);
+            }
+        }
     }
 
     public static void main(String[] args) throws IOException {

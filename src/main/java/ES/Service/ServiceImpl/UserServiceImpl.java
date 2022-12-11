@@ -18,8 +18,14 @@ public class UserServiceImpl implements UserService {
     UserDao userDao;
 
     @Override
-    public Response<Object> register(String username, String pwd, String email, String bio){
-        User user = new User(username,pwd,email,bio);
+    public Response<Object> register(String username, String pwd, String email){
+        if (userDao.selectByUsername(username)!=null){
+            return Response.fail("用户名已存在!");
+        }
+        if (userDao.selectByEmail(email)!=null){
+            return Response.fail("用户名已存在!");
+        }
+        User user = new User(username,pwd,email);
         if (userDao.insertUser(user)>0){
             return Response.success("注册成功",user);
         }
@@ -72,4 +78,27 @@ public class UserServiceImpl implements UserService {
             return Response.success("找到用户密码信息", password);
         }
     }
+
+    @Override
+    public Response<Object> setInfos(String uid, String password, String email) {
+        if(password!=null && email!=null)
+        {
+            userDao.setPasswordAndEmail(uid, password, email);
+        }
+        else if(password!=null && email==null)
+        {
+            userDao.setPassword(uid, password);
+        }
+        else if(email!=null && password==null)
+        {
+            userDao.setEmail(uid, email);
+        }
+        return Response.success("修改成功");
+    }
+
+    @Override
+    public User selectByEmail(String email){
+        return userDao.selectByEmail(email);
+    }
+
 }
