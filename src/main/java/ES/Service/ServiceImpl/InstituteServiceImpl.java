@@ -6,6 +6,7 @@ import ES.Document.ResearcherDoc;
 import ES.Service.InstituteService;
 import ES.storage.InstitutionStorage;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,16 @@ public class InstituteServiceImpl implements InstituteService {
             institutionStorage.storeInstitution("http://api.openalex.org/institutions/"+iid);
             jsonObject = esUtileService.queryDocById("institutions", iid);
         }
+        JSONArray associations = jsonObject.getJSONArray("iassociations");
+        ArrayList<String> assoNames = new ArrayList<>();
+        for(int i=0; i<associations.size(); i++)
+        {
+            String assoID = associations.getString(i);
+            JSONObject assoInfo = esUtileService.queryDocById("institutions", assoID);
+            String assoName = assoInfo.getString("iname");
+            assoNames.add(assoName);
+        }
+        jsonObject.put("IassoNames", assoNames);
         int IschNum = jsonObject.getJSONArray("iresearchers").size();
         jsonObject.put("IschNum", IschNum);
         return Response.success("机构信息如下:",
