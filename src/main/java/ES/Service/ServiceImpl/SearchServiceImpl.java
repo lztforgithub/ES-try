@@ -38,17 +38,18 @@ public class SearchServiceImpl implements SearchService {
             String filterPublicationTypes,
             String sort,
             int page) throws IOException {
-        try {
+        //try {
             Map<String, Object> andmap = new HashMap<>();
+            Map<String, Object> notmap = new HashMap<>();
             andmap.put("pname", normalSearch);
+            notmap.put("pabstract","Abstract ");
+            notmap.put("exists","pabstract");
             if (filterAuthors != null) {
-                List<String> tmp = new ArrayList<>();
-                tmp.add(filterAuthors);
-                andmap.put("pauthor", tmp);
+                andmap.put("pauthor", filterAuthors);
             }
 
             //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", page, 10, "", andmap, null, null, null, null, null, start_time, end_time, sort);
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", page, 10, "", andmap, null, notmap, null, null, null, start_time, end_time, sort);
             System.out.println(t.getTotal());
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
@@ -98,10 +99,13 @@ public class SearchServiceImpl implements SearchService {
                 coAuthors = new ArrayList<>();
                 q = i.get("pauthor");
                 now_authors = castList(q, String.class);
+                int numq=0;
                 if (now_authors!=null) {
                     for (String nowAuthor : now_authors) {
                         p = esUtileService.queryDocById("researcher", nowAuthor);
                         if (p != null) {
+                            numq++;
+                            if (numq>=10) break;
                             coAuthors.add(new CoAuthor(
                                     p.getString("rinstitute"),
                                     nowAuthor,
@@ -234,9 +238,9 @@ public class SearchServiceImpl implements SearchService {
             );
 
             return Response.success("搜索结果如下:", searchResultRet);
-        }catch (Exception e){
-            return Response.fail("网络错误!");
-        }
+        //}catch (Exception e){
+        //    return Response.fail("网络错误!");
+        //}
     }
 
     @Override
