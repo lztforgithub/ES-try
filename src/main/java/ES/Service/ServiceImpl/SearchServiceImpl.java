@@ -458,7 +458,7 @@ public class SearchServiceImpl implements SearchService {
             }
 
             //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 1, 10, "", andmap, ormap, notmap, null, null, null, from, to,sort);
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", page, 10, "", andmap, ormap, notmap, null, null, null, from, to,sort);
 
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
