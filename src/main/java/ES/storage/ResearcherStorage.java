@@ -8,6 +8,7 @@ import ES.Crawler.ResearcherCrawler;
 import ES.Document.ConceptDoc;
 import ES.Document.ResearcherDoc;
 import ES.Service.ServiceImpl.VenueServiceImpl;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
@@ -37,12 +38,13 @@ public class ResearcherStorage {
 
 
     @RequestMapping(value = "/storeResearchers", method = RequestMethod.PUT)
-    public void storeResearcherByURL(String url) {
+    public ArrayList<ResearcherDoc> storeResearcherByURL(String url) {
         ArrayList<ResearcherDoc> researcherDocs = ResearcherCrawler.getResearchersByURL(url);
-        System.out.println("Total researchers found:" + researcherDocs.size());
+        // System.out.println("Total researchers found:" + researcherDocs.size());
         for (ResearcherDoc researcherDoc : researcherDocs) {
             addDoc("researcher", researcherDoc);
         }
+        return researcherDocs;
     }
 
     @RequestMapping(value = "/searchRID", method = RequestMethod.GET)

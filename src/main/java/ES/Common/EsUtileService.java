@@ -454,7 +454,7 @@ public class EsUtileService {
                 System.out.println("add doc "+workDoc.getPID()+" success.");
             } catch (IOException e) {
 //            System.out.println("add doc "+workDoc.getPID()+" failed.");
-                System.out.println(e);
+                // System.out.println(e);
             }
         }
     }
@@ -500,7 +500,7 @@ public class EsUtileService {
             restHighLevelClient.index(request, RequestOptions.DEFAULT);
             System.out.println("Successfully added new concept: " + venueDoc.getVID() + " with name " + venueDoc.getVfullname());
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -519,7 +519,7 @@ public class EsUtileService {
         } catch (Exception e) {
             // e.printStackTrace();
         }
-        System.out.println("Successfully added new researcher: " + researcherDoc.getRID() + " with name " + researcherDoc.getRname());
+       //  System.out.println("Successfully added new researcher: " + researcherDoc.getRID() + " with name " + researcherDoc.getRname());
     }
     public void deleteDuplicateDoc(String indexName, String IDName, String ID) {
         CountRequest countRequest = new CountRequest(indexName);
@@ -529,7 +529,7 @@ public class EsUtileService {
         try {
             CountResponse countResponse = restHighLevelClient.count(countRequest, RequestOptions.DEFAULT);
             int count = (int) countResponse.getCount();
-            System.out.println("Duplicate check: " + count);
+            // System.out.println("Duplicate check: " + count);
             if (count > 1) {
                 // 清除多余的Doc
                 DeleteByQueryRequest deleteByQueryRequest = new DeleteByQueryRequest(indexName);

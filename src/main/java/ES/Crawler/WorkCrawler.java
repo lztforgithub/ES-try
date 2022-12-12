@@ -1,5 +1,6 @@
 package ES.Crawler;
 
+import ES.Common.HttpUtils;
 import ES.Document.WorkDoc;
 import ES.storage.ResearcherStorage;
 import ES.storage.WorkStorage;
@@ -67,6 +68,25 @@ public class WorkCrawler {
         }
 //        System.out.println(text);
         return text.toString();
+    }
+
+    /**
+     * 爬取单页结果。
+     * @param url
+     * @param num
+     * @return
+     */
+    public ArrayList<WorkDoc> crawlWorks(String url, int num) {
+        ArrayList<WorkDoc> workDocs = new ArrayList<>();
+
+        String response = HttpUtils.handleRequestURL(url);
+        JSONObject responseJSON = JSONObject.parseObject(response);
+        JSONArray results = responseJSON.getJSONArray("results");
+        for(int i = 0; i < num; i++) {
+            JSONObject object = results.getJSONObject(i);
+            workDocs.add(json2Doc(object.toJSONString()));
+        }
+        return workDocs;
     }
 
     public String crawlWork()
@@ -292,7 +312,7 @@ public class WorkCrawler {
         }
 
 
-        System.out.println("generate "+workDoc.getPID()+" doc done.");
+        // System.out.println("generate "+workDoc.getPID()+" doc done.");
         this.workDoc = workDoc;
         return workDoc;
     }
@@ -316,7 +336,7 @@ public class WorkCrawler {
             {
                 content.append(line);
             }
-            System.out.println("crawl "+url+" done.");
+            // System.out.println("crawl "+url+" done.");
         } catch (IOException e) {
             System.out.println("can't crawl "+url);;
         } finally {

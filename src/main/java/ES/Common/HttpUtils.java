@@ -90,4 +90,19 @@ public class HttpUtils {
             return "";
         }
     }
+
+
+    public static String buildURL(ArrayList<NameValuePair> nameValuePairs, String baseURL) {
+        String requestString = "";
+        try {
+            URI uri = new URIBuilder(baseURL)
+                    .addParameters(nameValuePairs)
+                    .build();
+            requestString = uri.toString();
+        } catch (Exception e) {
+
+        }
+
+        return requestString;
+    }
 }

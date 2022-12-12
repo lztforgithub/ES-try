@@ -138,8 +138,8 @@ public class ResearcherCrawler {
 
             ret.setRcoauthor(coauthors);
             ret.setRcoauthorInstitute(coauthorsInstitute);
-            System.out.println("   Coauthors: " + coauthors);
-            System.out.println("   CoInstitute: " + coauthorsInstitute);
+//            System.out.println("   Coauthors: " + coauthors);
+//            System.out.println("   CoInstitute: " + coauthorsInstitute);
 
 
             return ret;

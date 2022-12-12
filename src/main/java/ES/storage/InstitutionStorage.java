@@ -188,61 +188,6 @@ public class InstitutionStorage {
         return ret;
     }
 
-    @RequestMapping(value = "/gs", method = RequestMethod.GET)
-    public void crawlFamousResearchers() {
-        // C41008148
-        ConceptStorage conceptStorage = new ConceptStorage();
-        ResearcherStorage researcherStorage = new ResearcherStorage();
-        JSONArray currentConcepts = conceptStorage.searchConceptByLevelAndAncestor("C41008148", 1);
-        for (int i = 0; i < currentConcepts.size(); i++) {
-            JSONObject currentConcept = currentConcepts.getJSONObject(i);
-            String Cname = currentConcept.getString("cname");
-            String CID = currentConcept.getString("cID");
-            int page = 0;
-            int count = 0;
-            int tries = 0;
-            int totalCrawledResearchers = 75;
-            ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
 
-            nameValuePairs.add(0, new BasicNameValuePair("filter",
-                    "last_known_institution.continent:north_america,cited_by_count:>15000,x_concepts.id:" + CID));
-            while(count < totalCrawledResearchers) {
-                tries++;
-                page++;
-                nameValuePairs.add(1, new BasicNameValuePair("page", Integer.toString(page)));
-                String requestString = "";
-                try {
-                    URI uri = new URIBuilder("https://api.openalex.org/authors")
-                            .addParameters(nameValuePairs)
-                            .build();
-                    requestString = uri.toString();
-                } catch (Exception e) {
-
-                }
-                nameValuePairs.remove(1);
-                System.out.printf("[%s]Researcher Request: %s" , Cname, requestString);
-
-                String response = HttpUtils.handleRequestURL(requestString);
-                JSONObject responseJSON = JSONObject.parseObject(response);
-
-                totalCrawledResearchers = responseJSON.getJSONObject("meta").getInteger("count");
-                JSONArray arr = responseJSON.getJSONArray("results");
-                for (int j = 0; j < arr.size(); j++) {
-                    JSONObject object = arr.getJSONObject(j);
-                    // System.out.println(object);
-                    ResearcherDoc researcherDoc = ResearcherCrawler.parseOpenAlexResearcherInfo(object);
-                    researcherStorage.addDoc("researcher", researcherDoc);
-                    count++;
-                }
-                System.out.printf("Crawl status %d / %d\n", count, totalCrawledResearchers);
-//                if (tries >= 1) {
-//                    break;
-//                }
-            }
-//            if (tries >= 1) {
-//                break;
-//            }
-        }
-    }
 
 }

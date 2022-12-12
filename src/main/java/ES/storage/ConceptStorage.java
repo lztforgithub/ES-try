@@ -65,6 +65,12 @@ public class ConceptStorage {
         }
     }
 
+    /**
+     * 爬取ES数据库中，自身等级为level且祖先ID含ancestorID的所有概念。
+     * @param ancestorID
+     * @param level
+     * @return
+     */
     @RequestMapping(value = "/gs2", method = RequestMethod.GET)
     public JSONArray searchConceptByLevelAndAncestor(String ancestorID, int level) {
         JSONArray ret = new JSONArray();
