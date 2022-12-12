@@ -44,8 +44,8 @@ public class CollectController {
         String token = request.getHeader("token");
         String user_id = JwtUtil.getUserId(token);
         String paper_id = map.get("PID");
-        Object q = map.get("CTID");
-        List<String> collect_id = castList(q,String.class);
+        String q = map.get("CTID");
+        List<String> collect_id = List.of(q.split(","));
         return collectService.CollectPaper(user_id,paper_id,collect_id);
     }
 
