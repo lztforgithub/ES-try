@@ -98,4 +98,18 @@ public class UserController {
         return userService.editInfo(uid,ufield,uinterest);
     }
 
+    @PostMapping("/ConfirmVerCode")
+    public Response<Object> confirmVerCode(HttpServletRequest request,@RequestBody Map<String,String> map){
+        String email = map.get("email");
+        String verCode = map.get("vercode");
+        return userService.confiemVerCode(email,verCode);
+    }
+
+    @PostMapping("/ChangePassword")
+    public Response<Object> changePassword(HttpServletRequest request,@RequestBody Map<String,String> map){
+        String email = map.get("email");
+        String password = map.get("password");
+        return userService.changePassword(email,password);
+    }
+
 }

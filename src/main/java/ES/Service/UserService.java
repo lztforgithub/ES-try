@@ -19,4 +19,8 @@ public interface UserService {
     Response<Object> personInfo(String uid);
 
     Response<Object> editInfo(String uid, String ufield, String uinterest);
+
+    Response<Object> confiemVerCode(String email, String verCode);
+
+    Response<Object> changePassword(String email, String password);
 }

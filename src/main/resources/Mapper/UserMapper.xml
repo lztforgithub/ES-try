@@ -40,4 +40,8 @@
                         Uinterest = #{Uinterest}
                     where UID = #{UID}
     </update>
+    <update id="changePassword" parameterType="java.lang.String">
+        update user set UPassword = #{UPassword}
+                    where Uemail = #{Uemail}
+    </update>
 </mapper>
