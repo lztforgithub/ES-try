@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -14,6 +15,13 @@ public class PaperController {
 
     @Autowired
     PaperService paperService;
+
+    @PostMapping("/paper/Details")
+    private Response<Object> getDetails(HttpServletRequest request, @RequestBody Map<String, String> map)
+    {
+        String pid = map.get("PID");
+        return paperService.getDetails(pid);
+    }
 
     //文献详情
     @PostMapping("/paper/view")
@@ -81,9 +89,8 @@ public class PaperController {
 
 
     @GetMapping("/recommendPapers")
-    private Response<Object> getRecommendWork(HttpServletRequest request)
-    {
-        return paperService.getRecommendWork();
+    private Response<Object> getRecommendWork(HttpServletRequest request) throws IOException {
+        return paperService.getRecommendWorks();
     }
 
     @GetMapping("/recommendConferences")

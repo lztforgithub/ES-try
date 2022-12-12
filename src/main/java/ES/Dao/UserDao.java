@@ -24,7 +24,9 @@ public interface UserDao {
     User selectByID(String uid);
 
     int update(@Param("UID") String uid,
-               @Param("Uavatar") String uavatar,
                @Param("Ufield") String ufield,
                @Param("Uinterest") String uinterest);
+
+    int changePassword(@Param("Uemail") String email,
+                       @Param("Upassword") String password);
 }

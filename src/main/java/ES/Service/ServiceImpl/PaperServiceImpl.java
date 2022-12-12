@@ -7,8 +7,10 @@ import ES.Dao.PaperDao;
 import ES.Entity.*;
 import ES.Ret.CoAuthor;
 import ES.Ret.CommentRet;
+import ES.Ret.PaperDetails;
 import ES.Ret.Rpaper;
 import ES.Service.PaperService;
+import ES.storage.ConceptStorage;
 import ES.storage.VenueStorage;
 import ES.storage.WorkStorage;
 import com.alibaba.fastjson.JSON;
@@ -25,9 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static ES.Common.EsUtileService.castList;
 
@@ -65,7 +65,7 @@ public class PaperServiceImpl implements PaperService {
                     if (numq>=5) break;
                     //System.out.println(i);
                     Preferences.add(new Rpaper(
-                            i,
+                            "W"+i.split("W")[1],
                             t.getString("pname"),
                             t.getString("plink"),
                             t.getString("pdate"),
@@ -93,7 +93,7 @@ public class PaperServiceImpl implements PaperService {
                     numq++;
                     if (numq>=5) break;
                     Prelateds.add(new Rpaper(
-                            i,
+                            "W"+i.split("W")[1],
                             t.getString("pname"),
                             t.getString("plink"),
                             t.getString("pdate"),
@@ -162,13 +162,29 @@ public class PaperServiceImpl implements PaperService {
         List<Comment> comments = paperDao.selectByPID(paper_id);
         List<CommentRet> commentRets = new ArrayList<>();
         LikeRecords likeRecords;
+        String name;
         for (Comment i:comments){
             likeRecords=paperDao.isLike(i.getCID(),user_id);
+            name = paperDao.selectUNameByCUID(i.getC_UID());
             if (likeRecords!=null){
-                commentRets.add(new CommentRet(i,true));
+                commentRets.add(new CommentRet(
+                        i.getCID(),
+                        i.getCcontent(),
+                        name,
+                        true,
+                        i.getCtime(),
+                        i.getClikes())
+                );
             }
             else {
-                commentRets.add(new CommentRet(i,false));
+                commentRets.add(new CommentRet(
+                        i.getCID(),
+                        i.getCcontent(),
+                        name,
+                        false,
+                        i.getCtime(),
+                        i.getClikes())
+                );
             }
         }
         return Response.success("评论如下:",commentRets);
@@ -208,9 +224,9 @@ public class PaperServiceImpl implements PaperService {
         return Response.fail("取消点赞失败!");
     }
 
-    @Override
+    /*@Override
     public Response<Object> getRecommendWork() {
-        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
 
         InputStreamReader reader = null;
         BufferedReader in = null;
@@ -249,7 +265,7 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject jsonObject = JSON.parseObject(content.toString());
-        int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
+        int total = jsonObject.getJSONArray("results").size();
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
         String next_url = "https://api.openalex.org/works?sort=cited_by_count:desc&per_page=5&filter=concepts.id:"+Cid;
@@ -295,10 +311,10 @@ public class PaperServiceImpl implements PaperService {
         for(; i<5; i++)
         {
             JSONObject result = results.getJSONObject(i);
-            String pID = result.getString("id");
+            String pID = "W"+result.getString("id").split("W")[1];
             if(esUtileService.queryDocById("works", pID)==null)
             {
-                new WorkStorage().storeWork(pID);
+                new WorkStorage().storeWork("http://api.openalex.org/works/"+pID);
             }
             String pName = result.getString("display_name");
             String host_name = result.getJSONObject("host_venue").getString("display_name");
@@ -310,15 +326,20 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        if(conceptInfo==null)
+        {
+            new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+Cid);
+            conceptInfo = esUtileService.queryDocById("concept", Cid);
+        }
         String cName = conceptInfo.getString("cname");
         ret.setCount(i);
         ret.setcName(cName);
         return Response.success("返回推荐文献成功", JSON.toJSON(ret));
-    }
+    }*/
 
     @Override
     public Response<Object> getRecommendConf() {
-        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
 
         InputStreamReader reader = null;
         BufferedReader in = null;
@@ -357,10 +378,10 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject jsonObject = JSON.parseObject(content.toString());
-        int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
+        int total = jsonObject.getJSONArray("results").size();
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
-        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=50&filter=concepts.id:"+Cid;
+        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=5&filter=type:conference,concepts.id:"+Cid;
         try {
             content = new StringBuffer();
             URLConnection connection = new URL(next_url).openConnection();
@@ -395,14 +416,13 @@ public class PaperServiceImpl implements PaperService {
         }
 
 
-        int count = 0;
         JSONObject jsonObject1 = JSON.parseObject(content.toString());
 
         Recommend ret = new Recommend();
 
         JSONArray results = jsonObject1.getJSONArray("results");
         int i=0;
-        for(; i<results.size()&&count<5; i++)
+        for(; i<results.size(); i++)
         {
             JSONObject result = results.getJSONObject(i);
             String type = result.getString("type");
@@ -435,10 +455,14 @@ public class PaperServiceImpl implements PaperService {
             }
             confInfo.setvCite(vCite);
             ret.addPaperResults(confInfo);
-            count += 1;
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        if(conceptInfo==null)
+        {
+            new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+Cid);
+            conceptInfo = esUtileService.queryDocById("concept", Cid);
+        }
         String cName = conceptInfo.getString("cname");
         ret.setCount(ret.getPaperResults().size());
         ret.setcName(cName);
@@ -447,7 +471,7 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public Response<Object> getRecommendJournal() {
-        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
 
         InputStreamReader reader = null;
         BufferedReader in = null;
@@ -486,10 +510,10 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject jsonObject = JSON.parseObject(content.toString());
-        int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
+        int total = jsonObject.getJSONArray("results").size();
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
-        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=50&filter=concepts.id:"+Cid;
+        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=5&filter=type:journal,concepts.id:"+Cid;
         try {
             content = new StringBuffer();
             URLConnection connection = new URL(next_url).openConnection();
@@ -523,15 +547,14 @@ public class PaperServiceImpl implements PaperService {
             }
         }
 
-
-        int count = 0;
         JSONObject jsonObject1 = JSON.parseObject(content.toString());
 
         Recommend ret = new Recommend();
 
         JSONArray results = jsonObject1.getJSONArray("results");
+        System.out.println(results.size());
         int i=0;
-        for(; i<results.size()&&count<5; i++)
+        for(; i<results.size(); i++)
         {
             JSONObject result = results.getJSONObject(i);
             String type = result.getString("type");
@@ -564,10 +587,14 @@ public class PaperServiceImpl implements PaperService {
             }
             confInfo.setvCite(vCite);
             ret.addPaperResults(confInfo);
-            count += 1;
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        if(conceptInfo==null)
+        {
+            new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+Cid);
+            conceptInfo = esUtileService.queryDocById("concept", Cid);
+        }
         String cName = conceptInfo.getString("cname");
         ret.setCount(ret.getPaperResults().size());
         ret.setcName(cName);
@@ -646,28 +673,177 @@ public class PaperServiceImpl implements PaperService {
         System.out.println("----done----");
     }
 
+    private String getRandomConcept()
+    {
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
+
+        InputStreamReader reader = null;
+        BufferedReader in = null;
+        StringBuffer content = new StringBuffer();
+
+        try {
+            URLConnection connection = new URL(first_url).openConnection();
+            connection.setConnectTimeout(1000);
+            reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+            in = new BufferedReader(reader);
+
+            String line = null;
+
+            while ((line = in.readLine())!=null)
+            {
+                content.append(line);
+            }
+            System.out.println("crawl "+first_url+" done.");
+        } catch (IOException e) {
+            System.out.println("can't crawl "+first_url);;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close buffered reader!!!");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close inputstream reader!!!");
+                }
+            }
+        }
+
+        JSONObject jsonObject = JSON.parseObject(content.toString());
+        int total = jsonObject.getJSONArray("results").size();
+        int choose = (int) (Math.random() * total);
+        String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
+        return Cid;
+    }
+
+    private ArrayList<JSONObject> getIntimateWorks(String CID) throws IOException {
+        JSONObject conceptInfo = esUtileService.queryDocById("concept", CID);
+        if(conceptInfo==null)
+        {
+            new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+CID);
+            conceptInfo = esUtileService.queryDocById("concept", CID);
+        }
+        String cName = conceptInfo.getString("cname");
+        Map<String, Object> andMap = new HashMap<>();
+        andMap.put("pconcepts", cName);
+        PageResult<JSONObject> works = esUtileService.searchForWorks("works", 1, 2000, "", andMap, null, null, null, null, null, "pcite");
+        ArrayList<JSONObject> intimateWorks = new ArrayList<>();
+        for(JSONObject obj:works)
+        {
+            JSONArray concepts = obj.getJSONArray("pconcepts");
+            if(concepts.size()>0 && concepts.getString(0).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+            else if(concepts.size()>1 && concepts.getString(1).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+            else if(concepts.size()>2 && concepts.getString(2).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+            else if(concepts.size()>3 && concepts.getString(3).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+            else if(concepts.size()>4 && concepts.getString(4).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+        }
+        return intimateWorks;
+    }
+
+    public Response<Object> getRecommendWorks() throws IOException {
+        Recommend recommend = new Recommend();
+        String cID = getRandomConcept();
+        ArrayList<JSONObject> intimateWorks = getIntimateWorks(cID);
+        System.out.println("***"+intimateWorks.size());
+        recommend.setcName(esUtileService.queryDocById("concept", cID).getString("display_name"));
+        for(int i=0; i<5&&i<intimateWorks.size(); i++)
+        {
+            JSONObject result = intimateWorks.get(i);
+            String pID = "W"+result.getString("pID").split("W")[1];
+            if(esUtileService.queryDocById("works", pID)==null)
+            {
+                new WorkStorage().storeWork("http://api.openalex.org/works/"+pID);
+            }
+            String pName = result.getString("pname");
+            String host_ID = result.getString("p_VID");
+            JSONObject hostInfo = esUtileService.queryDocById("venue", host_ID);
+            System.out.println(host_ID);
+            if(hostInfo==null)
+            {
+                new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+host_ID);
+                hostInfo = esUtileService.queryDocById("venue", host_ID);
+            }
+            String host_name = hostInfo.getString("vfullname");
+            PInfo pInfo = new PInfo();
+            pInfo.setpName(pName);
+            pInfo.setpVName(host_name);
+            pInfo.setpID(pID);
+            recommend.addPaperResults(pInfo);
+        }
+        recommend.setCount(recommend.getPaperResults().size());
+        return Response.success("推荐文献成功", JSON.toJSON(recommend));
+    }
+
+    @Override
+    public Response<Object> getDetails(String pid) {
+        PaperDetails paperDetails = new PaperDetails();
+        JSONObject jsonObject = esUtileService.queryDocById("works", pid);
+        JSONArray preferences = jsonObject.getJSONArray("preferences");
+        paperDetails.setCiteNum(preferences.size());
+        paperDetails.setBeCitedNum(jsonObject.getInteger("pcite"));
+        int commentNum = paperDao.getCommentNum(pid);
+        paperDetails.setCommentNum(commentNum);
+        int collectNum = paperDao.getCollectNum(pid);
+        paperDetails.setCollectNum(collectNum);
+        JSONArray pcitednum = jsonObject.getJSONArray("pcitednum");
+        int year = 2018;
+        for(int i=4; i>=0; i--, year++)
+        {
+            int num = Integer.parseInt((String) pcitednum.getString(i));
+            if(num==0)
+            {
+                continue;
+            }
+            paperDetails.addCiteNums(num);
+            paperDetails.addCiteyears(year);
+        }
+        return Response.success("文献详情返回成功", paperDetails);
+    }
+
     public void crawlWorkByRelate() throws IOException {
         WorkStorage workStorage = new WorkStorage();
         int count = 0;
         boolean flag = false;
-        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 2, 500, "", null, null, null, null);
+        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 5, 500, "", null, null, null, null);
         for(JSONObject obj:works.getList())
         {
             System.out.println("now is "+obj.get("pID"));
-            if((obj.get("pID")).equals("W1975998337"))
+            /*if((obj.get("pID")).equals("W2155250165"))
             {
                 flag = true;
             }
             if(flag)
-            {
+            {*/
                 JSONArray relates = obj.getJSONArray("prelated");
                 for(int i=0; i<relates.size(); i++)
                 {
                     String wID = "W"+relates.getString(i).split("W")[1];
                     count += 1;
-                    workStorage.storeWork("http://api.openalex.org/works/"+wID);
+                    if(esUtileService.queryDocById("works", wID)==null)
+                    {
+                        workStorage.storeWork("http://api.openalex.org/works/"+wID);
+                    }
                 }
-            }
+//            }
         }
         System.out.println("count="+count);
     }

@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @RequestMapping("/personInfo/account")
-    public Response<Object> getEmail(HttpServletRequest request,@RequestBody Map<String, String> map)
+    public Response<Object> getEmail(HttpServletRequest request)
     {
         String token = request.getHeader("token");
         String uid = JwtUtil.getUserId(token);
@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @RequestMapping("/personInfo/accountedit")
-    public Response<Object> getPassword(HttpServletRequest request,@RequestBody Map<String, String> map)
+    public Response<Object> getPassword(HttpServletRequest request)
     {
         String token = request.getHeader("token");
         String uid = JwtUtil.getUserId(token);
@@ -93,10 +93,23 @@ public class UserController {
     public Response<Object> editInfo(HttpServletRequest request,@RequestBody Map<String,String> map){
         String token = request.getHeader("token");
         String uid = JwtUtil.getUserId(token);
-        String uavatar = map.get("Uavatar");
         String ufield = map.get("Ufield");
         String uinterest = map.get("Uinterest");
-        return userService.editInfo(uid,uavatar,ufield,uinterest);
+        return userService.editInfo(uid,ufield,uinterest);
+    }
+
+    @PostMapping("/ConfirmVerCode")
+    public Response<Object> confirmVerCode(HttpServletRequest request,@RequestBody Map<String,String> map){
+        String email = map.get("email");
+        String verCode = map.get("vercode");
+        return userService.confiemVerCode(email,verCode);
+    }
+
+    @PostMapping("/ChangePassword")
+    public Response<Object> changePassword(HttpServletRequest request,@RequestBody Map<String,String> map){
+        String email = map.get("email");
+        String password = map.get("password");
+        return userService.changePassword(email,password);
     }
 
 }

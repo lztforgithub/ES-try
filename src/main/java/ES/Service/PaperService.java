@@ -17,7 +17,7 @@ public interface PaperService {
 
     Response<Object> unlike(String user_id, String comment_id);
 
-    Response<Object> getRecommendWork();
+    Response<Object> getRecommendWorks() throws IOException;
 
     Response<Object> getRecommendConf();
 
@@ -26,4 +26,6 @@ public interface PaperService {
     Response<Object> systemTags(String paper_id);
 
     void crawlWorkURLByAuthor() throws IOException;
+
+    Response<Object> getDetails(String pid);
 }

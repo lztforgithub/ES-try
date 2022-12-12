@@ -12,8 +12,8 @@
     </update>
     <update id="setPassword">
         update user
-        set Upassword=#{Upassword}
-        where UID=#{UID}
+        set Upassword=#{password}
+        where UID=#{uid}
     </update>
     <update id="setEmail">
         update user
@@ -36,9 +36,12 @@
         select * from user where UID=#{UID}
     </select>
     <update id="update" parameterType="java.lang.String">
-        update user set Uavatar = #{Uavatar},
-                        Ufield = #{Ufield},
-                        Uinterest = #{Uinterest},
+        update user set Ufield = #{Ufield},
+                        Uinterest = #{Uinterest}
                     where UID = #{UID}
+    </update>
+    <update id="changePassword" parameterType="java.lang.String">
+        update user set UPassword = #{UPassword}
+                    where Uemail = #{Uemail}
     </update>
 </mapper>

@@ -6,6 +6,7 @@ import ES.Common.Response;
 import ES.Dao.ScholarDao;
 import ES.Entity.AdmissionApplication;
 import ES.Ret.CoAuthor;
+import ES.Ret.RAuthor;
 import ES.Ret.ScholarRet;
 import ES.Service.ScholarService;
 import com.alibaba.fastjson.JSONObject;
@@ -38,41 +39,34 @@ public class ScholarServiceImpl implements ScholarService {
         boolean flag = true;
         if (s == null) {
             flag = false;
-        }
-        if (!s.equals(user_id)){
-            flag = false;
-        }
-
-        /*共著学者信息
-        List<String> RCOID = new ArrayList<>();
-        List<CoAuthor> RcoauthorList = new ArrayList<>();
-        Object q = jsonObject.get("rcoauthor");
-        RCOID = castList(q,String.class);
-
-        CoAuthor coAuthor;
-        for (String i:RCOID){
-            JSONObject t = esUtileService.queryDocById("researcher",i);
-            if (t!=null){
-                coAuthor = new CoAuthor(
-                        t.getString("rinstitute"),
-                        i,
-                        t.getString("rname"),
-                        t.getString("ravatar")
-                );
-                RcoauthorList.add(coAuthor);
+        }else {
+            if (!s.equals(user_id)) {
+                flag = false;
             }
         }
-        jsonObject.put("RcoauthorList",RcoauthorList);*/
+
+        //共著学者信息
+        List<String> RCO = new ArrayList<>();
+        List<String> RIN = new ArrayList<>();
+        List<RAuthor> RcoauthorList = new ArrayList<>();
+        Object q = jsonObject.get("rcoauthor");
+        RCO = castList(q,String.class);
+        q = jsonObject.get("rcoauthorInstitute");
+        RIN = castList(q,String.class);
+        for (int i=0;i<RCO.size();i++){
+            RcoauthorList.add(new RAuthor(RCO.get(i),RIN.get(i)));
+        }
+
+        jsonObject.put("RcoauthorList",RcoauthorList);
 
         //代表论文信息
         Map<String, Object> map = new HashMap<>();
         map.put("pauthor",researcher_id);
         PageResult<JSONObject> paper = esUtileService.conditionSearch("works",1,20,"",map,null,null,null);
 
-        jsonObject.put("RpaperList",paper);
+        jsonObject.put("RpaperList",paper.getList());
 
         //领域名
-        Object q;
         q = jsonObject.get("rconcepts");
         List<String> cid = new ArrayList<>();
         String cname = "";
@@ -116,6 +110,53 @@ public class ScholarServiceImpl implements ScholarService {
         if (jsonObject == null){
             return Response.fail("RID错误");
         }
+        String none = "none";
+        String s=jsonObject.getString("rname");
+        if (s==null || s.equals(none)){
+            jsonObject.put("rname","");
+        }
+        s=(jsonObject.getString("ravatar"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("ravatar","");
+        }
+        s=(jsonObject.getString("rinstitute"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rinstitute","");
+        }
+        s=(jsonObject.getString("rcontact"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rcontact","");
+        }
+        s=(jsonObject.getString("rconcepts"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rconcepts","");
+        }
+        s=(jsonObject.getString("rpersonalPage"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rpersonalPage","");
+        }
+        s=(jsonObject.getString("rgateinfo"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rgateinfo","");
+        }
+
+        //领域名
+        Object q = jsonObject.get("rconcepts");
+        List<String> cid = new ArrayList<>();
+        String cname = "";
+        if (q!=null) {
+            cid = castList(q, String.class);
+            for (String i : cid) {
+                JSONObject p = esUtileService.queryDocById("concept", i);
+                if (p != null) {
+                    cname = cname + "," + p.getString("cname");
+                }
+            }
+        }
+        if (cname.equals("")){
+            cname = " -";
+        }
+        jsonObject.put("Cname",cname.substring(1));
         return Response.success("学者信息如下:",jsonObject);
     }
 
