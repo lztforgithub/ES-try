@@ -99,10 +99,13 @@ public class SearchServiceImpl implements SearchService {
                 coAuthors = new ArrayList<>();
                 q = i.get("pauthor");
                 now_authors = castList(q, String.class);
+                int numq=0;
                 if (now_authors!=null) {
                     for (String nowAuthor : now_authors) {
                         p = esUtileService.queryDocById("researcher", nowAuthor);
                         if (p != null) {
+                            numq++;
+                            if (numq>=10) break;
                             coAuthors.add(new CoAuthor(
                                     p.getString("rinstitute"),
                                     nowAuthor,

@@ -46,17 +46,20 @@ public class PaperServiceImpl implements PaperService {
             return Response.fail("PID错误!");
         }
 
+        int numq;
         //参考文献
         List<String> PreferencesID = new ArrayList<>();
         List<Rpaper> Preferences = new ArrayList<>();
         Object q = jsonObject.get("preferences");
         PreferencesID = castList(q,String.class);
-
+        numq = 0;
         if (PreferencesID!=null) {
             for (String i : PreferencesID) {
                 JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
-                    System.out.println(i);
+                    numq++;
+                    if (numq>=5) break;
+                    //System.out.println(i);
                     Preferences.add(new Rpaper(
                             i,
                             t.getString("pname"),
@@ -75,11 +78,13 @@ public class PaperServiceImpl implements PaperService {
         List<Rpaper> Prelateds = new ArrayList<>();
         q = jsonObject.get("prelated");
         PrelatedID = castList(q,String.class);
-
+        numq = 0;
         if (PreferencesID!=null) {
             for (String i : PrelatedID) {
                 JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
+                    numq++;
+                    if (numq>=5) break;
                     Prelateds.add(new Rpaper(
                             i,
                             t.getString("pname"),
@@ -98,10 +103,13 @@ public class PaperServiceImpl implements PaperService {
         List<CoAuthor> Pauthors = new ArrayList<>();
         q = jsonObject.get("pauthor");
         PauthorID = castList(q,String.class);
+        numq = 0;
         if (PauthorID!=null) {
             for (String i : PauthorID) {
                 JSONObject t = esUtileService.queryDocById("researcher", i);
                 if (t != null) {
+                    numq++;
+                    if (numq>=10) break;
                     Pauthors.add(new CoAuthor(
                             t.getString("rinstitute"),
                             i,
