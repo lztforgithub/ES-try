@@ -122,26 +122,32 @@ public class VenueStorage {
                 JSONObject responseJSON = JSONObject.parseObject(response);
                 JSONArray arr = responseJSON.getJSONArray("results");
                 WorkCrawler workCrawler = new WorkCrawler("none");
+                int venueWorksCount = 0;
                 for (int j = 0; j < arr.size(); j++) {
                     JSONObject object = arr.getJSONObject(j);
                     WorkDoc workDoc = workCrawler.json2Doc(object.toJSONString());
 
                     System.out.printf("    Get new work: [%s]%s\n", workDoc.getPID(), workDoc.getPname());
-
                     // 爬取相关文献
                     CrawlerUtils.crawlRelatedDocs(workDoc);
                     // 爬取引用文献
                     CrawlerUtils.crawlReferencedDocs(workDoc);
                     // 爬取作者
                     CrawlerUtils.crawlDocsResearchers(workDoc);
-
 //                    if (tries >= 1) {
 //                        break;
 //                    }
                     // 存储自己！
-                    esUtileService.addDoc("works", workDoc);
-
+                    if (CrawlerUtils.checkDocExist("works", workDoc.getPID()) == 0) {
+                        System.out.printf("    Store new work: [%s]%s, progress %d / 20\n", workDoc.getPID(), workDoc.getPname(), j);
+                        esUtileService.addDoc("works", workDoc);
+                    }
+                    venueWorksCount++;
+                    if (venueWorksCount >= 20) {
+                        break;
+                    }
                 }
+                System.out.printf("    Finished crawling top 20 papers of [%s]%s, progress %d / %d\n", VID, Vfullname, i, num);
 //                if (tries >= 1) {
 //                    break;
 //                }

@@ -67,7 +67,7 @@ public class CrawlerUtils {
             ret.add(workDoc);
         }
 
-        System.out.println("        Crawled following new docs:" + crawledDocsIDs);
+        System.out.println("        Crawled following new related docs:" + crawledDocsIDs);
 
         return ret;
     }
@@ -104,7 +104,7 @@ public class CrawlerUtils {
             ret.add(workDoc);
         }
 
-        System.out.println("        Crawled following new docs: " + crawledDocsIDs);
+        System.out.println("        Crawled following new referenced docs: " + crawledDocsIDs);
 
         return ret;
     }

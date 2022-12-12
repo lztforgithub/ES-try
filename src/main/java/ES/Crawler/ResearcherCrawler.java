@@ -97,7 +97,7 @@ public class ResearcherCrawler {
             // 学者领域
             ArrayList<String> conceptIDs = new ArrayList<>();
             JSONArray conceptsJSON = researcherJSON.getJSONArray("x_concepts");
-            for(int i = 0; i < 5; i++){
+            for(int i = 0; i < min(5, conceptsJSON.size()); i++){
                 JSONObject obj = conceptsJSON.getJSONObject(i);
                 conceptIDs.add(AlexUtils.getRawID(obj.getString("id")));
             }
