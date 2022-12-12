@@ -40,13 +40,15 @@ public class SearchServiceImpl implements SearchService {
             int page) throws IOException {
         //try {
             Map<String, Object> andmap = new HashMap<>();
+            Map<String, Object> notmap = new HashMap<>();
             andmap.put("pname", normalSearch);
+            notmap.put("pabstract","Abstract ");
             if (filterAuthors != null) {
                 andmap.put("pauthor", filterAuthors);
             }
 
             //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", page, 10, "", andmap, null, null, null, null, null, start_time, end_time, sort);
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", page, 10, "", andmap, null, notmap, null, null, null, start_time, end_time, sort);
             System.out.println(t.getTotal());
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
