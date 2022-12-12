@@ -70,8 +70,8 @@ public class SearchServiceImpl implements SearchService {
             int qs;
             JSONObject p;
 
-            return Response.success("GG",t);
-            /*System.out.println(t.getList().size());
+            //return Response.success("GG",t);
+            System.out.println(t.getList().size());
             for (JSONObject i : t.getList()) {
                 //出版类型统计
                 String v = i.getString("p_VID");
@@ -199,7 +199,7 @@ public class SearchServiceImpl implements SearchService {
             andmap = new HashMap<>();
             andmap.put("rname",normalSearch);
             List<JSONObject> author = new ArrayList<>();
-            t = esUtileService.defaultSearch("researcher",100,20,"",null,null,null,andmap,null,null,start_time,end_time);
+            t = esUtileService.conditionSearch("researcher",1,20,"",null,null,null,andmap);
             int nums = 0;
             for (JSONObject i:t.getList()){
                 nums++;
@@ -213,7 +213,7 @@ public class SearchServiceImpl implements SearchService {
             andmap = new HashMap<>();
             andmap.put("iname",normalSearch);
             List<JSONObject> institute = new ArrayList<>();
-            t = esUtileService.defaultSearch("institutions",100,20,"",null,null,null,andmap,null,null,start_time,end_time);
+            t = esUtileService.conditionSearch("institutions",1,20,"",null,null,null,andmap);
             nums = 0;
             for (JSONObject i:t.getList()){
                 nums++;
@@ -232,7 +232,7 @@ public class SearchServiceImpl implements SearchService {
                     new Recommendation(author,institute)
             );
 
-            return Response.success("搜索结果如下:", t);*/
+            return Response.success("搜索结果如下:", searchResultRet);
         }catch (Exception e){
             return Response.fail("网络错误!");
         }
