@@ -110,6 +110,53 @@ public class ScholarServiceImpl implements ScholarService {
         if (jsonObject == null){
             return Response.fail("RID错误");
         }
+        String none = "none";
+        String s=jsonObject.getString("rname");
+        if (s==null || s.equals(none)){
+            jsonObject.put("rname","");
+        }
+        s=(jsonObject.getString("ravatar"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("ravatar","");
+        }
+        s=(jsonObject.getString("rinstitute"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rinstitute","");
+        }
+        s=(jsonObject.getString("rcontact"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rcontact","");
+        }
+        s=(jsonObject.getString("rconcepts"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rconcepts","");
+        }
+        s=(jsonObject.getString("rpersonalPage"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rpersonalPage","");
+        }
+        s=(jsonObject.getString("rgateinfo"));
+        if (s==null || s.equals(none)){
+            jsonObject.put("rgateinfo","");
+        }
+
+        //领域名
+        Object q = jsonObject.get("rconcepts");
+        List<String> cid = new ArrayList<>();
+        String cname = "";
+        if (q!=null) {
+            cid = castList(q, String.class);
+            for (String i : cid) {
+                JSONObject p = esUtileService.queryDocById("concept", i);
+                if (p != null) {
+                    cname = cname + "," + p.getString("cname");
+                }
+            }
+        }
+        if (cname.equals("")){
+            cname = " -";
+        }
+        jsonObject.put("Cname",cname.substring(1));
         return Response.success("学者信息如下:",jsonObject);
     }
 
