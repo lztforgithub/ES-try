@@ -77,23 +77,22 @@ public class SearchServiceImpl implements SearchService {
             for (JSONObject i : t.getList()) {
                 //出版类型统计
                 String v = i.getString("p_VID");
-                p = null;
                 if (v!=null) {
                     p = esUtileService.queryDocById("venue", v);
-                }
-                if (p!=null) {
-                    v = p.getString("vtype");
-                    //不同的出版类型忽略
-                    if (filterPublicationTypes != null) {
-                        if (!v.equals(filterPublicationTypes)) {
-                            continue;
+                    if (p != null) {
+                        v = p.getString("vtype");
+                        //不同的出版类型忽略
+                        if (filterPublicationTypes != null) {
+                            if (!v.equals(filterPublicationTypes)) {
+                                continue;
+                            }
                         }
-                    }
-                    if (V_map.containsKey(v)) {
-                        qs = V_map.get(v);
-                        V_map.put(v, qs + 1);
-                    } else {
-                        V_map.put(v, 1);
+                        if (V_map.containsKey(v)) {
+                            qs = V_map.get(v);
+                            V_map.put(v, qs + 1);
+                        } else {
+                            V_map.put(v, 1);
+                        }
                     }
                 }
                 //学者统计
@@ -268,6 +267,9 @@ public class SearchServiceImpl implements SearchService {
             Map<String,Object> ormap = new HashMap<>();
             Map<String,Object> notmap = new HashMap<>();
             Map<String,Object> tempMap = new HashMap<>();
+            //去掉摘要为空的情况
+            notmap.put("pabstract","Abstract ");
+            notmap.put("exists","pabstract");
 
             for (JSONObject i:advancedSearch){
                 type = i.getInteger("type");
@@ -352,7 +354,7 @@ public class SearchServiceImpl implements SearchService {
                     continue;
                 }
 
-                if (category.equals("Cname")){
+                /*if (category.equals("Cname")){
                     tempMap = new HashMap<>();
                     tempMap.put("Cname",content);
                     PageResult<JSONObject> t = esUtileService.conditionSearch("concept",100,20,"",tempMap,null,null,null);
@@ -369,12 +371,12 @@ public class SearchServiceImpl implements SearchService {
                             break;
                     }
                     continue;
-                }
+                }*/
 
                 if (category.equals("Iname")){
                     tempMap = new HashMap<>();
-                    tempMap.put("Rinstitute",content);
-                    PageResult<JSONObject> t = esUtileService.conditionSearch("researcher",100,20,"",tempMap,null,null,null);
+                    tempMap.put("rinstitute",content);
+                    PageResult<JSONObject> t = esUtileService.conditionSearch("researcher",1,10,"",tempMap,null,null,null);
                     content = t.getList().get(0).getString("rID");
                     /*for (JSONObject j:t.getList()){
                         switch (type){
@@ -451,17 +453,12 @@ public class SearchServiceImpl implements SearchService {
             //处理筛选条件
             boolean flag = false;
             if (filterAuthors != null) {
-                List<String> tmp = new ArrayList<>();
-                tmp.add(filterAuthors);
-                andmap.put("pauthor", tmp);
+                andmap.put("pauthor", filterAuthors);
                 flag = true;
-            }
-            if (!flag) {
-                andmap = null;
             }
 
             //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 100, 20, "", andmap, ormap, notmap, null, null, null, from, to,sort);
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 1, 10, "", andmap, ormap, notmap, null, null, null, from, to,sort);
 
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
@@ -482,40 +479,50 @@ public class SearchServiceImpl implements SearchService {
             for (JSONObject i : t.getList()) {
                 //出版类型统计
                 String v = i.getString("p_VID");
-                p = esUtileService.queryDocById("venue", v);
-                v = p.getString("vtype");
-                //不同的出版类型忽略
-                if (filterPublicationTypes != null) {
-                    if (!v.equals(filterPublicationTypes)) {
-                        continue;
+                if (v!=null) {
+                    p = esUtileService.queryDocById("venue", v);
+                    v = p.getString("vtype");
+                    //不同的出版类型忽略
+                    if (filterPublicationTypes != null) {
+                        if (!v.equals(filterPublicationTypes)) {
+                            continue;
+                        }
                     }
-                }
-                if (V_map.containsKey(v)) {
-                    qs = V_map.get(v);
-                    V_map.put(v, qs + 1);
-                } else {
-                    V_map.put(v, 1);
+                    if (V_map.containsKey(v)) {
+                        qs = V_map.get(v);
+                        V_map.put(v, qs + 1);
+                    } else {
+                        V_map.put(v, 1);
+                    }
                 }
                 //学者统计
                 coAuthors = new ArrayList<>();
                 q = i.get("pauthor");
                 now_authors = castList(q, String.class);
-                for (String nowAuthor : now_authors) {
-                    p = esUtileService.queryDocById("researcher", nowAuthor);
-                    if (p != null) {
-                        coAuthors.add(new CoAuthor(
-                                p.getString("rinstitute"),
-                                nowAuthor,
-                                p.getString("rname"),
-                                p.getString("ravatar"),
-                                p.getString("r_IID")
-                        ));
-                        if (R_map.containsKey(nowAuthor)) {
-                            qs = R_map.get(nowAuthor);
-                            R_map.put(nowAuthor, qs + 1);
-                        } else {
-                            R_map.put(nowAuthor, 1);
-                            R_map_name.put(nowAuthor, p.getString("rname"));
+                int numq = 0;
+                int nump = 0;
+                if (now_authors != null) {
+                    for (String nowAuthor : now_authors) {
+                        nump++;
+                        if (nump >= 20) break;
+                        p = esUtileService.queryDocById("researcher", nowAuthor);
+                        if (p != null) {
+                            numq++;
+                            if (numq >= 10) break;
+                            coAuthors.add(new CoAuthor(
+                                    p.getString("rinstitute"),
+                                    nowAuthor,
+                                    p.getString("rname"),
+                                    p.getString("ravatar"),
+                                    p.getString("r_IID")
+                            ));
+                            if (R_map.containsKey(nowAuthor)) {
+                                qs = R_map.get(nowAuthor);
+                                R_map.put(nowAuthor, qs + 1);
+                            } else {
+                                R_map.put(nowAuthor, 1);
+                                R_map_name.put(nowAuthor, p.getString("rname"));
+                            }
                         }
                     }
                 }
