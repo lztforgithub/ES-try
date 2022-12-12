@@ -44,6 +44,7 @@ public class SearchController {
         Timestamp start_time = new Timestamp(
                 simpleDateFormat.parse(
                         (String) map.get("startTime")
+
                 ).getTime()
         );
         Timestamp end_time = new Timestamp(
@@ -90,7 +91,7 @@ public class SearchController {
 
     //高级搜索
     @PostMapping("/AdvancedSearchResults")
-    public Response<Object> AdvancedSearch(HttpServletRequest request, @RequestBody Map<String,Object> map) throws IOException {
+    public Response<Object> AdvancedSearch(HttpServletRequest request, @RequestBody Map<String,Object> map) throws IOException, ParseException {
         //取用户id,判断是否收藏,未登录则user_id=""
         String token = request.getHeader("token");
         String user_id;
@@ -105,10 +106,35 @@ public class SearchController {
         List<JSONObject> advancedSearch = new ArrayList<>();
         advancedSearch = castList(q,JSONObject.class);
         //起止时间，存疑
-        Timestamp start_time = (Timestamp) map.get("startTime");
-        Timestamp end_time = (Timestamp) map.get("endTime");
-        Timestamp adv_start_time = (Timestamp) map.get("advStartTime");
-        Timestamp adv_end_time = (Timestamp) map.get("advEndTime");
+//        Timestamp start_time = (Timestamp) map.get("startTime");
+//        Timestamp end_time = (Timestamp) map.get("endTime");
+//        Timestamp adv_start_time = (Timestamp) map.get("advStartTime");
+//        Timestamp adv_end_time = (Timestamp) map.get("advEndTime");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Timestamp start_time = new Timestamp(
+                simpleDateFormat.parse(
+                        (String) map.get("startTime")
+
+                ).getTime()
+        );
+        Timestamp end_time = new Timestamp(
+                simpleDateFormat.parse(
+                        (String) map.get("endTime")
+
+                ).getTime()
+        );
+        Timestamp adv_start_time = new Timestamp(
+                simpleDateFormat.parse(
+                        (String) map.get("advStartTime")
+
+                ).getTime()
+        );
+        Timestamp adv_end_time = new Timestamp(
+                simpleDateFormat.parse(
+                        (String) map.get("advEndTime")
+
+                ).getTime()
+        );
         Timestamp from = start_time;
         if (start_time.before(adv_start_time)){
             from = adv_start_time;
@@ -125,6 +151,7 @@ public class SearchController {
         int page = (int) map.get("page");
         //sort,排序方式
         String sort = (String) map.get("sort");
+        System.out.println(sort);
         if (sort.equals("mostRecent")){
             sort = "pdate";
         }
