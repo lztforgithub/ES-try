@@ -32,4 +32,7 @@
         update comment set Clikes=Clikes-1
         where CID=#{comment_id}
     </update>
+    <select id="selectUNameByCUID" resultType="java.lang.String">
+        select Uname from user where UID = #{c_uid}
+    </select>
 </mapper>

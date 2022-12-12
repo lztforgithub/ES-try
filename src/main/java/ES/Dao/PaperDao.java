@@ -26,4 +26,6 @@ public interface PaperDao {
     int getCommentNum(String pid);
 
     int getCollectNum(String pid);
+
+    String selectUNameByCUID(String c_uid);
 }

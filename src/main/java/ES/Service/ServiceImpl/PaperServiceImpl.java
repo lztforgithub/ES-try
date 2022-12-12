@@ -162,13 +162,29 @@ public class PaperServiceImpl implements PaperService {
         List<Comment> comments = paperDao.selectByPID(paper_id);
         List<CommentRet> commentRets = new ArrayList<>();
         LikeRecords likeRecords;
+        String name;
         for (Comment i:comments){
             likeRecords=paperDao.isLike(i.getCID(),user_id);
+            name = paperDao.selectUNameByCUID(i.getC_UID());
             if (likeRecords!=null){
-                commentRets.add(new CommentRet(i,true));
+                commentRets.add(new CommentRet(
+                        i.getCID(),
+                        i.getCcontent(),
+                        name,
+                        true,
+                        i.getCtime(),
+                        i.getClikes())
+                );
             }
             else {
-                commentRets.add(new CommentRet(i,false));
+                commentRets.add(new CommentRet(
+                        i.getCID(),
+                        i.getCcontent(),
+                        name,
+                        false,
+                        i.getCtime(),
+                        i.getClikes())
+                );
             }
         }
         return Response.success("评论如下:",commentRets);
