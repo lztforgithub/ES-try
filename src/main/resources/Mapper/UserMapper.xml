@@ -29,7 +29,7 @@
     <select id="getPassword" resultType="java.lang.String">
         select Upassword from user where UID=#{uid}
     </select>
-    <select id="selectByEmail" resultType="java.lang.String">
+    <select id="selectByEmail" resultType="java.lang.User">
         select * from user where Uemail=#{Uemail}
     </select>
 </mapper>
