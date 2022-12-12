@@ -65,7 +65,7 @@ public class PaperServiceImpl implements PaperService {
                     if (numq>=5) break;
                     //System.out.println(i);
                     Preferences.add(new Rpaper(
-                            i,
+                            "W"+i.split("W")[1],
                             t.getString("pname"),
                             t.getString("plink"),
                             t.getString("pdate"),
