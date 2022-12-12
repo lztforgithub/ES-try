@@ -38,9 +38,10 @@ public class ScholarServiceImpl implements ScholarService {
         boolean flag = true;
         if (s == null) {
             flag = false;
-        }
-        if (!s.equals(user_id)){
-            flag = false;
+        }else {
+            if (!s.equals(user_id)) {
+                flag = false;
+            }
         }
 
         /*共著学者信息
@@ -69,7 +70,7 @@ public class ScholarServiceImpl implements ScholarService {
         map.put("pauthor",researcher_id);
         PageResult<JSONObject> paper = esUtileService.conditionSearch("works",1,20,"",map,null,null,null);
 
-        jsonObject.put("RpaperList",paper);
+        jsonObject.put("RpaperList",paper.getList());
 
         //领域名
         Object q;
