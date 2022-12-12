@@ -17,8 +17,8 @@ import java.util.UUID;
 @Table(name = "like_records")
 public class LikeRecords {
     @Id
-    @Column(name = "LR_ID", nullable = false)
-    String LR_ID;
+    @Column(name = "LRID", nullable = false)
+    String LRID;
 
     @Column(name = "C_ID", nullable = false)
     String C_ID;
@@ -27,7 +27,7 @@ public class LikeRecords {
     String UID;
 
     public LikeRecords(String user_id, String comment_id){
-        this.LR_ID = UUID.randomUUID().toString();
+        this.LRID = UUID.randomUUID().toString();
         this.UID = user_id;
         this.C_ID = comment_id;
     }
