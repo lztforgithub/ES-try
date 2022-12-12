@@ -10,6 +10,7 @@ import ES.Ret.CommentRet;
 import ES.Ret.PaperDetails;
 import ES.Ret.Rpaper;
 import ES.Service.PaperService;
+import ES.storage.ConceptStorage;
 import ES.storage.VenueStorage;
 import ES.storage.WorkStorage;
 import com.alibaba.fastjson.JSON;
@@ -311,6 +312,11 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        if(conceptInfo==null)
+        {
+            new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+Cid);
+            conceptInfo = esUtileService.queryDocById("concept", Cid);
+        }
         String cName = conceptInfo.getString("cname");
         ret.setCount(i);
         ret.setcName(cName);
@@ -438,6 +444,11 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        if(conceptInfo==null)
+        {
+            new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+Cid);
+            conceptInfo = esUtileService.queryDocById("concept", Cid);
+        }
         String cName = conceptInfo.getString("cname");
         ret.setCount(ret.getPaperResults().size());
         ret.setcName(cName);
@@ -565,6 +576,11 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
+        if(conceptInfo==null)
+        {
+            new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+Cid);
+            conceptInfo = esUtileService.queryDocById("concept", Cid);
+        }
         String cName = conceptInfo.getString("cname");
         ret.setCount(ret.getPaperResults().size());
         ret.setcName(cName);
