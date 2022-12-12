@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
             return Response.fail("用户名已存在!");
         }
         if (userDao.selectByEmail(email)!=null){
-            return Response.fail("用户名已存在!");
+            return Response.fail("邮箱已存在!");
         }
         User user = new User(username,pwd,email);
         if (userDao.insertUser(user)>0){
