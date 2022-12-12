@@ -727,23 +727,31 @@ public class PaperServiceImpl implements PaperService {
             new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+CID);
             conceptInfo = esUtileService.queryDocById("concept", CID);
         }
-        String cName = conceptInfo.getString("display_name");
+        String cName = conceptInfo.getString("cname");
         Map<String, Object> andMap = new HashMap<>();
         andMap.put("pconcepts", cName);
-        PageResult<JSONObject> works = esUtileService.searchForWorks("works", 1, 50, "", andMap, null, null, null, null, null, "pcite");
+        PageResult<JSONObject> works = esUtileService.searchForWorks("works", 1, 2000, "", andMap, null, null, null, null, null, "pcite");
         ArrayList<JSONObject> intimateWorks = new ArrayList<>();
         for(JSONObject obj:works)
         {
             JSONArray concepts = obj.getJSONArray("pconcepts");
-            if(concepts.getString(0).equals(cName))
+            if(concepts.size()>0 && concepts.getString(0).equals(cName))
             {
                 intimateWorks.add(obj);
             }
-            else if(concepts.getString(1).equals(cName))
+            else if(concepts.size()>1 && concepts.getString(1).equals(cName))
             {
                 intimateWorks.add(obj);
             }
-            else if(concepts.getString(2).equals(cName))
+            else if(concepts.size()>2 && concepts.getString(2).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+            else if(concepts.size()>3 && concepts.getString(3).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+            else if(concepts.size()>4 && concepts.getString(4).equals(cName))
             {
                 intimateWorks.add(obj);
             }
@@ -755,17 +763,26 @@ public class PaperServiceImpl implements PaperService {
         Recommend recommend = new Recommend();
         String cID = getRandomConcept();
         ArrayList<JSONObject> intimateWorks = getIntimateWorks(cID);
+        System.out.println("***"+intimateWorks.size());
         recommend.setcName(esUtileService.queryDocById("concept", cID).getString("display_name"));
         for(int i=0; i<5&&i<intimateWorks.size(); i++)
         {
             JSONObject result = intimateWorks.get(i);
-            String pID = "W"+result.getString("id").split("W")[1];
+            String pID = "W"+result.getString("pID").split("W")[1];
             if(esUtileService.queryDocById("works", pID)==null)
             {
                 new WorkStorage().storeWork("http://api.openalex.org/works/"+pID);
             }
-            String pName = result.getString("display_name");
-            String host_name = result.getJSONObject("host_venue").getString("display_name");
+            String pName = result.getString("pname");
+            String host_ID = result.getString("p_VID");
+            JSONObject hostInfo = esUtileService.queryDocById("venue", host_ID);
+            System.out.println(host_ID);
+            if(hostInfo==null)
+            {
+                new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+host_ID);
+                hostInfo = esUtileService.queryDocById("venue", host_ID);
+            }
+            String host_name = hostInfo.getString("vfullname");
             PInfo pInfo = new PInfo();
             pInfo.setpName(pName);
             pInfo.setpVName(host_name);
