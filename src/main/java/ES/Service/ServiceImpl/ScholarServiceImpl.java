@@ -84,6 +84,10 @@ public class ScholarServiceImpl implements ScholarService {
         jsonObject.put("Cname",cname.substring(1));
         jsonObject.put("flag",flag);
 
+        if (jsonObject.getString("rcustomconcepts") == null){
+            jsonObject.put("rcustomconcepts",cname.substring(1));
+        }
+
         return Response.success("门户信息如下:", jsonObject);
     }
 
@@ -157,6 +161,10 @@ public class ScholarServiceImpl implements ScholarService {
             cname = " -";
         }
         jsonObject.put("Cname",cname.substring(1));
+
+        if (jsonObject.getString("rcustomconcepts") == null){
+            jsonObject.put("rcustomconcepts",cname.substring(1));
+        }
         return Response.success("学者信息如下:",jsonObject);
     }
 
