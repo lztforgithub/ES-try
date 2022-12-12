@@ -408,6 +408,7 @@ public class PaperServiceImpl implements PaperService {
             String type = result.getString("type");
             if(!type.equals("conference"))
             {
+                i++;
                 continue;
             }
             ConfInfo confInfo = new ConfInfo();
@@ -537,6 +538,7 @@ public class PaperServiceImpl implements PaperService {
             String type = result.getString("type");
             if(!type.equals("journal"))
             {
+                i++;
                 continue;
             }
             ConfInfo confInfo = new ConfInfo();
@@ -650,11 +652,11 @@ public class PaperServiceImpl implements PaperService {
         WorkStorage workStorage = new WorkStorage();
         int count = 0;
         boolean flag = false;
-        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 3, 500, "", null, null, null, null);
+        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 5, 500, "", null, null, null, null);
         for(JSONObject obj:works.getList())
         {
             System.out.println("now is "+obj.get("pID"));
-            /*if((obj.get("pID")).equals("W1975998337"))
+            /*if((obj.get("pID")).equals("W2155250165"))
             {
                 flag = true;
             }
@@ -665,7 +667,10 @@ public class PaperServiceImpl implements PaperService {
                 {
                     String wID = "W"+relates.getString(i).split("W")[1];
                     count += 1;
-                    workStorage.storeWork("http://api.openalex.org/works/"+wID);
+                    if(esUtileService.queryDocById("works", wID)==null)
+                    {
+                        workStorage.storeWork("http://api.openalex.org/works/"+wID);
+                    }
                 }
 //            }
         }
