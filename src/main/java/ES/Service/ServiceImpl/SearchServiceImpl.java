@@ -106,7 +106,8 @@ public class SearchServiceImpl implements SearchService {
                                     p.getString("rinstitute"),
                                     nowAuthor,
                                     p.getString("rname"),
-                                    p.getString("ravatar")
+                                    p.getString("ravatar"),
+                                    p.getString("r_IID")
                             ));
                             if (R_map.containsKey(nowAuthor)) {
                                 qs = R_map.get(nowAuthor);
@@ -497,7 +498,8 @@ public class SearchServiceImpl implements SearchService {
                                 p.getString("rinstitute"),
                                 nowAuthor,
                                 p.getString("rname"),
-                                p.getString("ravatar")
+                                p.getString("ravatar"),
+                                p.getString("r_IID")
                         ));
                         if (R_map.containsKey(nowAuthor)) {
                             qs = R_map.get(nowAuthor);

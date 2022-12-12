@@ -106,7 +106,8 @@ public class PaperServiceImpl implements PaperService {
                             t.getString("rinstitute"),
                             i,
                             t.getString("rname"),
-                            t.getString("ravatar")
+                            t.getString("ravatar"),
+                            t.getString("r_IID")
                     ));
                 }
             }
