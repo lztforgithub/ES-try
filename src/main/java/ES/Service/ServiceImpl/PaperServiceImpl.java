@@ -131,6 +131,10 @@ public class PaperServiceImpl implements PaperService {
             }
         }
 
+        if (jsonObject.getString("p_Vurl") == null){
+            jsonObject.put("p_Vurl","");
+        }
+
         jsonObject.put("Pauthor",Pauthors);
 
         return Response.success("文献详情如下:",
