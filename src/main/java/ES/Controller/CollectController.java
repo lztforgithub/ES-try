@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
+
+import static ES.Common.EsUtileService.castList;
 
 @RestController
 public class CollectController {
@@ -41,7 +44,8 @@ public class CollectController {
         String token = request.getHeader("token");
         String user_id = JwtUtil.getUserId(token);
         String paper_id = map.get("PID");
-        String collect_id = map.get("CTID");
+        String q = map.get("CTID");
+        List<String> collect_id = List.of(q.split(","));
         return collectService.CollectPaper(user_id,paper_id,collect_id);
     }
 

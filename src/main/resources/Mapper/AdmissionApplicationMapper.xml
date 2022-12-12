@@ -19,4 +19,7 @@
     <select id="countUser" resultType="int">
         select count(*) from user
     </select>
+    <select id="selectUnameByID" resultType="java.lang.String">
+        select Uname from user where UID = #{UID}
+    </select>
 </mapper>

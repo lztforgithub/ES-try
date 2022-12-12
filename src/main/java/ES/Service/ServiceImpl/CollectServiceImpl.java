@@ -41,13 +41,17 @@ public class CollectServiceImpl implements CollectService {
     }
 
     @Override
-    public Response<Object> CollectPaper(String user_id, String paper_id, String collect_id){
+    public Response<Object> CollectPaper(String user_id, String paper_id, List<String> collect_id){
         collectDao.deleteCollectRecords(user_id,paper_id);
-        CollectRecords collectRecords = new CollectRecords(collect_id,paper_id);
-        if (collectDao.insertCollectRecords(collectRecords)>0){
-            return Response.success("收藏成功!",collectRecords);
+        try{
+            for (String i:collect_id){
+                CollectRecords collectRecords = new CollectRecords(i,paper_id);
+                collectDao.insertCollectRecords(collectRecords);
+            }
+            return Response.success("收藏成功!");
+        }catch (Exception e){
+            return Response.fail("收藏失败!");
         }
-        return Response.fail("收藏失败!");
     }
 
     @Override

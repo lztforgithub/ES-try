@@ -55,7 +55,7 @@ public class AdmissionApplication {
     String AAinterestedareas;
 
     //主页链接，申请者自行填写,可不填
-    @Column(name = "AAhomepage", nullable = true)
+    @Column(name = "AAhomepage", nullable = false)
     String AAhomepage;
 
     @Column(name = "AAintroduction", nullable = false)
@@ -65,7 +65,7 @@ public class AdmissionApplication {
     @Column(name = "AAccept", nullable = false)
     int AAccept;
 
-    @Column(name = "AOpinion", nullable = true)
+    @Column(name = "AOpinion", nullable = false)
     String AOpinion;
 
     public AdmissionApplication(

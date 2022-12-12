@@ -18,6 +18,6 @@
     </insert>
     <insert id="insertCollected" parameterType="ES.Entity.Collected">
         insert into collected(CTID,CTname,CT_UID)
-            values(#{CTID},#{CTname},#{CTUID})
+            values(#{CTID},#{CTname},#{CT_UID})
     </insert>
 </mapper>

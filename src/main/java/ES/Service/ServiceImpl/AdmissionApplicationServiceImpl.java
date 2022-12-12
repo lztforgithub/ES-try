@@ -6,6 +6,7 @@ import ES.Common.Response;
 import ES.Dao.AdmissionApplicationDao;
 import ES.Dao.UserDao;
 import ES.Entity.AdmissionApplication;
+import ES.Ret.AARet;
 import ES.Ret.BaseRet;
 import ES.Service.AdmissionApplicationService;
 import com.alibaba.fastjson.JSONObject;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AdmissionApplicationServiceImpl implements AdmissionApplicationService {
@@ -29,13 +27,57 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
     EsUtileService esUtileService = new EsUtileService();
 
     @Override
-    public List<AdmissionApplication> getList0(){
-        return admissionApplicationDao.getList0();
+    public Response<Object> getList0(){
+        List<AdmissionApplication> t = admissionApplicationDao.getList0();
+        List<AARet> q = new ArrayList<>();
+        for (AdmissionApplication i:t){
+            String name = admissionApplicationDao.selectUnameByID(i.getAA_UID());
+            q.add(new AARet(
+                    i.getAAID(),
+                    i.getAAtype(),
+                    i.getAA_UID(),
+                    i.getAA_RID(),
+                    i.getAAtime(),
+                    i.getAAlastUpdateTime(),
+                    i.getAAname(),
+                    i.getAAinstitution(),
+                    i.getAAemail(),
+                    i.getAAinterestedareas(),
+                    i.getAAhomepage(),
+                    i.getAAintroduction(),
+                    i.getAAccept(),
+                    i.getAOpinion(),
+                    name
+            ));
+        }
+        return Response.success("列表如下:",q);
     }
 
     @Override
-    public List<AdmissionApplication> getList1(){
-        return admissionApplicationDao.getList1();
+    public Response<Object> getList1(){
+        List<AdmissionApplication> t = admissionApplicationDao.getList1();
+        List<AARet> q = new ArrayList<>();
+        for (AdmissionApplication i:t){
+            String name = admissionApplicationDao.selectUnameByID(i.getAA_UID());
+            q.add(new AARet(
+                    i.getAAID(),
+                    i.getAAtype(),
+                    i.getAA_UID(),
+                    i.getAA_RID(),
+                    i.getAAtime(),
+                    i.getAAlastUpdateTime(),
+                    i.getAAname(),
+                    i.getAAinstitution(),
+                    i.getAAemail(),
+                    i.getAAinterestedareas(),
+                    i.getAAhomepage(),
+                    i.getAAintroduction(),
+                    i.getAAccept(),
+                    i.getAOpinion(),
+                    name
+            ));
+        }
+        return Response.success("列表如下:",q);
     }
 
     @Override

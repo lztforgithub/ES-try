@@ -26,7 +26,7 @@ public class AdmissionApplicationController {
         String token = request.getHeader("token");
         Map<String, Object> info = JwtUtil.getInfo(token);
         if (info.get("type").equals("admin")) {
-            return Response.success("列表如下:", admissionApplicationService.getList0());
+            return admissionApplicationService.getList0();
         }
         return Response.fail("无权限!");
     }
@@ -38,7 +38,7 @@ public class AdmissionApplicationController {
         String token = request.getHeader("token");
         Map<String, Object> info = JwtUtil.getInfo(token);
         if (info.get("type").equals("admin")) {
-            return Response.success("列表如下:", admissionApplicationService.getList1());
+            return admissionApplicationService.getList1();
         }
         return Response.fail("无权限!");
     }
