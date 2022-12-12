@@ -104,7 +104,7 @@ public class CrawlerUtils {
             esUtileService.addDoc("works", workDoc);
             crawledDocsIDs.add(workDoc.getPID());
             counter++;
-            if (counter >= 20) {
+            if (counter >= 10) {
                 break;
             }
             ret.add(workDoc);
