@@ -7,6 +7,7 @@ import ES.Entity.ToEmail;
 import ES.Entity.User;
 import ES.Service.ToEmailService;
 import ES.Service.UserService;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +54,11 @@ public class UserServiceImpl implements UserService {
 
             //生成JWT字符串
             String token = JwtUtil.sign(user.getUID(), info);
-            return Response.success("登录成功",token);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("token",token);
+            jsonObject.put("type",user.getUtype());
+            return Response.success("登录成功",jsonObject);
         }
         return Response.fail("密码错误");
     }
