@@ -53,6 +53,11 @@ public class InstituteServiceImpl implements InstituteService {
         {
             String assoID = associations.getString(i);
             JSONObject assoInfo = esUtileService.queryDocById("institutions", assoID);
+            if (assoInfo==null){
+                InstitutionStorage institutionStorage = new InstitutionStorage();
+                institutionStorage.storeInstitution("http://api.openalex.org/institutions/"+assoID);
+                assoInfo = esUtileService.queryDocById("institutions", assoID);
+            }
             String assoName = assoInfo.getString("iname");
             assoNames.add(assoName);
         }
