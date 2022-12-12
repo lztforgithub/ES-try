@@ -617,30 +617,27 @@ public class PaperServiceImpl implements PaperService {
 
     public void crawlWorkByRelate() throws IOException {
         WorkStorage workStorage = new WorkStorage();
+        int count = 0;
         boolean flag = false;
-        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 1, 500, "", null, null, null, null);
+        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 1, 200, "", null, null, null, null);
         for(JSONObject obj:works.getList())
         {
-            if((obj.get("pID")).equals("W1980107343"))
+            System.out.println("now is "+obj.get("pID"));
+            JSONArray relates = obj.getJSONArray("prelated");
+            for(int i=0; i<relates.size(); i++)
             {
-                flag = true;
-            }
-            if(flag)
-            {
-                System.out.println("now is "+obj.get("pID"));
-                JSONArray relates = obj.getJSONArray("prelated");
-                for(int i=0; i<relates.size(); i++)
-                {
-                    String wID = "W"+relates.getString(i).split("W")[1];
-                    workStorage.storeWork("http://api.openalex.org/works/"+wID);
-                }
+                String wID = "W"+relates.getString(i).split("W")[1];
+                count += 1;
+//                workStorage.storeWork("http://api.openalex.org/works/"+wID);
             }
         }
+        System.out.println("count="+count);
     }
 
     public static void main(String[] args) throws IOException {
         PaperServiceImpl paperService = new PaperServiceImpl();
         paperService.crawlWorkByRelate();
+        System.out.println("----done----");
     }
 
 }
