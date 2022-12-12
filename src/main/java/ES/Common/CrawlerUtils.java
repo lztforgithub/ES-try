@@ -6,6 +6,7 @@ import ES.Document.ResearcherDoc;
 import ES.Document.WorkDoc;
 import ES.storage.ResearcherStorage;
 import ES.storage.WorkStorage;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
@@ -28,11 +29,20 @@ public class CrawlerUtils {
 
     public static WorkDoc frogCrawlSingleDoc(String url) {
         String response = HttpUtils.handleRequestURL(url);
-        JSONObject firstDoc = JSONObject.parseObject(response).getJSONArray("results").getJSONObject(0);
-        WorkCrawler workCrawler = new WorkCrawler("none");
-        WorkDoc workDoc = workCrawler.json2Doc(firstDoc.toJSONString());
-        // System.out.println("Check crawler: " + workDoc.getPID());
-        return workDoc;
+        JSONObject firstDoc = new JSONObject();
+        try {
+            firstDoc = JSONObject.parseObject(response).getJSONArray("results").getJSONObject(0);
+            WorkCrawler workCrawler = new WorkCrawler("none");
+            WorkDoc workDoc = workCrawler.json2Doc(firstDoc.toJSONString());
+            // System.out.println("Check crawler: " + workDoc.getPID());
+            return workDoc;
+        } catch (Exception e) {
+            System.out.println("Work not found: " + url);
+            WorkDoc workDoc = new WorkDoc();
+            workDoc.setPID("ERROR");
+            return workDoc;
+        }
+
     }
 
     public static ArrayList<WorkDoc> crawlRelatedDocs(WorkDoc originDoc) {
@@ -58,6 +68,11 @@ public class CrawlerUtils {
             String requestString = HttpUtils.buildURL(nameValuePairs, "https://api.openalex.org/works");
             // System.out.println("        Request URL:" + requestString);
             WorkDoc workDoc = frogCrawlSingleDoc(requestString);
+
+            if (workDoc.getPID().equals("ERROR")) {
+                continue;
+            }
+
             esUtileService.addDoc("works", workDoc);
             crawledDocsIDs.add(workDoc.getPID());
             counter++;

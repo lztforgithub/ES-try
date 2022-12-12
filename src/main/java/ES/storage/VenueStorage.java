@@ -106,7 +106,11 @@ public class VenueStorage {
             ArrayList<VenueDoc> venueDocs = storeVenuesByURL(requestString, num);
             // 接着爬取论文
             // 2017年以来，排名前20的文章
+
+            int crawledVenuesCount = 0;
+
             for (VenueDoc venueDoc : venueDocs) {
+                crawledVenuesCount++;
                 String Vfullname = venueDoc.getVfullname();
                 String VID = venueDoc.getVID();
                 System.out.printf("    Crawling top 20 papers of [%s]%s\n", VID, Vfullname);
@@ -139,7 +143,7 @@ public class VenueStorage {
 //                    }
                     // 存储自己！
                     if (CrawlerUtils.checkDocExist("works", workDoc.getPID()) == 0) {
-                        System.out.printf("    Store new work: [%s]%s, progress %d / 20\n", workDoc.getPID(), workDoc.getPname(), j);
+                        System.out.printf("    Store new work: [%s]%s, progress %d / 20\n", workDoc.getPID(), workDoc.getPname(), j + 1);
                         esUtileService.addDoc("works", workDoc);
                     }
                     venueWorksCount++;
@@ -147,7 +151,7 @@ public class VenueStorage {
                         break;
                     }
                 }
-                System.out.printf("    Finished crawling top 20 papers of [%s]%s, progress %d / %d\n", VID, Vfullname, i, num);
+                System.out.printf("    Finished crawling top 20 papers of [%s]%s, progress %d / %d\n", VID, Vfullname, crawledVenuesCount, num);
 //                if (tries >= 1) {
 //                    break;
 //                }
