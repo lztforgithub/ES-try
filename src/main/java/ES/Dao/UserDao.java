@@ -19,4 +19,6 @@ public interface UserDao {
     void setEmail(String uid, String email);
 
     User selectByEmail(String email);
+
+    User selectById(String uid);
 }

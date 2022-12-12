@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<Object> personInfo(String uid){
-        return Response.fail("还没写");
+        return Response.success("个人信息如下:",userDao.selectById(uid));
     }
 
 }
