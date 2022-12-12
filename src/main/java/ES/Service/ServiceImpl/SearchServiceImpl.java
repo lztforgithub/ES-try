@@ -38,13 +38,11 @@ public class SearchServiceImpl implements SearchService {
             String filterPublicationTypes,
             String sort,
             int page) throws IOException {
-        try {
+        //try {
             Map<String, Object> andmap = new HashMap<>();
             andmap.put("pname", normalSearch);
             if (filterAuthors != null) {
-                List<String> tmp = new ArrayList<>();
-                tmp.add(filterAuthors);
-                andmap.put("pauthor", tmp);
+                andmap.put("pauthor", filterAuthors);
             }
 
             //搜索
@@ -234,9 +232,9 @@ public class SearchServiceImpl implements SearchService {
             );
 
             return Response.success("搜索结果如下:", searchResultRet);
-        }catch (Exception e){
-            return Response.fail("网络错误!");
-        }
+        //}catch (Exception e){
+        //    return Response.fail("网络错误!");
+        //}
     }
 
     @Override
