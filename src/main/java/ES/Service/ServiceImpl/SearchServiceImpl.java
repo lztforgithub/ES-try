@@ -43,6 +43,7 @@ public class SearchServiceImpl implements SearchService {
             Map<String, Object> notmap = new HashMap<>();
             andmap.put("pname", normalSearch);
             notmap.put("pabstract","Abstract ");
+            notmap.put("exists","pabstract");
             if (filterAuthors != null) {
                 andmap.put("pauthor", filterAuthors);
             }

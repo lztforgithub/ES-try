@@ -301,6 +301,10 @@ public class EsUtileService {
         //精确查询，not
         if (!CollectionUtils.isEmpty(notMap)) {
             for (Map.Entry<String, Object> entry : notMap.entrySet()) {
+                if (entry.getKey().equals("exists")){
+                    boolQueryBuilder.must(QueryBuilders.existsQuery((String) entry.getValue()));
+                    continue;
+                }
                 MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
                 boolQueryBuilder.mustNot(matchQueryBuilder);
                 System.out.println("not"+" "+entry.getKey()+":"+entry.getValue());
