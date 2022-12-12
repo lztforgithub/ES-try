@@ -7,6 +7,7 @@ import ES.Dao.PaperDao;
 import ES.Entity.*;
 import ES.Ret.CoAuthor;
 import ES.Ret.CommentRet;
+import ES.Ret.PaperDetails;
 import ES.Ret.Rpaper;
 import ES.Service.PaperService;
 import ES.storage.VenueStorage;
@@ -640,6 +641,30 @@ public class PaperServiceImpl implements PaperService {
             }
         }
         System.out.println("----done----");
+    }
+
+    @Override
+    public Response<Object> getDetails(String pid) {
+        PaperDetails paperDetails = new PaperDetails();
+        JSONObject jsonObject = esUtileService.queryDocById("works", pid);
+        JSONArray preferences = jsonObject.getJSONArray("preferences");
+        paperDetails.setCiteNum(preferences.size());
+        paperDetails.setBeCitedNum(jsonObject.getInteger("pcite"));
+        int commentNum = paperDao.getCommentNum(pid);
+        paperDetails.setCommentNum(commentNum);
+        int collectNum = paperDao.getCollectNum(pid);
+        paperDetails.setCollectNum(collectNum);
+        JSONArray pcitednum = jsonObject.getJSONArray("pcitednum");
+        for(int i=4; i>=0; i--)
+        {
+            int num = Integer.parseInt((String) pcitednum.get(i));
+            if(num==0)
+            {
+                continue;
+            }
+            paperDetails.addCiteNums(num);
+        }
+        return Response.success("文献详情返回成功", paperDetails);
     }
 
     public void crawlWorkByRelate() throws IOException {

@@ -7,6 +7,12 @@
     <select id="isLike" resultType="ES.Entity.LikeRecords">
         select * from like_records where LR_CID = #{comment_id} and LR_UID = #{user_id}
     </select>
+    <select id="getCommentNum" resultType="java.lang.Integer">
+        select count(*) from comment where C_PID = #{pid}
+    </select>
+    <select id="getCollectNum" resultType="java.lang.Integer">
+        select count(*) from collect_records where CR_PID=#{pid}
+    </select>
     <insert id="insertComment" parameterType="ES.Entity.Comment">
         insert into comment(CID,C_UID,C_PID,Ccontent,Ctime,Clikes,Ctop)
             values(#{CID},#{C_UID},#{C_PID},#{Ccontent},#{Ctime},#{Clikes},#{Ctop})

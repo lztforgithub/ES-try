@@ -22,4 +22,8 @@ public interface PaperDao {
     int deleteLikeRecords(@Param("user_id") String user_id,@Param("comment_id") String comment_id);
 
     int updateUnLike(String comment_id);
+
+    int getCommentNum(String pid);
+
+    int getCollectNum(String pid);
 }
