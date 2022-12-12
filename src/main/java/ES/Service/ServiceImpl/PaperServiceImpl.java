@@ -210,7 +210,7 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public Response<Object> getRecommendWork() {
-        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
 
         InputStreamReader reader = null;
         BufferedReader in = null;
@@ -249,7 +249,7 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject jsonObject = JSON.parseObject(content.toString());
-        int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
+        int total = jsonObject.getJSONArray("results").size();
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
         String next_url = "https://api.openalex.org/works?sort=cited_by_count:desc&per_page=5&filter=concepts.id:"+Cid;
@@ -295,10 +295,10 @@ public class PaperServiceImpl implements PaperService {
         for(; i<5; i++)
         {
             JSONObject result = results.getJSONObject(i);
-            String pID = result.getString("id");
+            String pID = "W"+result.getString("id").split("W")[1];
             if(esUtileService.queryDocById("works", pID)==null)
             {
-                new WorkStorage().storeWork(pID);
+                new WorkStorage().storeWork("http://api.openalex.org/works/"+pID);
             }
             String pName = result.getString("display_name");
             String host_name = result.getJSONObject("host_venue").getString("display_name");
@@ -318,7 +318,7 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public Response<Object> getRecommendConf() {
-        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
 
         InputStreamReader reader = null;
         BufferedReader in = null;
@@ -357,10 +357,10 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject jsonObject = JSON.parseObject(content.toString());
-        int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
+        int total = jsonObject.getJSONArray("results").size();
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
-        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=50&filter=concepts.id:"+Cid;
+        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=5&filter=type:conference,concepts.id:"+Cid;
         try {
             content = new StringBuffer();
             URLConnection connection = new URL(next_url).openConnection();
@@ -395,20 +395,18 @@ public class PaperServiceImpl implements PaperService {
         }
 
 
-        int count = 0;
         JSONObject jsonObject1 = JSON.parseObject(content.toString());
 
         Recommend ret = new Recommend();
 
         JSONArray results = jsonObject1.getJSONArray("results");
         int i=0;
-        for(; i<results.size()&&count<5; i++)
+        for(; i<results.size(); i++)
         {
             JSONObject result = results.getJSONObject(i);
             String type = result.getString("type");
             if(!type.equals("conference"))
             {
-                i++;
                 continue;
             }
             ConfInfo confInfo = new ConfInfo();
@@ -436,7 +434,6 @@ public class PaperServiceImpl implements PaperService {
             }
             confInfo.setvCite(vCite);
             ret.addPaperResults(confInfo);
-            count += 1;
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
@@ -448,7 +445,7 @@ public class PaperServiceImpl implements PaperService {
 
     @Override
     public Response<Object> getRecommendJournal() {
-        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148";
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
 
         InputStreamReader reader = null;
         BufferedReader in = null;
@@ -487,10 +484,10 @@ public class PaperServiceImpl implements PaperService {
         }
 
         JSONObject jsonObject = JSON.parseObject(content.toString());
-        int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
+        int total = jsonObject.getJSONArray("results").size();
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
-        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=50&filter=concepts.id:"+Cid;
+        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=5&filter=type:journal,concepts.id:"+Cid;
         try {
             content = new StringBuffer();
             URLConnection connection = new URL(next_url).openConnection();
@@ -524,21 +521,19 @@ public class PaperServiceImpl implements PaperService {
             }
         }
 
-
-        int count = 0;
         JSONObject jsonObject1 = JSON.parseObject(content.toString());
 
         Recommend ret = new Recommend();
 
         JSONArray results = jsonObject1.getJSONArray("results");
+        System.out.println(results.size());
         int i=0;
-        for(; i<results.size()&&count<5; i++)
+        for(; i<results.size(); i++)
         {
             JSONObject result = results.getJSONObject(i);
             String type = result.getString("type");
             if(!type.equals("journal"))
             {
-                i++;
                 continue;
             }
             ConfInfo confInfo = new ConfInfo();
@@ -566,7 +561,6 @@ public class PaperServiceImpl implements PaperService {
             }
             confInfo.setvCite(vCite);
             ret.addPaperResults(confInfo);
-            count += 1;
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
