@@ -36,7 +36,8 @@ public class SearchServiceImpl implements SearchService {
             Timestamp end_time,
             String filterAuthors,
             String filterPublicationTypes,
-            String sort) throws IOException {
+            String sort,
+            int page) throws IOException {
         try {
             Map<String, Object> andmap = new HashMap<>();
             andmap.put("pname", normalSearch);
@@ -47,7 +48,7 @@ public class SearchServiceImpl implements SearchService {
             }
 
             //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 2, 10, "", andmap, null, null, null, null, null, start_time, end_time);
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", page, 10, "", andmap, null, null, null, null, null, start_time, end_time, sort);
             System.out.println(t.getTotal());
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
@@ -245,7 +246,8 @@ public class SearchServiceImpl implements SearchService {
             Timestamp to,
             String filterAuthors,
             String filterPublicationTypes,
-            String sort) throws IOException {
+            String sort,
+            int page) throws IOException {
 
         try{
 
@@ -449,7 +451,7 @@ public class SearchServiceImpl implements SearchService {
             }
 
             //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 100, 20, "", andmap, ormap, notmap, null, null, null, from, to);
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 100, 20, "", andmap, ormap, notmap, null, null, null, from, to,sort);
 
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();

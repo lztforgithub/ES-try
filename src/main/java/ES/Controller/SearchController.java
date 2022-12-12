@@ -59,8 +59,22 @@ public class SearchController {
         String filterAuthors = (String) map.get("filterAuthors");
         //包含出版类型
         String filterPublicationTypes = (String) map.get("filterPublicationTypes");
+        //当前页数
+        int page = (int) map.get("page");
         //sort,排序方式
         String sort = (String) map.get("sort");
+        if (sort!=null) {
+            if (sort.equals("mostRecent")) {
+                sort = "pdate";
+            }
+            if (sort.equals("mostCited")) {
+                sort = "pcite";
+            }
+            if (sort.equals("default")) {
+                sort = null;
+            }
+        }
+
 
         return searchService.defaultSearch(
                 user_id,
@@ -69,7 +83,8 @@ public class SearchController {
                 end_time,
                 filterAuthors,
                 filterPublicationTypes,
-                sort
+                sort,
+                page
         );
     }
 
@@ -106,8 +121,19 @@ public class SearchController {
         String filterAuthors = (String) map.get("filterAuthors");
         //包含出版类型
         String filterPublicationTypes = (String) map.get("filterPublicationTypes");
+        //当前页数
+        int page = (int) map.get("page");
         //sort,排序方式
         String sort = (String) map.get("sort");
+        if (sort.equals("mostRecent")){
+            sort = "pdate";
+        }
+        if (sort.equals("mostCited")){
+            sort = "pcite";
+        }
+        if (sort.equals("default")){
+            sort = null;
+        }
 
         return searchService.advancedSearch(
                 user_id,
@@ -116,7 +142,8 @@ public class SearchController {
                 to,
                 filterAuthors,
                 filterPublicationTypes,
-                sort
+                sort,
+                page
         );
     }
 
