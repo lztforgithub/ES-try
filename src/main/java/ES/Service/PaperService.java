@@ -26,4 +26,6 @@ public interface PaperService {
     Response<Object> systemTags(String paper_id);
 
     void crawlWorkURLByAuthor() throws IOException;
+
+    Response<Object> getDetails(String pid);
 }

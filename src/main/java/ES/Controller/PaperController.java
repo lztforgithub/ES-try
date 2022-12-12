@@ -15,6 +15,13 @@ public class PaperController {
     @Autowired
     PaperService paperService;
 
+    @PostMapping("/paper/Details")
+    private Response<Object> getDetails(HttpServletRequest request, @RequestBody Map<String, String> map)
+    {
+        String pid = map.get("PID");
+        return paperService.getDetails(pid);
+    }
+
     //文献详情
     @PostMapping("/paper/view")
     private Response<Object> view(HttpServletRequest request, @RequestBody Map<String, String> map){

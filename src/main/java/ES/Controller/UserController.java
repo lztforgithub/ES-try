@@ -93,10 +93,9 @@ public class UserController {
     public Response<Object> editInfo(HttpServletRequest request,@RequestBody Map<String,String> map){
         String token = request.getHeader("token");
         String uid = JwtUtil.getUserId(token);
-        String uavatar = map.get("Uavatar");
         String ufield = map.get("Ufield");
         String uinterest = map.get("Uinterest");
-        return userService.editInfo(uid,uavatar,ufield,uinterest);
+        return userService.editInfo(uid,ufield,uinterest);
     }
 
 }
