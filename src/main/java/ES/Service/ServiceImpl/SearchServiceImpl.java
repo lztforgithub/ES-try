@@ -73,6 +73,7 @@ public class SearchServiceImpl implements SearchService {
 
             //return Response.success("GG",t);
             System.out.println(t.getList().size());
+            int totalPage = (int) t.getTotalPage();
             for (JSONObject i : t.getList()) {
                 //出版类型统计
                 String v = i.getString("p_VID");
@@ -104,7 +105,7 @@ public class SearchServiceImpl implements SearchService {
                 if (now_authors!=null) {
                     for (String nowAuthor : now_authors) {
                         nump++;
-                        if (nump>30) break;
+                        if (nump>20) break;
                         p = esUtileService.queryDocById("researcher", nowAuthor);
                         if (p != null) {
                             numq++;
@@ -237,6 +238,7 @@ public class SearchServiceImpl implements SearchService {
                     simpleAuthors,
                     simpleVenues,
                     totalNumber,
+                    totalPage,
                     new Recommendation(author,institute)
             );
 
@@ -464,7 +466,7 @@ public class SearchServiceImpl implements SearchService {
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
             JSONObject result_i;
-
+            int totalPage = (int) t.getTotalPage();
             //统计存在学者发表的论文数，以及出版物,同时加入学者姓名
             List<String> now_authors = new ArrayList<>();
             List<CoAuthor> coAuthors = new ArrayList<>();
@@ -599,6 +601,7 @@ public class SearchServiceImpl implements SearchService {
                     simpleAuthors,
                     simpleVenues,
                     totalNumber,
+                    totalPage,
                     null
             );
 

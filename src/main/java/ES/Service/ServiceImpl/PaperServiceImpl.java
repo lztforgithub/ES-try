@@ -58,7 +58,7 @@ public class PaperServiceImpl implements PaperService {
         if (PreferencesID!=null) {
             for (String i : PreferencesID) {
                 nump++;
-                if (nump>=20) break;
+                if (nump>=10) break;
                 JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
                     numq++;
@@ -87,7 +87,7 @@ public class PaperServiceImpl implements PaperService {
         if (PreferencesID!=null) {
             for (String i : PrelatedID) {
                 nump++;
-                if (nump>=20) break;
+                if (nump>=10) break;
                 JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
                     numq++;

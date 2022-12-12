@@ -13,5 +13,6 @@ public class SearchResultRet {
     List<SimpleAuthor> author;
     List<SimpleVenue> venue;
     int num;
+    int totalPage;
     Recommendation recommendation;
 }
