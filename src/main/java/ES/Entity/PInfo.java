@@ -3,6 +3,7 @@ package ES.Entity;
 public class PInfo {
     private String pName;
     private String pVName;
+    private String pID;
 
     public String getpName() {
         return pName;
@@ -18,5 +19,13 @@ public class PInfo {
 
     public void setpVName(String pVName) {
         this.pVName = pVName;
+    }
+
+    public String getpID() {
+        return pID;
+    }
+
+    public void setpID(String pID) {
+        this.pID = pID;
     }
 }

@@ -296,12 +296,16 @@ public class PaperServiceImpl implements PaperService {
         {
             JSONObject result = results.getJSONObject(i);
             String pID = result.getString("id");
-            new WorkStorage().storeWork(pID);
+            if(esUtileService.queryDocById("works", pID)==null)
+            {
+                new WorkStorage().storeWork(pID);
+            }
             String pName = result.getString("display_name");
             String host_name = result.getJSONObject("host_venue").getString("display_name");
             PInfo pInfo = new PInfo();
             pInfo.setpName(pName);
             pInfo.setpVName(host_name);
+            pInfo.setpID(pID);
             ret.addPaperResults(pInfo);
         }
 
@@ -409,10 +413,14 @@ public class PaperServiceImpl implements PaperService {
             ConfInfo confInfo = new ConfInfo();
             String vName = result.getString("display_name");
             String vID = "V"+result.getString("id").split("V")[1];
-            new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+vID);
+            if(esUtileService.queryDocById("venue", vID)==null)
+            {
+                new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+vID);
+            }
             String vAbbrname = result.getString("abbreviated_title");
             confInfo.setvAbbrname(vAbbrname);
             confInfo.setvName(vName);
+            confInfo.setVID(vID);
             int vCite = 0;
             JSONArray counts = result.getJSONArray("counts_by_year");
             for(int j=0; j<3; j++)
@@ -534,9 +542,13 @@ public class PaperServiceImpl implements PaperService {
             ConfInfo confInfo = new ConfInfo();
             String vName = result.getString("display_name");
             String vID = "V"+result.getString("id").split("V")[1];
-            new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+vID);
+            if(esUtileService.queryDocById("venue", vID)==null)
+            {
+                new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+vID);
+            }
             String vAbbrname = result.getString("abbreviated_title");
             confInfo.setvAbbrname(vAbbrname);
+            confInfo.setVID(vID);
             confInfo.setvName(vName);
             int vCite = 0;
             JSONArray counts = result.getJSONArray("counts_by_year");
