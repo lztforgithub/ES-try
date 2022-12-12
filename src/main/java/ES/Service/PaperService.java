@@ -17,7 +17,7 @@ public interface PaperService {
 
     Response<Object> unlike(String user_id, String comment_id);
 
-    Response<Object> getRecommendWork();
+    Response<Object> getRecommendWorks() throws IOException;
 
     Response<Object> getRecommendConf();
 
