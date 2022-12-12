@@ -26,6 +26,11 @@ public class WorkStorage {
 
     EsUtileService esUtileService = new EsUtileService();
 
+    public void deleteWork(String WID)
+    {
+        esUtileService.deleteDocById("works", WID);
+    }
+
     @RequestMapping(value = "/addIndex", method = RequestMethod.PUT)
     public void addIndex(String indexName)
     {

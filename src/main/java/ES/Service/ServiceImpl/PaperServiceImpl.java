@@ -638,17 +638,24 @@ public class PaperServiceImpl implements PaperService {
         WorkStorage workStorage = new WorkStorage();
         int count = 0;
         boolean flag = false;
-        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 1, 200, "", null, null, null, null);
+        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 2, 500, "", null, null, null, null);
         for(JSONObject obj:works.getList())
         {
             System.out.println("now is "+obj.get("pID"));
-            JSONArray relates = obj.getJSONArray("prelated");
-            for(int i=0; i<relates.size(); i++)
+            /*if((obj.get("pID")).equals("W2004345831"))
             {
-                String wID = "W"+relates.getString(i).split("W")[1];
-                count += 1;
-//                workStorage.storeWork("http://api.openalex.org/works/"+wID);
+                flag = true;
             }
+            if(flag)
+            {*/
+                JSONArray relates = obj.getJSONArray("prelated");
+                for(int i=0; i<relates.size(); i++)
+                {
+                    String wID = "W"+relates.getString(i).split("W")[1];
+                    count += 1;
+                    workStorage.storeWork("http://api.openalex.org/works/"+wID);
+                }
+//            }
         }
         System.out.println("count="+count);
     }
