@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @RequestMapping("/personInfo/account")
-    public Response<Object> getEmail(HttpServletRequest request,@RequestBody Map<String, String> map)
+    public Response<Object> getEmail(HttpServletRequest request)
     {
         String token = request.getHeader("token");
         String uid = JwtUtil.getUserId(token);
@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @RequestMapping("/personInfo/accountedit")
-    public Response<Object> getPassword(HttpServletRequest request,@RequestBody Map<String, String> map)
+    public Response<Object> getPassword(HttpServletRequest request)
     {
         String token = request.getHeader("token");
         String uid = JwtUtil.getUserId(token);

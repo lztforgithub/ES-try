@@ -12,8 +12,8 @@
     </update>
     <update id="setPassword">
         update user
-        set Upassword=#{Upassword}
-        where UID=#{UID}
+        set Upassword=#{password}
+        where UID=#{uid}
     </update>
     <update id="setEmail">
         update user
