@@ -642,12 +642,12 @@ public class PaperServiceImpl implements PaperService {
         for(JSONObject obj:works.getList())
         {
             System.out.println("now is "+obj.get("pID"));
-            /*if((obj.get("pID")).equals("W2004345831"))
+            if((obj.get("pID")).equals("W1975998337"))
             {
                 flag = true;
             }
             if(flag)
-            {*/
+            {
                 JSONArray relates = obj.getJSONArray("prelated");
                 for(int i=0; i<relates.size(); i++)
                 {
@@ -655,7 +655,7 @@ public class PaperServiceImpl implements PaperService {
                     count += 1;
                     workStorage.storeWork("http://api.openalex.org/works/"+wID);
                 }
-//            }
+            }
         }
         System.out.println("count="+count);
     }

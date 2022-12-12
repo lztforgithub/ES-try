@@ -8,7 +8,6 @@ import ES.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.event.WindowStateListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<Object> personInfo(String uid){
-        return Response.success("个人信息如下:",userDao.selectById(uid));
+        return Response.success("个人信息如下:",userDao.selectByID(uid));
     }
 
     @Override
