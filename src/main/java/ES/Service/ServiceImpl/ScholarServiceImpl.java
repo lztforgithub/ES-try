@@ -67,7 +67,7 @@ public class ScholarServiceImpl implements ScholarService {
         //代表论文信息
         Map<String, Object> map = new HashMap<>();
         map.put("pauthor",researcher_id);
-        PageResult<JSONObject> paper = esUtileService.conditionSearch("works",100,20,"",map,null,null,null);
+        PageResult<JSONObject> paper = esUtileService.conditionSearch("works",1,20,"",map,null,null,null);
 
         jsonObject.put("RpaperList",paper);
 
@@ -79,7 +79,7 @@ public class ScholarServiceImpl implements ScholarService {
         Map<String,Object> map = new HashMap<>();
         map.put("rname",researcher_name);
         map.put("rinstitute",institute);
-        PageResult<JSONObject> t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
+        PageResult<JSONObject> t = esUtileService.conditionSearch("researcher",1,20,"",map,null,null,null);
         return Response.success("匹配的学者如下:",t);
     }
 

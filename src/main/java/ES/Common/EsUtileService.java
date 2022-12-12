@@ -195,7 +195,7 @@ public class EsUtileService {
             buildHighlight(sourceBuilder, highName);
         }
         //分页设置
-        buildPageLimit(sourceBuilder, pageNum, 10);
+        buildPageLimit(sourceBuilder, pageNum, pageSize);
         //超时设置
         sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
         searchRequest.source(sourceBuilder);
