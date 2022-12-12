@@ -2,6 +2,8 @@ package ES.Dao;
 
 import ES.Entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Mapper
 public interface UserDao {
@@ -21,4 +23,9 @@ public interface UserDao {
     User selectByEmail(String email);
 
     User selectById(String uid);
+
+    int update(@Param("UID") String uid,
+               @Param("Uavatar") String uavatar,
+               @Param("Ufield") String ufield,
+               @Param("Uinterest") String uinterest);
 }

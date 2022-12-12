@@ -35,4 +35,10 @@
     <select id="selectByID" resultType="ES.Entity.User">
         select * from user where UID=#{UID}
     </select>
+    <update id="update" parameterType="java.lang.String">
+        update user set Uavatar = #{Uavatar},
+                        Ufield = #{Ufield},
+                        Uinterest = #{Uinterest},
+                    where UID = #{UID}
+    </update>
 </mapper>
