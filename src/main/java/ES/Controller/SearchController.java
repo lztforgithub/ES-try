@@ -3,6 +3,7 @@ package ES.Controller;
 import ES.Common.EsUtileService;
 import ES.Common.JwtUtil;
 import ES.Common.Response;
+import ES.Ret.SearchRet;
 import ES.Service.SearchService;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,9 +103,31 @@ public class SearchController {
             user_id=JwtUtil.getUserId(token);
         }
         //搜索关键词
-        Object q = map.get("advancedSearch");
+        /*Object q = map.get("advancedSearch");
+        if (q==null) return Response.success("请输入搜索结果!");
+        //return Response.success("GG",q);
+        List<SearchRet> t = new ArrayList<>();
+        t = castList(q,SearchRet.class);
         List<JSONObject> advancedSearch = new ArrayList<>();
-        advancedSearch = castList(q,JSONObject.class);
+        for (SearchRet i:t){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type",i.getType());
+            jsonObject.put("category",i.getCategory());
+            jsonObject.put("content",i.getContent());
+            advancedSearch.add(jsonObject);
+        }*/
+        ArrayList q = (ArrayList) map.get("advancedSearch");
+        List<JSONObject> advancedSearch = new ArrayList<>();
+        if (q == null) return Response.success("请输入搜索参数!");
+        for(int i = 0;i < q.size();i++) {
+            JSONObject temp = new JSONObject();
+            LinkedHashMap tempp = (LinkedHashMap) q.get(i);
+            for (Object key : tempp.keySet()) {
+                temp.put((String) key, tempp.get(key));
+            }
+            advancedSearch.add(temp);
+        }
+        //return Response.success("GG",advancedSearch);
         //起止时间，存疑
 //        Timestamp start_time = (Timestamp) map.get("startTime");
 //        Timestamp end_time = (Timestamp) map.get("endTime");
