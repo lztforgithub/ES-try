@@ -35,6 +35,7 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
 
     @Override
     public List<AdmissionApplication> getList1(){
+
         return admissionApplicationDao.getList1();
     }
 
