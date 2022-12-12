@@ -101,4 +101,9 @@ public class UserServiceImpl implements UserService {
         return userDao.selectByEmail(email);
     }
 
+    @Override
+    public Response<Object> personInfo(String uid){
+        return Response.fail("还没写");
+    }
+
 }

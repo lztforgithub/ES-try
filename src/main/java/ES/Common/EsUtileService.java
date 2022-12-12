@@ -193,6 +193,8 @@ public class EsUtileService {
         if (!StringUtils.isEmpty(highName)) {
             buildHighlight(sourceBuilder, highName);
         }
+        //分页设置
+        //buildPageLimit(sourceBuilder, 1, 100000);
         //超时设置
         sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
         searchRequest.source(sourceBuilder);
@@ -201,13 +203,15 @@ public class EsUtileService {
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         SearchHits searchHits = searchResponse.getHits();
         List<JSONObject> resultList = new ArrayList<>();
+        int q=0;
         for (SearchHit hit : searchHits) {
             //原始查询结果数据
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
             JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
             resultList.add(jsonObject);
+            q++;
         }
-
+        System.out.println("??????");
         long total = searchHits.getTotalHits().value;
         PageResult<JSONObject> pageResult = new PageResult<>();
         pageResult.setTotal(total);
@@ -234,6 +238,7 @@ public class EsUtileService {
         if (!StringUtils.isEmpty(highName)) {
             buildHighlight(sourceBuilder, highName);
         }
+        //buildPageLimit(sourceBuilder, 1, 100000);
         //超时设置
         sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
         searchRequest.source(sourceBuilder);
@@ -270,13 +275,14 @@ public class EsUtileService {
         BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, notMap, dimAndMap, dimOrMap, dimNotMap);
         //构造时间限制
         boolQueryBuilder.filter(QueryBuilders.rangeQuery("pdate").from(from.getTime()).to(to.getTime()));
-        System.out.println("Time");
+        //System.out.println("Time");
         sourceBuilder.query(boolQueryBuilder);
 
         //高亮处理
         if (!StringUtils.isEmpty(highName)) {
             buildHighlight(sourceBuilder, highName);
         }
+        buildPageLimit(sourceBuilder, pageNum, pageSize);
         //超时设置
         sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
         searchRequest.source(sourceBuilder);
@@ -285,17 +291,23 @@ public class EsUtileService {
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         SearchHits searchHits = searchResponse.getHits();
         List<JSONObject> resultList = new ArrayList<>();
+        int q=0;
         for (SearchHit hit : searchHits) {
             //原始查询结果数据
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
             JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
             resultList.add(jsonObject);
+            q++;
         }
+        System.out.println(q);
 
         long total = searchHits.getTotalHits().value;
         PageResult<JSONObject> pageResult = new PageResult<>();
+        pageResult.setPageNum(pageNum);
+        pageResult.setPageSize(pageSize);
         pageResult.setTotal(total);
         pageResult.setList(resultList);
+        pageResult.setTotalPage(total==0?0: (int) (total % pageSize == 0 ? total / pageSize : (total / pageSize) + 1));
 
         return pageResult;
     }

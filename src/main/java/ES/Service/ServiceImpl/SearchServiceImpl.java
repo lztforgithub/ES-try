@@ -47,7 +47,7 @@ public class SearchServiceImpl implements SearchService {
             }
 
             //搜索
-            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 100, 20, "", andmap, null, null, null, null, null, start_time, end_time);
+            PageResult<JSONObject> t = esUtileService.defaultSearch("works", 2, 10, "", andmap, null, null, null, null, null, start_time, end_time);
             System.out.println(t.getTotal());
             //初始化最终结果
             List<JSONObject> result = new ArrayList<>();
@@ -69,12 +69,15 @@ public class SearchServiceImpl implements SearchService {
             int qs;
             JSONObject p;
 
-            //return Response.success("GG",t.getList());
-
+            return Response.success("GG",t);
+            /*System.out.println(t.getList().size());
             for (JSONObject i : t.getList()) {
                 //出版类型统计
                 String v = i.getString("p_VID");
-                p = esUtileService.queryDocById("venue", v);
+                p = null;
+                if (v!=null) {
+                    p = esUtileService.queryDocById("venue", v);
+                }
                 if (p!=null) {
                     v = p.getString("vtype");
                     //不同的出版类型忽略
@@ -228,7 +231,7 @@ public class SearchServiceImpl implements SearchService {
                     new Recommendation(author,institute)
             );
 
-            return Response.success("搜索结果如下:", searchResultRet);
+            return Response.success("搜索结果如下:", t);*/
         }catch (Exception e){
             return Response.fail("网络错误!");
         }

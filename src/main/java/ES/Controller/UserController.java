@@ -56,6 +56,13 @@ public class UserController {
         return userService.login(username,pwd);
     }
 
+    @RequestMapping("/personInfo")
+    public Response<Object> personInfo(HttpServletRequest request){
+        String token = request.getHeader("token");
+        String uid = JwtUtil.getUserId(token);
+        return userService.personInfo(uid);
+    }
+
     @RequestMapping("/personInfo/account")
     public Response<Object> getEmail(HttpServletRequest request,@RequestBody Map<String, String> map)
     {
