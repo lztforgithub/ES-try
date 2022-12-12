@@ -8,6 +8,7 @@ public class PaperDetails {
     private int commentNum;
     private int collectNum;
     private ArrayList<Integer> citeNums = new ArrayList<>();
+    private ArrayList<Integer> citeyears = new ArrayList<>();
 
     public int getCiteNum() {
         return citeNum;
@@ -52,5 +53,18 @@ public class PaperDetails {
     public void addCiteNums(int num)
     {
         this.citeNums.add(num);
+    }
+
+    public ArrayList<Integer> getCiteyears() {
+        return citeyears;
+    }
+
+    public void setCiteyears(ArrayList<Integer> citeyears) {
+        this.citeyears = citeyears;
+    }
+
+    public void addCiteyears(int n)
+    {
+        this.citeyears.add(n);
     }
 }

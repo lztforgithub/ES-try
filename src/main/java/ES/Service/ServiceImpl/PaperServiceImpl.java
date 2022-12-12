@@ -27,9 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static ES.Common.EsUtileService.castList;
 
@@ -210,7 +208,7 @@ public class PaperServiceImpl implements PaperService {
         return Response.fail("取消点赞失败!");
     }
 
-    @Override
+    /*@Override
     public Response<Object> getRecommendWork() {
         String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
 
@@ -321,7 +319,7 @@ public class PaperServiceImpl implements PaperService {
         ret.setCount(i);
         ret.setcName(cName);
         return Response.success("返回推荐文献成功", JSON.toJSON(ret));
-    }
+    }*/
 
     @Override
     public Response<Object> getRecommendConf() {
@@ -659,6 +657,109 @@ public class PaperServiceImpl implements PaperService {
         System.out.println("----done----");
     }
 
+    private String getRandomConcept()
+    {
+        String first_url = "https://api.openalex.org/concepts?filter=level:1,ancestors.id:C41008148&per_page=100";
+
+        InputStreamReader reader = null;
+        BufferedReader in = null;
+        StringBuffer content = new StringBuffer();
+
+        try {
+            URLConnection connection = new URL(first_url).openConnection();
+            connection.setConnectTimeout(1000);
+            reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+            in = new BufferedReader(reader);
+
+            String line = null;
+
+            while ((line = in.readLine())!=null)
+            {
+                content.append(line);
+            }
+            System.out.println("crawl "+first_url+" done.");
+        } catch (IOException e) {
+            System.out.println("can't crawl "+first_url);;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close buffered reader!!!");
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    System.out.println("cannot close inputstream reader!!!");
+                }
+            }
+        }
+
+        JSONObject jsonObject = JSON.parseObject(content.toString());
+        int total = jsonObject.getJSONArray("results").size();
+        int choose = (int) (Math.random() * total);
+        String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
+        return Cid;
+    }
+
+    private ArrayList<JSONObject> getIntimateWorks(String CID) throws IOException {
+        JSONObject conceptInfo = esUtileService.queryDocById("concept", CID);
+        if(conceptInfo==null)
+        {
+            new ConceptStorage().storeConceptByURL("http://api.openalex.org/concepts?filter=openalex:"+CID);
+            conceptInfo = esUtileService.queryDocById("concept", CID);
+        }
+        String cName = conceptInfo.getString("display_name");
+        Map<String, Object> andMap = new HashMap<>();
+        andMap.put("pconcepts", cName);
+        PageResult<JSONObject> works = esUtileService.searchForWorks("works", 1, 50, "", andMap, null, null, null, null, null, "pcite");
+        ArrayList<JSONObject> intimateWorks = new ArrayList<>();
+        for(JSONObject obj:works)
+        {
+            JSONArray concepts = obj.getJSONArray("pconcepts");
+            if(concepts.getString(0).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+            else if(concepts.getString(1).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+            else if(concepts.getString(2).equals(cName))
+            {
+                intimateWorks.add(obj);
+            }
+        }
+        return intimateWorks;
+    }
+
+    public Response<Object> getRecommendWorks() throws IOException {
+        Recommend recommend = new Recommend();
+        String cID = getRandomConcept();
+        ArrayList<JSONObject> intimateWorks = getIntimateWorks(cID);
+        recommend.setcName(esUtileService.queryDocById("concept", cID).getString("display_name"));
+        for(int i=0; i<5&&i<intimateWorks.size(); i++)
+        {
+            JSONObject result = intimateWorks.get(i);
+            String pID = "W"+result.getString("id").split("W")[1];
+            if(esUtileService.queryDocById("works", pID)==null)
+            {
+                new WorkStorage().storeWork("http://api.openalex.org/works/"+pID);
+            }
+            String pName = result.getString("display_name");
+            String host_name = result.getJSONObject("host_venue").getString("display_name");
+            PInfo pInfo = new PInfo();
+            pInfo.setpName(pName);
+            pInfo.setpVName(host_name);
+            pInfo.setpID(pID);
+            recommend.addPaperResults(pInfo);
+        }
+        recommend.setCount(recommend.getPaperResults().size());
+        return Response.success("推荐文献成功", JSON.toJSON(recommend));
+    }
+
     @Override
     public Response<Object> getDetails(String pid) {
         PaperDetails paperDetails = new PaperDetails();
@@ -671,14 +772,16 @@ public class PaperServiceImpl implements PaperService {
         int collectNum = paperDao.getCollectNum(pid);
         paperDetails.setCollectNum(collectNum);
         JSONArray pcitednum = jsonObject.getJSONArray("pcitednum");
-        for(int i=4; i>=0; i--)
+        int year = 2018;
+        for(int i=4; i>=0; i--, year++)
         {
-            int num = Integer.parseInt((String) pcitednum.get(i));
+            int num = Integer.parseInt((String) pcitednum.getString(i));
             if(num==0)
             {
                 continue;
             }
             paperDetails.addCiteNums(num);
+            paperDetails.addCiteyears(year);
         }
         return Response.success("文献详情返回成功", paperDetails);
     }
