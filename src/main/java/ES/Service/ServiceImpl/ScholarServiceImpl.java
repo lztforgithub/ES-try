@@ -88,8 +88,9 @@ public class ScholarServiceImpl implements ScholarService {
         }
 
         jsonObject.put("Cname",cname.substring(1));
+        jsonObject.put("flag",flag);
 
-        return Response.success("门户信息如下:", new ScholarRet(jsonObject, flag));
+        return Response.success("门户信息如下:", jsonObject);
     }
 
     @Override
