@@ -258,7 +258,7 @@ public class SearchServiceImpl implements SearchService {
             String sort,
             int page) throws IOException {
 
-        try{
+        //try{
 
             int type; String category; String content;
 
@@ -481,18 +481,20 @@ public class SearchServiceImpl implements SearchService {
                 String v = i.getString("p_VID");
                 if (v!=null) {
                     p = esUtileService.queryDocById("venue", v);
-                    v = p.getString("vtype");
-                    //不同的出版类型忽略
-                    if (filterPublicationTypes != null) {
-                        if (!v.equals(filterPublicationTypes)) {
-                            continue;
+                    if (p!=null) {
+                        v = p.getString("vtype");
+                        //不同的出版类型忽略
+                        if (filterPublicationTypes != null) {
+                            if (!v.equals(filterPublicationTypes)) {
+                                continue;
+                            }
                         }
-                    }
-                    if (V_map.containsKey(v)) {
-                        qs = V_map.get(v);
-                        V_map.put(v, qs + 1);
-                    } else {
-                        V_map.put(v, 1);
+                        if (V_map.containsKey(v)) {
+                            qs = V_map.get(v);
+                            V_map.put(v, qs + 1);
+                        } else {
+                            V_map.put(v, 1);
+                        }
                     }
                 }
                 //学者统计
@@ -612,9 +614,9 @@ public class SearchServiceImpl implements SearchService {
                     null
             );
 
-            return Response.success("搜索结果如下:", t);
-        }catch (Exception e){
-            return  Response.fail("网络错误!");
-        }
+            return Response.success("搜索结果如下:", searchResultRet);
+        //}catch (Exception e){
+       //     return  Response.fail("网络错误!");
+        //}
     }
 }
