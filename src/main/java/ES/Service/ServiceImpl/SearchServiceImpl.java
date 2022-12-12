@@ -342,13 +342,13 @@ public class SearchServiceImpl implements SearchService {
                 if (category.equals("Pauthor")){
                     switch (type){
                         case 1:
-                            andmap.put("pauthor", content);
+                            andmap.put("pauthorname", content);
                             break;
                         case 2:
-                            ormap.put("pauthor", content);
+                            ormap.put("pauthorname", content);
                             break;
                         case 3:
-                            notmap.put("pauthor", content);
+                            notmap.put("pauthorname", content);
                             break;
                     }
                     continue;
@@ -393,13 +393,13 @@ public class SearchServiceImpl implements SearchService {
                     }*/
                     switch (type){
                         case 1:
-                            andmap.put("pauthor", content);
+                            andmap.put("pauthorname", content);
                             break;
                         case 2:
-                            ormap.put("pauthor", content);
+                            ormap.put("pauthorname", content);
                             break;
                         case 3:
-                            notmap.put("pauthor", content);
+                            notmap.put("pauthorname", content);
                             break;
                     }
                     continue;
