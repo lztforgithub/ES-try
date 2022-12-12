@@ -47,14 +47,18 @@ public class PaperServiceImpl implements PaperService {
         }
 
         int numq;
+        int nump;
         //参考文献
         List<String> PreferencesID = new ArrayList<>();
         List<Rpaper> Preferences = new ArrayList<>();
         Object q = jsonObject.get("preferences");
         PreferencesID = castList(q,String.class);
         numq = 0;
+        nump = 0;
         if (PreferencesID!=null) {
             for (String i : PreferencesID) {
+                nump++;
+                if (nump>=20) break;
                 JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
                     numq++;
@@ -79,8 +83,11 @@ public class PaperServiceImpl implements PaperService {
         q = jsonObject.get("prelated");
         PrelatedID = castList(q,String.class);
         numq = 0;
+        nump = 0;
         if (PreferencesID!=null) {
             for (String i : PrelatedID) {
+                nump++;
+                if (nump>=20) break;
                 JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
                     numq++;
@@ -104,8 +111,11 @@ public class PaperServiceImpl implements PaperService {
         q = jsonObject.get("pauthor");
         PauthorID = castList(q,String.class);
         numq = 0;
+        nump = 0;
         if (PauthorID!=null) {
             for (String i : PauthorID) {
+                nump++;
+                if (nump>=20) break;
                 JSONObject t = esUtileService.queryDocById("researcher", i);
                 if (t != null) {
                     numq++;

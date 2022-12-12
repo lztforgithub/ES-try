@@ -100,8 +100,11 @@ public class SearchServiceImpl implements SearchService {
                 q = i.get("pauthor");
                 now_authors = castList(q, String.class);
                 int numq=0;
+                int nump=0;
                 if (now_authors!=null) {
                     for (String nowAuthor : now_authors) {
+                        nump++;
+                        if (nump>30) break;
                         p = esUtileService.queryDocById("researcher", nowAuthor);
                         if (p != null) {
                             numq++;
