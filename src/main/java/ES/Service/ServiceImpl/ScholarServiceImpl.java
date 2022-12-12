@@ -6,6 +6,7 @@ import ES.Common.Response;
 import ES.Dao.ScholarDao;
 import ES.Entity.AdmissionApplication;
 import ES.Ret.CoAuthor;
+import ES.Ret.RAuthor;
 import ES.Ret.ScholarRet;
 import ES.Service.ScholarService;
 import com.alibaba.fastjson.JSONObject;
@@ -44,26 +45,19 @@ public class ScholarServiceImpl implements ScholarService {
             }
         }
 
-        /*共著学者信息
-        List<String> RCOID = new ArrayList<>();
-        List<CoAuthor> RcoauthorList = new ArrayList<>();
+        //共著学者信息
+        List<String> RCO = new ArrayList<>();
+        List<String> RIN = new ArrayList<>();
+        List<RAuthor> RcoauthorList = new ArrayList<>();
         Object q = jsonObject.get("rcoauthor");
-        RCOID = castList(q,String.class);
-
-        CoAuthor coAuthor;
-        for (String i:RCOID){
-            JSONObject t = esUtileService.queryDocById("researcher",i);
-            if (t!=null){
-                coAuthor = new CoAuthor(
-                        t.getString("rinstitute"),
-                        i,
-                        t.getString("rname"),
-                        t.getString("ravatar")
-                );
-                RcoauthorList.add(coAuthor);
-            }
+        RCO = castList(q,String.class);
+        q = jsonObject.get("rcoauthorInstitute");
+        RIN = castList(q,String.class);
+        for (int i=0;i<RCO.size();i++){
+            RcoauthorList.add(new RAuthor(RCO.get(i),RIN.get(i)));
         }
-        jsonObject.put("RcoauthorList",RcoauthorList);*/
+
+        jsonObject.put("RcoauthorList",RcoauthorList);
 
         //代表论文信息
         Map<String, Object> map = new HashMap<>();
@@ -73,7 +67,6 @@ public class ScholarServiceImpl implements ScholarService {
         jsonObject.put("RpaperList",paper.getList());
 
         //领域名
-        Object q;
         q = jsonObject.get("rconcepts");
         List<String> cid = new ArrayList<>();
         String cname = "";
