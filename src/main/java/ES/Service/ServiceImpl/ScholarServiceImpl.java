@@ -71,6 +71,24 @@ public class ScholarServiceImpl implements ScholarService {
 
         jsonObject.put("RpaperList",paper);
 
+        //领域名
+        Object q;
+        q = jsonObject.get("rconcepts");
+        List<String> cid = new ArrayList<>();
+        String cname = "";
+        cid = castList(q,String.class);
+        for (String i:cid){
+            JSONObject p = esUtileService.queryDocById("concept",i);
+            if (p!=null){
+                cname = cname +","+p.getString("cname");
+            }
+        }
+        if (cname.equals("")){
+            cname = " -";
+        }
+
+        jsonObject.put("Cname",cname.substring(1));
+
         return Response.success("门户信息如下:", new ScholarRet(jsonObject, flag));
     }
 
