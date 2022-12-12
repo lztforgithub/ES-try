@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface AdmissionApplicationService {
-    List<AdmissionApplication> getList0();
-    List<AdmissionApplication> getList1();
+    Response<Object> getList0();
+    Response<Object> getList1();
 
     Response<Object> update(String aa_id, int acc, String opinion);
 
