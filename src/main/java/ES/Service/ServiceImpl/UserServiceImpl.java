@@ -8,7 +8,6 @@ import ES.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.event.WindowStateListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ public class UserServiceImpl implements UserService {
             return Response.fail("用户名已存在!");
         }
         if (userDao.selectByEmail(email)!=null){
-            return Response.fail("用户名已存在!");
+            return Response.fail("邮箱已存在!");
         }
         User user = new User(username,pwd,email);
         if (userDao.insertUser(user)>0){
@@ -99,6 +98,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public User selectByEmail(String email){
         return userDao.selectByEmail(email);
+    }
+
+    @Override
+    public Response<Object> personInfo(String uid){
+        return Response.success("个人信息如下:",userDao.selectByID(uid));
+    }
+
+    @Override
+    public Response<Object> editInfo(String uid, String uavatar, String ufield, String uinterest){
+        if (userDao.update(uid,uavatar,ufield,uinterest)>1){
+            return Response.success("更新成功!");
+        }
+        return Response.fail("更新失败!");
     }
 
 }

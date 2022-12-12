@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static ES.Common.EsUtileService.castList;
@@ -22,7 +24,7 @@ public class SearchController {
 
     //默认搜索
     @PostMapping("/DefaultSearchResults")
-    public Response<Object> defaultSearch(HttpServletRequest request, @RequestBody Map<String,Object> map) throws IOException {
+    public Response<Object> defaultSearch(HttpServletRequest request, @RequestBody Map<String,Object> map) throws IOException, ParseException {
         //取用户id,判断是否收藏,未登录则user_id=""
         String token = request.getHeader("token");
         String user_id;
@@ -34,15 +36,45 @@ public class SearchController {
         }
         //搜索关键词
         String normalSearch = (String) map.get("normalSearch");
+
         //起止时间，存疑
-        Timestamp start_time = (Timestamp) map.get("startTime");
-        Timestamp end_time = (Timestamp) map.get("endTime");
+        /*Timestamp start_time = (Timestamp) map.get("startTime");
+        Timestamp end_time = (Timestamp) map.get("endTime");*/
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Timestamp start_time = new Timestamp(
+                simpleDateFormat.parse(
+                        (String) map.get("startTime")
+                ).getTime()
+        );
+        Timestamp end_time = new Timestamp(
+                simpleDateFormat.parse(
+                        (String) map.get("endTime")
+                ).getTime()
+        );
+
+        //System.out.println(start_time);
+        //System.out.println(end_time);
+
         //包含作者
         String filterAuthors = (String) map.get("filterAuthors");
         //包含出版类型
         String filterPublicationTypes = (String) map.get("filterPublicationTypes");
+        //当前页数
+        int page = (int) map.get("page");
         //sort,排序方式
         String sort = (String) map.get("sort");
+        if (sort!=null) {
+            if (sort.equals("mostRecent")) {
+                sort = "pdate";
+            }
+            if (sort.equals("mostCited")) {
+                sort = "pcite";
+            }
+            if (sort.equals("default")) {
+                sort = null;
+            }
+        }
+
 
         return searchService.defaultSearch(
                 user_id,
@@ -51,7 +83,8 @@ public class SearchController {
                 end_time,
                 filterAuthors,
                 filterPublicationTypes,
-                sort
+                sort,
+                page
         );
     }
 
@@ -88,8 +121,19 @@ public class SearchController {
         String filterAuthors = (String) map.get("filterAuthors");
         //包含出版类型
         String filterPublicationTypes = (String) map.get("filterPublicationTypes");
+        //当前页数
+        int page = (int) map.get("page");
         //sort,排序方式
         String sort = (String) map.get("sort");
+        if (sort.equals("mostRecent")){
+            sort = "pdate";
+        }
+        if (sort.equals("mostCited")){
+            sort = "pcite";
+        }
+        if (sort.equals("default")){
+            sort = null;
+        }
 
         return searchService.advancedSearch(
                 user_id,
@@ -98,7 +142,8 @@ public class SearchController {
                 to,
                 filterAuthors,
                 filterPublicationTypes,
-                sort
+                sort,
+                page
         );
     }
 

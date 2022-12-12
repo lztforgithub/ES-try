@@ -56,6 +56,13 @@ public class UserController {
         return userService.login(username,pwd);
     }
 
+    @RequestMapping("/personInfo")
+    public Response<Object> personInfo(HttpServletRequest request){
+        String token = request.getHeader("token");
+        String uid = JwtUtil.getUserId(token);
+        return userService.personInfo(uid);
+    }
+
     @RequestMapping("/personInfo/account")
     public Response<Object> getEmail(HttpServletRequest request,@RequestBody Map<String, String> map)
     {
@@ -72,14 +79,24 @@ public class UserController {
         return userService.getPassword(uid);
     }
 
-    @RequestMapping("/personInfo/accountedit2")
+    @PostMapping("/personInfo/accountedit2")
     public Response<Object> setInfos(HttpServletRequest request,@RequestBody Map<String, String> map)
     {
         String token = request.getHeader("token");
         String uid = JwtUtil.getUserId(token);
         String password = map.get("Upassword");
-        String email = map.get("Uemail");
-        return userService.setInfos(uid, password, email);
+        //String email = map.get("Uemail");
+        return userService.setInfos(uid, password, null);
+    }
+
+    @PostMapping("/personInfo/edit")
+    public Response<Object> editInfo(HttpServletRequest request,@RequestBody Map<String,String> map){
+        String token = request.getHeader("token");
+        String uid = JwtUtil.getUserId(token);
+        String uavatar = map.get("Uavatar");
+        String ufield = map.get("Ufield");
+        String uinterest = map.get("Uinterest");
+        return userService.editInfo(uid,uavatar,ufield,uinterest);
     }
 
 }

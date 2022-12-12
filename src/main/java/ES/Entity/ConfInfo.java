@@ -4,6 +4,7 @@ public class ConfInfo {
     private String vName;
     private String vAbbrname;
     private int vCite;
+    private String VID;
 
     public String getvName() {
         return vName;
@@ -27,5 +28,13 @@ public class ConfInfo {
 
     public void setvCite(int vCite) {
         this.vCite = vCite;
+    }
+
+    public String getVID() {
+        return VID;
+    }
+
+    public void setVID(String VID) {
+        this.VID = VID;
     }
 }

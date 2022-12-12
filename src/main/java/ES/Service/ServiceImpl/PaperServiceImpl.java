@@ -9,6 +9,7 @@ import ES.Ret.CoAuthor;
 import ES.Ret.CommentRet;
 import ES.Ret.Rpaper;
 import ES.Service.PaperService;
+import ES.storage.VenueStorage;
 import ES.storage.WorkStorage;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -45,23 +46,33 @@ public class PaperServiceImpl implements PaperService {
             return Response.fail("PID错误!");
         }
 
+        int numq;
+        int nump;
         //参考文献
         List<String> PreferencesID = new ArrayList<>();
         List<Rpaper> Preferences = new ArrayList<>();
         Object q = jsonObject.get("preferences");
         PreferencesID = castList(q,String.class);
-
-        for (String i:PreferencesID){
-            JSONObject t = esUtileService.queryDocById("works",i);
-            if (t!=null){
-                Preferences.add(new Rpaper(
-                        i,
-                        t.getString("pname"),
-                        t.getString("plink"),
-                        t.getString("pdate"),
-                        t.getString("pcite"),
-                        t.getString("pauthor")
-                ));
+        numq = 0;
+        nump = 0;
+        if (PreferencesID!=null) {
+            for (String i : PreferencesID) {
+                nump++;
+                if (nump>=10) break;
+                JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
+                if (t != null) {
+                    numq++;
+                    if (numq>=5) break;
+                    //System.out.println(i);
+                    Preferences.add(new Rpaper(
+                            i,
+                            t.getString("pname"),
+                            t.getString("plink"),
+                            t.getString("pdate"),
+                            t.getString("pcite"),
+                            t.getString("pauthor")
+                    ));
+                }
             }
         }
         jsonObject.put("Preferences",Preferences);
@@ -71,18 +82,25 @@ public class PaperServiceImpl implements PaperService {
         List<Rpaper> Prelateds = new ArrayList<>();
         q = jsonObject.get("prelated");
         PrelatedID = castList(q,String.class);
-
-        for (String i:PrelatedID){
-            JSONObject t = esUtileService.queryDocById("works",i);
-            if (t!=null){
-                Prelateds.add(new Rpaper(
-                        i,
-                        t.getString("pname"),
-                        t.getString("plink"),
-                        t.getString("pdate"),
-                        t.getString("pcite"),
-                        t.getString("pauthor")
-                ));
+        numq = 0;
+        nump = 0;
+        if (PreferencesID!=null) {
+            for (String i : PrelatedID) {
+                nump++;
+                if (nump>=10) break;
+                JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
+                if (t != null) {
+                    numq++;
+                    if (numq>=5) break;
+                    Prelateds.add(new Rpaper(
+                            i,
+                            t.getString("pname"),
+                            t.getString("plink"),
+                            t.getString("pdate"),
+                            t.getString("pcite"),
+                            t.getString("pauthor")
+                    ));
+                }
             }
         }
         jsonObject.put("Prelateds",Prelateds);
@@ -92,16 +110,24 @@ public class PaperServiceImpl implements PaperService {
         List<CoAuthor> Pauthors = new ArrayList<>();
         q = jsonObject.get("pauthor");
         PauthorID = castList(q,String.class);
-
-        for (String i:PauthorID){
-            JSONObject t = esUtileService.queryDocById("researcher",i);
-            if (t!=null){
-                Pauthors.add(new CoAuthor(
-                        t.getString("rinstitute"),
-                        i,
-                        t.getString("rname"),
-                        t.getString("ravatar")
-                ));
+        numq = 0;
+        nump = 0;
+        if (PauthorID!=null) {
+            for (String i : PauthorID) {
+                nump++;
+                if (nump>=20) break;
+                JSONObject t = esUtileService.queryDocById("researcher", i);
+                if (t != null) {
+                    numq++;
+                    if (numq>=10) break;
+                    Pauthors.add(new CoAuthor(
+                            t.getString("rinstitute"),
+                            i,
+                            t.getString("rname"),
+                            t.getString("ravatar"),
+                            t.getString("r_IID")
+                    ));
+                }
             }
         }
 
@@ -269,11 +295,17 @@ public class PaperServiceImpl implements PaperService {
         for(; i<5; i++)
         {
             JSONObject result = results.getJSONObject(i);
+            String pID = result.getString("id");
+            if(esUtileService.queryDocById("works", pID)==null)
+            {
+                new WorkStorage().storeWork(pID);
+            }
             String pName = result.getString("display_name");
             String host_name = result.getJSONObject("host_venue").getString("display_name");
             PInfo pInfo = new PInfo();
             pInfo.setpName(pName);
             pInfo.setpVName(host_name);
+            pInfo.setpID(pID);
             ret.addPaperResults(pInfo);
         }
 
@@ -328,7 +360,7 @@ public class PaperServiceImpl implements PaperService {
         int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
-        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=25&filter=concepts.id:"+Cid;
+        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=50&filter=concepts.id:"+Cid;
         try {
             content = new StringBuffer();
             URLConnection connection = new URL(next_url).openConnection();
@@ -381,47 +413,34 @@ public class PaperServiceImpl implements PaperService {
             ConfInfo confInfo = new ConfInfo();
             String vName = result.getString("display_name");
             String vID = "V"+result.getString("id").split("V")[1];
-            JSONObject venueInfo = esUtileService.queryDocById("venue", vID);
-            JSONArray vAbbrnames = venueInfo.getJSONArray("valtername");
-            String abbr = vAbbrnames.getString(0);
-            for(int j=0; j<vAbbrnames.size(); j++)
+            if(esUtileService.queryDocById("venue", vID)==null)
             {
-                String temp = vAbbrnames.getString(j);
-                if(temp.length()<abbr.length())
-                {
-                    abbr = temp;
-                }
+                new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+vID);
             }
-            if(abbr.length()<10)
-            {
-                confInfo.setvAbbrname(abbr);
-            }
-            else
-            {
-                confInfo.setvAbbrname(null);
-            }
+            String vAbbrname = result.getString("abbreviated_title");
+            confInfo.setvAbbrname(vAbbrname);
             confInfo.setvName(vName);
-            int vCite = -1;
-            JSONArray vCites = venueInfo.getJSONArray("vcitesAccumulate");
-            if(vCites.size()>=3)
+            confInfo.setVID(vID);
+            int vCite = 0;
+            JSONArray counts = result.getJSONArray("counts_by_year");
+            for(int j=0; j<3; j++)
             {
-                vCite = Integer.parseInt(vCites.getString(2));
-            }
-            else if(vCites.size()>=2)
-            {
-                vCite = Integer.parseInt(vCites.getString(1));
-            }
-            else if(vCites.size()>=1)
-            {
-                vCite = Integer.parseInt(vCites.getString(0));
+                JSONObject countInfo = counts.getJSONObject(j);
+                int year = Integer.parseInt(countInfo.getString("year"));
+                int num = Integer.parseInt(countInfo.getString("cited_by_count"));
+                if(year>=2020 && year<=2022)
+                {
+                    vCite += num;
+                }
             }
             confInfo.setvCite(vCite);
             ret.addPaperResults(confInfo);
+            count += 1;
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
         String cName = conceptInfo.getString("cname");
-        ret.setCount(i);
+        ret.setCount(ret.getPaperResults().size());
         ret.setcName(cName);
         return Response.success("返回推荐会议成功", JSON.toJSON(ret));
     }
@@ -470,7 +489,7 @@ public class PaperServiceImpl implements PaperService {
         int total = Integer.parseInt(jsonObject.getJSONObject("meta").getString("count"));
         int choose = (int) (Math.random() * total);
         String Cid = "C"+jsonObject.getJSONArray("results").getJSONObject(choose).getString("id").split("C")[1];
-        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=25&filter=concepts.id:"+Cid;
+        String next_url = "https://api.openalex.org/venues?sort=cited_by_count:desc&per_page=50&filter=concepts.id:"+Cid;
         try {
             content = new StringBuffer();
             URLConnection connection = new URL(next_url).openConnection();
@@ -523,53 +542,34 @@ public class PaperServiceImpl implements PaperService {
             ConfInfo confInfo = new ConfInfo();
             String vName = result.getString("display_name");
             String vID = "V"+result.getString("id").split("V")[1];
-            JSONObject venueInfo = esUtileService.queryDocById("venue", vID);
-            JSONArray vAbbrnames;
-            if (venueInfo!=null){
-                vAbbrnames = venueInfo.getJSONArray("valtername");
-            }
-            else{
-                return Response.fail("GG");
-            }
-            String abbr = vAbbrnames.getString(0);
-            for(int j=0; j<vAbbrnames.size(); j++)
+            if(esUtileService.queryDocById("venue", vID)==null)
             {
-                String temp = vAbbrnames.getString(j);
-                if(temp.length()<abbr.length())
-                {
-                    abbr = temp;
-                }
+                new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+vID);
             }
-            if(abbr.length()<10)
-            {
-                confInfo.setvAbbrname(abbr);
-            }
-            else
-            {
-                confInfo.setvAbbrname(null);
-            }
+            String vAbbrname = result.getString("abbreviated_title");
+            confInfo.setvAbbrname(vAbbrname);
+            confInfo.setVID(vID);
             confInfo.setvName(vName);
-            int vCite = -1;
-            JSONArray vCites = venueInfo.getJSONArray("vcitesAccumulate");
-            if(vCites.size()>=3)
+            int vCite = 0;
+            JSONArray counts = result.getJSONArray("counts_by_year");
+            for(int j=0; j<3; j++)
             {
-                vCite = Integer.parseInt(vCites.getString(2));
-            }
-            else if(vCites.size()>=2)
-            {
-                vCite = Integer.parseInt(vCites.getString(1));
-            }
-            else if(vCites.size()>=1)
-            {
-                vCite = Integer.parseInt(vCites.getString(0));
+                JSONObject countInfo = counts.getJSONObject(j);
+                int year = Integer.parseInt(countInfo.getString("year"));
+                int num = Integer.parseInt(countInfo.getString("cited_by_count"));
+                if(year>=2020 && year<=2022)
+                {
+                    vCite += num;
+                }
             }
             confInfo.setvCite(vCite);
             ret.addPaperResults(confInfo);
+            count += 1;
         }
 
         JSONObject conceptInfo = esUtileService.queryDocById("concept", Cid);
         String cName = conceptInfo.getString("cname");
-        ret.setCount(i);
+        ret.setCount(ret.getPaperResults().size());
         ret.setcName(cName);
         return Response.success("返回推荐期刊成功", JSON.toJSON(ret));
     }
@@ -579,11 +579,11 @@ public class PaperServiceImpl implements PaperService {
         ArrayList<String> rIDs = new ArrayList<>();
         ArrayList<String> wIDs = new ArrayList<>();
         WorkStorage workStorage = new WorkStorage();
-        PageResult<JSONObject> authors = esUtileService.conditionSearch("researcher", 5, 500, "", null, null, null, null);
+        PageResult<JSONObject> authors = esUtileService.conditionSearch("researcher", 6, 500, "", null, null, null, null);
         boolean flag = false;
         for(JSONObject authorObj:authors.getList())
         {
-            if(((String) authorObj.get("rID")).equals("A2114286658"))
+            if(((String) authorObj.get("rID")).equals("A2688455705"))
             {
                 flag = true;
             }
@@ -648,22 +648,34 @@ public class PaperServiceImpl implements PaperService {
 
     public void crawlWorkByRelate() throws IOException {
         WorkStorage workStorage = new WorkStorage();
-        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 1, 500, "", null, null, null, null);
+        int count = 0;
+        boolean flag = false;
+        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 2, 500, "", null, null, null, null);
         for(JSONObject obj:works.getList())
         {
             System.out.println("now is "+obj.get("pID"));
-            JSONArray relates = obj.getJSONArray("prelated");
-            for(int i=0; i<relates.size(); i++)
+            if((obj.get("pID")).equals("W1975998337"))
             {
-                String url = relates.getString(i);
-                workStorage.storeWork(url);
+                flag = true;
+            }
+            if(flag)
+            {
+                JSONArray relates = obj.getJSONArray("prelated");
+                for(int i=0; i<relates.size(); i++)
+                {
+                    String wID = "W"+relates.getString(i).split("W")[1];
+                    count += 1;
+                    workStorage.storeWork("http://api.openalex.org/works/"+wID);
+                }
             }
         }
+        System.out.println("count="+count);
     }
 
     public static void main(String[] args) throws IOException {
         PaperServiceImpl paperService = new PaperServiceImpl();
-        paperService.crawlWorkURLByAuthor();
+        paperService.crawlWorkByRelate();
+        System.out.println("----done----");
     }
 
 }

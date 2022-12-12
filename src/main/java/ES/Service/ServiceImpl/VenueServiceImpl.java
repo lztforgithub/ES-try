@@ -61,7 +61,7 @@ public class VenueServiceImpl implements VenueService {
 
         Map<String,Object> map = new HashMap<>();
         map.put("p_VID",venue_id);
-        PageResult<JSONObject> t = esUtileService.conditionSearch("works",100,20,"",map,null,null,null);
+        PageResult<JSONObject> t = esUtileService.conditionSearch("works",1,100,"",map,null,null,null);
         return Response.success("出版物论文如下:",t);
     }
 

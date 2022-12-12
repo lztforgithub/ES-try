@@ -2,6 +2,7 @@ package ES.Dao;
 
 import ES.Entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserDao {
@@ -19,4 +20,11 @@ public interface UserDao {
     void setEmail(String uid, String email);
 
     User selectByEmail(String email);
+
+    User selectByID(String uid);
+
+    int update(@Param("UID") String uid,
+               @Param("Uavatar") String uavatar,
+               @Param("Ufield") String ufield,
+               @Param("Uinterest") String uinterest);
 }

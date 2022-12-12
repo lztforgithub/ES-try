@@ -67,11 +67,30 @@ public class ScholarServiceImpl implements ScholarService {
         //代表论文信息
         Map<String, Object> map = new HashMap<>();
         map.put("pauthor",researcher_id);
-        PageResult<JSONObject> paper = esUtileService.conditionSearch("works",100,20,"",map,null,null,null);
+        PageResult<JSONObject> paper = esUtileService.conditionSearch("works",1,20,"",map,null,null,null);
 
         jsonObject.put("RpaperList",paper);
 
-        return Response.success("门户信息如下:", new ScholarRet(jsonObject, flag));
+        //领域名
+        Object q;
+        q = jsonObject.get("rconcepts");
+        List<String> cid = new ArrayList<>();
+        String cname = "";
+        cid = castList(q,String.class);
+        for (String i:cid){
+            JSONObject p = esUtileService.queryDocById("concept",i);
+            if (p!=null){
+                cname = cname +","+p.getString("cname");
+            }
+        }
+        if (cname.equals("")){
+            cname = " -";
+        }
+
+        jsonObject.put("Cname",cname.substring(1));
+        jsonObject.put("flag",flag);
+
+        return Response.success("门户信息如下:", jsonObject);
     }
 
     @Override
@@ -79,7 +98,7 @@ public class ScholarServiceImpl implements ScholarService {
         Map<String,Object> map = new HashMap<>();
         map.put("rname",researcher_name);
         map.put("rinstitute",institute);
-        PageResult<JSONObject> t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
+        PageResult<JSONObject> t = esUtileService.conditionSearch("researcher",1,20,"",map,null,null,null);
         return Response.success("匹配的学者如下:",t);
     }
 

@@ -16,4 +16,7 @@ public interface UserService {
 
     User selectByEmail(String email);
 
+    Response<Object> personInfo(String uid);
+
+    Response<Object> editInfo(String uid, String uavatar, String ufield, String uinterest);
 }

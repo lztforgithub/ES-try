@@ -39,6 +39,7 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -193,7 +194,7 @@ public class EsUtileService {
         if (!StringUtils.isEmpty(highName)) {
             buildHighlight(sourceBuilder, highName);
         }
-        //分页处理
+        //分页设置
         buildPageLimit(sourceBuilder, pageNum, pageSize);
         //超时设置
         sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
@@ -203,101 +204,29 @@ public class EsUtileService {
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         SearchHits searchHits = searchResponse.getHits();
         List<JSONObject> resultList = new ArrayList<>();
+        int q=0;
         for (SearchHit hit : searchHits) {
             //原始查询结果数据
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-            //高亮处理
-            if (!StringUtils.isEmpty(highName)) {
-                Map<String, HighlightField> highlightFields = hit.getHighlightFields();
-                HighlightField highlightField = highlightFields.get(highName);
-                if (highlightField != null) {
-                    Text[] fragments = highlightField.fragments();
-                    StringBuilder value = new StringBuilder();
-                    for (Text text : fragments) {
-                        value.append(text);
-                    }
-                    sourceAsMap.put(highName, value.toString());
-                }
-            }
             JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
             resultList.add(jsonObject);
+            q++;
         }
-
+        System.out.println("??????");
         long total = searchHits.getTotalHits().value;
         PageResult<JSONObject> pageResult = new PageResult<>();
-        pageResult.setPageNum(pageNum);
-        pageResult.setPageSize(pageSize);
         pageResult.setTotal(total);
         pageResult.setList(resultList);
-        pageResult.setTotalPage(total==0?0: (int) (total % pageSize == 0 ? total / pageSize : (total / pageSize) + 1));
 
         return pageResult;
     }
 
-    /**
-     * 高级搜索，map类型的参数都为空时，默认查询全部
-     *
-     */
-    public PageResult<JSONObject> advancedSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> notMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, Map<String, Object> dimNotMap,Timestamp from,Timestamp to) throws IOException {
-        SearchRequest searchRequest = new SearchRequest(indexName);
-        // 索引不存在时不报错
-        searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
-        //构造搜索条件
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, notMap, dimAndMap, dimOrMap, dimNotMap);
-        //构造时间限制
-        boolQueryBuilder.filter(QueryBuilders.rangeQuery("Pdate").from(from).to(to));
-        sourceBuilder.query(boolQueryBuilder);
-        //高亮处理
-        if (!StringUtils.isEmpty(highName)) {
-            buildHighlight(sourceBuilder, highName);
-        }
-        //分页处理
-        buildPageLimit(sourceBuilder, pageNum, pageSize);
-        //超时设置
-        sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
-        searchRequest.source(sourceBuilder);
-
-        //执行搜索
-        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        SearchHits searchHits = searchResponse.getHits();
-        List<JSONObject> resultList = new ArrayList<>();
-        for (SearchHit hit : searchHits) {
-            //原始查询结果数据
-            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-            //高亮处理
-            if (!StringUtils.isEmpty(highName)) {
-                Map<String, HighlightField> highlightFields = hit.getHighlightFields();
-                HighlightField highlightField = highlightFields.get(highName);
-                if (highlightField != null) {
-                    Text[] fragments = highlightField.fragments();
-                    StringBuilder value = new StringBuilder();
-                    for (Text text : fragments) {
-                        value.append(text);
-                    }
-                    sourceAsMap.put(highName, value.toString());
-                }
-            }
-            JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
-            resultList.add(jsonObject);
-        }
-
-        long total = searchHits.getTotalHits().value;
-        PageResult<JSONObject> pageResult = new PageResult<>();
-        pageResult.setPageNum(pageNum);
-        pageResult.setPageSize(pageSize);
-        pageResult.setTotal(total);
-        pageResult.setList(resultList);
-        pageResult.setTotalPage(total==0?0: (int) (total % pageSize == 0 ? total / pageSize : (total / pageSize) + 1));
-
-        return pageResult;
-    }
 
     /**
      * 默认搜索，map类型的参数都为空时，默认查询全部
      *
      */
-    public PageResult<JSONObject> defaultSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> notMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, Map<String, Object> dimNotMap, Timestamp from,Timestamp to) throws IOException {
+    public PageResult<JSONObject> defaultSearch(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> notMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, Map<String, Object> dimNotMap, Timestamp from,Timestamp to,String sort) throws IOException {
         SearchRequest searchRequest = new SearchRequest(indexName);
         // 索引不存在时不报错
         searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
@@ -305,42 +234,32 @@ public class EsUtileService {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, notMap, dimAndMap, dimOrMap, dimNotMap);
         //构造时间限制
-        boolQueryBuilder.filter(QueryBuilders.rangeQuery("Pdate").from(from).to(to));
-
+        boolQueryBuilder.filter(QueryBuilders.rangeQuery("pdate").from(from.getTime()).to(to.getTime()));
+        //System.out.println("Time");
         sourceBuilder.query(boolQueryBuilder);
-        //高亮处理
-        if (!StringUtils.isEmpty(highName)) {
-            buildHighlight(sourceBuilder, highName);
-        }
-        //分页处理
+        //分页设置
         buildPageLimit(sourceBuilder, pageNum, pageSize);
         //超时设置
         sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
+        //排序设置
+        if (sort!=null){
+            sourceBuilder.sort(sort, SortOrder.DESC);
+        }
         searchRequest.source(sourceBuilder);
 
         //执行搜索
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         SearchHits searchHits = searchResponse.getHits();
         List<JSONObject> resultList = new ArrayList<>();
+        int q=0;
         for (SearchHit hit : searchHits) {
             //原始查询结果数据
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-            //高亮处理
-            if (!StringUtils.isEmpty(highName)) {
-                Map<String, HighlightField> highlightFields = hit.getHighlightFields();
-                HighlightField highlightField = highlightFields.get(highName);
-                if (highlightField != null) {
-                    Text[] fragments = highlightField.fragments();
-                    StringBuilder value = new StringBuilder();
-                    for (Text text : fragments) {
-                        value.append(text);
-                    }
-                    sourceAsMap.put(highName, value.toString());
-                }
-            }
             JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
             resultList.add(jsonObject);
+            q++;
         }
+        System.out.println(q);
 
         long total = searchHits.getTotalHits().value;
         PageResult<JSONObject> pageResult = new PageResult<>();
@@ -366,6 +285,7 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : andMap.entrySet()) {
                 MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
                 boolQueryBuilder.must(matchQueryBuilder);
+                System.out.println("and"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
@@ -374,14 +294,20 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : orMap.entrySet()) {
                 MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
                 boolQueryBuilder.should(matchQueryBuilder);
+                System.out.println("or"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
         //精确查询，not
         if (!CollectionUtils.isEmpty(notMap)) {
             for (Map.Entry<String, Object> entry : notMap.entrySet()) {
+                if (entry.getKey().equals("exists")){
+                    boolQueryBuilder.must(QueryBuilders.existsQuery((String) entry.getValue()));
+                    continue;
+                }
                 MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(entry.getKey(), entry.getValue());
                 boolQueryBuilder.mustNot(matchQueryBuilder);
+                System.out.println("not"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
@@ -390,6 +316,7 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : dimAndMap.entrySet()) {
                 WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.must(wildcardQueryBuilder);
+                System.out.println("dimAnd"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
@@ -398,14 +325,16 @@ public class EsUtileService {
             for (Map.Entry<String, Object> entry : dimOrMap.entrySet()) {
                 WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.should(wildcardQueryBuilder);
+                System.out.println("dimOr"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }
         //模糊查询，not
-        if (!CollectionUtils.isEmpty(dimOrMap)) {
+        if (!CollectionUtils.isEmpty(dimNotMap)) {
             for (Map.Entry<String, Object> entry : dimNotMap.entrySet()) {
                 WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery(entry.getKey()+".keyword", "*" + entry.getValue() + "*");
                 boolQueryBuilder.mustNot(wildcardQueryBuilder);
+                System.out.println("dimNot"+" "+entry.getKey()+":"+entry.getValue());
             }
             searchAllFlag = false;
         }

@@ -35,7 +35,7 @@ public class JwtUtil {
                     .withAudience(userId)
                     //存放自定义数据
                     .withClaim("info", info)
-                    //五分钟后token过期
+                    //三十分钟后token过期
                     .withExpiresAt(date)
                     //token的密钥
                     .sign(algorithm);
