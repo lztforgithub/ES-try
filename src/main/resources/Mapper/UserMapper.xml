@@ -36,8 +36,7 @@
         select * from user where UID=#{UID}
     </select>
     <update id="update" parameterType="java.lang.String">
-        update user set Uavatar = #{Uavatar},
-                        Ufield = #{Ufield},
+        update user set Ufield = #{Ufield},
                         Uinterest = #{Uinterest},
                     where UID = #{UID}
     </update>

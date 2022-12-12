@@ -106,8 +106,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<Object> editInfo(String uid, String uavatar, String ufield, String uinterest){
-        if (userDao.update(uid,uavatar,ufield,uinterest)>1){
+    public Response<Object> editInfo(String uid, String ufield, String uinterest){
+        if (userDao.update(uid,ufield,uinterest)>1){
             return Response.success("更新成功!");
         }
         return Response.fail("更新失败!");
