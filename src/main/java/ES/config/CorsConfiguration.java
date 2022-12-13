@@ -12,11 +12,12 @@ public class CorsConfiguration {
     private org.springframework.web.cors.CorsConfiguration buildConfig() {
         org.springframework.web.cors.CorsConfiguration corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
         //允许任何域名使用
-        corsConfiguration.addAllowedOrigin("*");
+        // corsConfiguration.addAllowedOrigin("*");
         //允许任何头
         corsConfiguration.addAllowedHeader("*");
         //允许任何方法（post、get等）
         corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setMaxAge((long)3600);
         return corsConfiguration;
