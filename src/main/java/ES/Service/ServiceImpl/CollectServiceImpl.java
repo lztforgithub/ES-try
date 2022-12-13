@@ -1,10 +1,13 @@
 package ES.Service.ServiceImpl;
 
+import ES.Common.EsUtileService;
 import ES.Common.Response;
 import ES.Dao.CollectDao;
 import ES.Entity.CollectRecords;
 import ES.Entity.Collected;
+import ES.Ret.CollectRet;
 import ES.Service.CollectService;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,8 @@ import java.util.List;
 public class CollectServiceImpl implements CollectService {
     @Autowired
     CollectDao collectDao;
+    @Autowired
+    EsUtileService esUtileService;
 
     @Override
     public Response<Object> viewCollect(String user_id){
@@ -63,5 +68,34 @@ public class CollectServiceImpl implements CollectService {
             return Response.success("新建收藏夹成功!",collected);
         }
         return Response.fail("新建收藏夹失败!");
+    }
+
+    @Override
+    public Response<Object> viewCollectPaper(String user_id){
+        List<Collected> collectedList = collectDao.viewCollect(user_id);
+        if (collectedList==null){
+            return Response.success("用户收藏夹为空!");
+        }
+        List<CollectRet> collectRets = new ArrayList<>();
+        List<CollectRecords> collectRecords;
+        List<JSONObject> jsonObjects = new ArrayList<>();
+        JSONObject t;
+        for (Collected i:collectedList){
+            collectRecords = collectDao.selectByCID(i.getCTID());
+            jsonObjects = new ArrayList<>();
+            for (CollectRecords j:collectRecords){
+                t = esUtileService.queryDocById("works",j.getCR_PID());
+                if (t==null){
+                    continue;
+                }
+                jsonObjects.add(t);
+            }
+            collectRets.add(new CollectRet(
+                    i.getCTname(),
+                    i.getCTID(),
+                    jsonObjects
+            ));
+        }
+        return Response.success("收藏夹文献如下:",collectRets);
     }
 }

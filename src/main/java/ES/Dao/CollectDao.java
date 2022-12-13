@@ -18,4 +18,6 @@ public interface CollectDao {
     int insertCollectRecords(CollectRecords collectRecords);
 
     int insertCollected(Collected collected);
+
+    List<CollectRecords> selectByCID(String ctid);
 }
