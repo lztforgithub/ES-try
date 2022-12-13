@@ -456,6 +456,10 @@ public class PaperServiceImpl implements PaperService {
                             vAbbrname = temp;
                         }
                     }
+                    if(vAbbrname.length()>10)
+                    {
+                        vAbbrname = null;
+                    }
                 }
             }
             confInfo.setvAbbrname(vAbbrname);
@@ -606,6 +610,10 @@ public class PaperServiceImpl implements PaperService {
                         {
                             vAbbrname = temp;
                         }
+                    }
+                    if(vAbbrname.length()>10)
+                    {
+                        vAbbrname = null;
                     }
                 }
             }
