@@ -42,7 +42,7 @@ public class SearchServiceImpl implements SearchService {
             Map<String, Object> andmap = new HashMap<>();
             Map<String, Object> ormap = new HashMap<>();
             Map<String, Object> notmap = new HashMap<>();
-            andmap.put("pname", normalSearch);
+            ormap.put("pname", normalSearch);
             ormap.put("pauthorname",normalSearch);
             notmap.put("pabstract","Abstract ");
             notmap.put("exists","pabstract");
