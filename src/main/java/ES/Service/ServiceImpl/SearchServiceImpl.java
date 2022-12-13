@@ -131,7 +131,11 @@ public class SearchServiceImpl implements SearchService {
                 result_i = i;
 
                 String vid = i.getString("p_VID");
-                String vName = esUtileService.queryDocById("venue", vid).getString("vfullname");
+                String vName = "";
+                JSONObject temp = esUtileService.queryDocById("venue", vid);
+                if(temp != null) {
+                    vName = temp.getString("vfullname");
+                }
 
                 result_i.put("PAuthor", coAuthors);
                 result_i.put("VName", vName);
