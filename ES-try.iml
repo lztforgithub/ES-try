@@ -175,7 +175,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: com.jayway.jsonpath:json-path:2.5.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.minidev:json-smart:2.4.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.minidev:accessors-smart:2.4.7" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.ow2.asm:asm:9.1" level="project" />
     <orderEntry type="library" name="Maven: jakarta.xml.bind:jakarta.xml.bind-api:2.3.3" level="project" />
     <orderEntry type="library" name="Maven: jakarta.activation:jakarta.activation-api:1.2.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.assertj:assertj-core:3.19.0" level="project" />
@@ -209,6 +208,21 @@
     <orderEntry type="library" name="Maven: tk.mybatis:mapper-spring-boot-autoconfigure:2.1.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.zxing:core:3.3.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.10" level="project" />
+    <orderEntry type="library" name="Maven: de.undercouch:citeproc-java:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jbibtex:jbibtex:1.0.17" level="project" />
+    <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.7.2" level="project" />
+    <orderEntry type="library" name="Maven: org.graalvm.sdk:graal-sdk:19.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.graalvm.js:js:19.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.graalvm.regex:regex:19.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.graalvm.truffle:truffle-api:19.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm:6.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-tree:6.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-analysis:6.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-commons:6.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-util:6.2.1" level="project" />
+    <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:62.1" level="project" />
+    <orderEntry type="library" name="Maven: org.citationstyles:styles:20.11" level="project" />
+    <orderEntry type="library" name="Maven: org.citationstyles:locales:20.11" level="project" />
     <orderEntry type="library" name="Maven: io.springfox:springfox-boot-starter:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: io.springfox:springfox-oas:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: io.swagger.core.v3:swagger-annotations:2.1.2" level="project" />
