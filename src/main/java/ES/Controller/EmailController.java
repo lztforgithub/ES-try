@@ -101,7 +101,7 @@ public class EmailController {
 
         message.setText("尊敬的AceGate用户,您好:\n"
                 + "\n本次找回请求的邮件验证码为:" + verCode + ",本验证码 5 分钟内有效，请及时输入。（请勿泄露此验证码）\n"
-                + "\n如您更改过  AceGate  的密码，请忽略该邮件。\n(这是一封通过自动发送的邮件，请不要直接回复）");
+                + "\n如您未更改过  AceGate  的密码，请忽略该邮件。\n(这是一封通过自动发送的邮件，请不要直接回复）");
         try{
             mailSender.send(message);
         }catch (Exception e){
@@ -120,4 +120,5 @@ public class EmailController {
         }
         return Response.success("发送成功");
     }
+
 }
