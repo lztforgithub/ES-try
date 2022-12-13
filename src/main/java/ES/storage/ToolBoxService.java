@@ -35,7 +35,10 @@ import java.util.*;
 public class ToolBoxService {
 
     @RequestMapping(value = "/translate", method = RequestMethod.GET)
-    public Response<Object> translate(String sourceText, String originLanguage, String targetLanguage) {
+    public Response<Object> translate(@RequestBody Map<String, String> map1) {
+        String sourceText = map1.get("sourceText");
+        String originLanguage = map1.get("originLanguage");
+        String targetLanguage = map1.get("targetLanguage");
         String ret = "";
         try {
             ret = WebITS.translate(sourceText, originLanguage, targetLanguage);
@@ -114,7 +117,9 @@ public class ToolBoxService {
 
 
     @RequestMapping(value = "/citations", method = RequestMethod.POST)
-    public Response<Object> getCitation(String PID) {
+    public Response<Object> getCitation(@RequestBody Map<String, String> map1) {
+
+        String PID = map1.get("PID");
 
         try {
             JSONObject ret = new JSONObject();
