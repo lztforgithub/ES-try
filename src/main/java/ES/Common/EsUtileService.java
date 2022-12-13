@@ -221,6 +221,49 @@ public class EsUtileService {
         return pageResult;
     }
 
+    public PageResult<JSONObject> conditionSearchWithSort(String indexName, Integer pageNum, Integer pageSize, String highName, Map<String, Object> andMap, Map<String, Object> orMap, Map<String, Object> dimAndMap, Map<String, Object> dimOrMap, String sort) throws IOException, IOException {
+        SearchRequest searchRequest = new SearchRequest(indexName);
+        // 索引不存在时不报错
+        searchRequest.indicesOptions(IndicesOptions.lenientExpandOpen());
+        //构造搜索条件
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, dimAndMap, dimOrMap, null, null);
+        sourceBuilder.query(boolQueryBuilder);
+        //高亮处理
+        if (!StringUtils.isEmpty(highName)) {
+            buildHighlight(sourceBuilder, highName);
+        }
+        //分页设置
+        buildPageLimit(sourceBuilder, pageNum, pageSize);
+        //超时设置
+        sourceBuilder.timeout(TimeValue.timeValueSeconds(60));
+        searchRequest.source(sourceBuilder);
+        //排序设置
+        if (sort!=null){
+            sourceBuilder.sort(sort, SortOrder.DESC);
+        }
+
+        //执行搜索
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        SearchHits searchHits = searchResponse.getHits();
+        List<JSONObject> resultList = new ArrayList<>();
+        int q=0;
+        for (SearchHit hit : searchHits) {
+            //原始查询结果数据
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            JSONObject jsonObject =  JSONObject.parseObject(JSONObject.toJSONString(sourceAsMap));
+            resultList.add(jsonObject);
+            q++;
+        }
+        System.out.println("??????");
+        long total = searchHits.getTotalHits().value;
+        PageResult<JSONObject> pageResult = new PageResult<>();
+        pageResult.setTotal(total);
+        pageResult.setList(resultList);
+
+        return pageResult;
+    }
+
 
     /**
      * 默认搜索，map类型的参数都为空时，默认查询全部

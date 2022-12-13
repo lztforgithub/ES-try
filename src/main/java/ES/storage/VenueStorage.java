@@ -10,6 +10,7 @@ import ES.Crawler.WorkCrawler;
 import ES.Document.ConceptDoc;
 import ES.Document.VenueDoc;
 import ES.Document.WorkDoc;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.hc.core5.http.NameValuePair;
@@ -75,17 +76,14 @@ public class VenueStorage {
     }
 
     @RequestMapping(value = "/gs", method = RequestMethod.GET)
-    public void crawlVenues(String ancestorID, int level, int number) {
+    public void crawlVenues(String ancestorID, int level, int number, int mode) {
         ConceptStorage conceptStorage = new ConceptStorage();
         JSONArray currentConcepts = conceptStorage.searchConceptByLevelAndAncestor(ancestorID, level);
         int tries = 0;
         for (int i = 0; i < currentConcepts.size(); i++) {
             tries++;
 
-            if (number >= (i + 1)) {
-                continue;
-            }
-            if(tries >= 8) {
+            if (number > (i + 1)) {
                 continue;
             }
 
@@ -93,7 +91,7 @@ public class VenueStorage {
             String CID = currentConcept.getString("cID");
             String Cname = currentConcept.getString("cname");
             ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
-            nameValuePairs.add(new BasicNameValuePair("filter", "type:conference,x_concepts.id:" + CID));
+            nameValuePairs.add(new BasicNameValuePair("filter", "type:journal,x_concepts.id:" + CID));
             nameValuePairs.add(new BasicNameValuePair("sort", "cited_by_count:desc"));
             String requestString = "";
             try {
@@ -105,13 +103,7 @@ public class VenueStorage {
 
             }
 
-            int num = 0;
-
-            if (i < 10) {
-                num = 8;
-            } else {
-                num = 5;
-            }
+            int num = 5;
 
             System.out.println(requestString);
 
@@ -122,13 +114,15 @@ public class VenueStorage {
 
             int crawledVenuesCount = 0;
             int broken = 5;
+            if(mode == 1)
+                continue;
 
             for (VenueDoc venueDoc : venueDocs) {
 
                 // 先检查相关性
                 // 一级概念相关性排名在5及以内
 
-                if(!CrawlerUtils.checkVenueConceptScore(venueDoc, CID, 5)) {
+                if(!CrawlerUtils.checkVenueConceptScore(venueDoc, CID, 3)) {
                     continue;
                 }
 
@@ -185,7 +179,7 @@ public class VenueStorage {
                         esUtileService.addDoc("works", workDoc);
                     }
                     venueWorksCount++;
-                    if (venueWorksCount >= 20) {
+                    if (venueWorksCount >= 10) {
                         break;
                     }
                 }
@@ -197,9 +191,43 @@ public class VenueStorage {
                     break;
                 }
             }
-//            if (tries >= 1) {
-//                break;
-//            }
+            if (tries >= 8) {
+                break;
+            }
         }
+    }
+
+
+    @RequestMapping(value = "/crawlWorksByResearcherID", method = RequestMethod.GET)
+    public void crawlWorksByResearcherID(String RID) {
+        String baseURL = "https://api.openalex.org/works?filter=authorships.author.id:" + RID;
+        int page = 0;
+        int count = 0;
+        int tries = 0;
+        int totalCrawledWorks = 75;
+        WorkCrawler workCrawler = new WorkCrawler("none");
+
+        while(count < totalCrawledWorks) {
+            page++;
+            String requestURL = baseURL + "&page=" + page;
+            System.out.println(requestURL);
+            String response = HttpUtils.handleRequestURL(requestURL);
+            JSONObject responseJSON = JSONObject.parseObject(response);
+//            System.out.println(responseJSON);
+            totalCrawledWorks = responseJSON.getJSONObject("meta").getInteger("count");
+            JSONArray arr = responseJSON.getJSONArray("results");
+            for (int i = 0; i < arr.size(); i++) {
+                JSONObject object = arr.getJSONObject(i);
+                WorkDoc workDoc = workCrawler.json2Doc(object.toJSONString());
+
+                System.out.printf("    Get new work: [%s]%s\n", workDoc.getPID(), workDoc.getPname());
+                CrawlerUtils.parseWorkDocForCompleteInformation(workDoc);
+                count++;
+            }
+        }
+    }
+
+    public void crawlWorksByCSConcept(){
+
     }
 }

@@ -34,7 +34,7 @@ import java.util.*;
 @RestController
 public class ToolBoxService {
 
-    @RequestMapping(value = "/translate", method = RequestMethod.GET)
+    @RequestMapping(value = "/translate", method = RequestMethod.POST)
     public Response<Object> translate(@RequestBody Map<String, String> map1) {
         String sourceText = map1.get("sourceText");
         String originLanguage = map1.get("originLanguage");
@@ -185,7 +185,7 @@ public class ToolBoxService {
                 String givenName = temp.substring(0, index);
                 String familyName = temp.substring(index + 1);
 
-                builder = builder.author(givenName, familyName);
+                builder = builder.author(givenName + " John", familyName + " Doe");
             }
 
             builder

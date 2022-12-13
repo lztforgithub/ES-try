@@ -8,6 +8,7 @@ import ES.Document.WorkDoc;
 import ES.storage.ResearcherStorage;
 import ES.storage.WorkStorage;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
@@ -72,6 +73,55 @@ public class CrawlerUtils {
         return false;
     }
 
+    /**
+     * 返回false，代表不相关；返回true，代表相关
+     */
+    public static boolean checkVenueConceptScore(JSONObject venueJSON, String CID, int pos) {
+        JSONArray conceptIDs = venueJSON.getJSONArray("vconceptIDs");
+        for (int i = 0; i < conceptIDs.size(); i++) {
+            if (i >= pos) {
+                break;
+            }
+            String currentConcept = conceptIDs.getString(i);
+            if (currentConcept.equals(CID)) {
+//                System.out.printf("%s related.\n", venueJSON.getString("vfullname"));
+                return true;
+            }
+        }
+//        System.out.printf("%s not related.\n", venueJSON.getString("vfullname"));
+        return false;
+    }
+
+    public static boolean checkWorkConceptRelevance(JSONObject work, String Cname, int pos) {
+        JSONArray arr = work.getJSONArray("pconcepts");
+        for (int i = 0; i < arr.size(); i++) {
+            String cur = arr.getString(i);
+            if (Cname.equals(cur)) {
+//                System.out.printf("%s related to %s. \n", work.getString("pID"), Cname);
+                return true;
+            }
+            if ( (i + 1) > pos) {
+//                System.out.printf("%s not related to %s. \n", work.getString("pID"), Cname);
+                return false;
+            }
+        }
+        return false;
+    }
+
+
+    public static void parseWorkDocForCompleteInformation(WorkDoc workDoc) {
+        // 爬取相关文献
+        CrawlerUtils.crawlRelatedDocs(workDoc);
+        // 爬取引用文献
+        CrawlerUtils.crawlReferencedDocs(workDoc);
+        // 爬取作者
+        CrawlerUtils.crawlDocsResearchers(workDoc);
+        // 存储自己！
+        if (CrawlerUtils.checkDocExist("works", workDoc.getPID()) == 0) {
+            System.out.printf("    Store new work: [%s]%s\n", workDoc.getPID(), workDoc.getPname());
+            esUtileService.addDoc("works", workDoc);
+        }
+    }
 
     public static ArrayList<WorkDoc> crawlRelatedDocs(WorkDoc originDoc) {
 

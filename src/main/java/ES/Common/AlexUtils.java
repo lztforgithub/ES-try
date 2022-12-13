@@ -10,4 +10,36 @@ public class AlexUtils {
         String[] IDs = rawAlexID.split("/");
         return IDs[IDs.length - 1];
     }
+
+
+    public static String generateAbbr(String fullname) {
+        String[] parts = fullname.split(" ");
+
+        if(parts.length <= 2) {
+            return "none";
+        }
+        if(parts[0].equals("arXiv:")) {
+            return "none";
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String part : parts) {
+            if (part.equals("IEEE")){
+                continue;
+            }
+            char ch = part.charAt(0);
+            if (ch >= 'A' && ch <= 'Z') {
+                stringBuilder.append(ch);
+            }
+        }
+
+        String ret = stringBuilder.toString();
+        if (ret.length() > 5) {
+            ret = ret.substring(0, 5);
+        }
+        if (ret.length() <= 1){
+            ret = "none";
+        }
+        return ret;
+    }
 }

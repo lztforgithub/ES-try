@@ -24,6 +24,8 @@ public class HttpUtils {
             InputStream inputStream = entity.getContent();
             Scanner s = new Scanner(inputStream).useDelimiter("\\A");
             result = s.hasNext() ? s.next() : "";
+            inputStream.close();
+            s.close();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -42,6 +44,7 @@ public class HttpUtils {
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 ret = handleResponse(response);
                 response.close();
+                httpClient.close();
                 return ret;
             } catch (Exception e){
                 e.printStackTrace();
@@ -60,6 +63,7 @@ public class HttpUtils {
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 ret = handleResponse(response);
                 response.close();
+                httpClient.close();
                 return ret;
             } catch (Exception e){
                 e.printStackTrace();
