@@ -8,6 +8,7 @@ import ES.Service.CollectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,13 +32,14 @@ public class CollectServiceImpl implements CollectService {
             return Response.fail("收藏夹为空!");
         }
         CollectRecords collectRecords;
+        List<Collected> result = new ArrayList<>();
         for (Collected i:collectedList){
             collectRecords = collectDao.selectByCTIDandPID(i.getCTID(),paper_id);
             if (collectRecords!=null){
-                return Response.success("位于收藏夹:",i);
+                result.add(i);
             }
         }
-        return Response.fail("文档未收藏!");
+        return Response.success("文档所在收藏夹如下:",result);
     }
 
     @Override

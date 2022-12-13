@@ -11,6 +11,9 @@ import ES.Ret.BaseRet;
 import ES.Service.AdmissionApplicationService;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,6 +24,9 @@ import java.util.*;
 @Service
 public class AdmissionApplicationServiceImpl implements AdmissionApplicationService {
 
+    //	引入邮件接口
+    @Autowired
+    private JavaMailSender mailSender;
     @Autowired
     AdmissionApplicationDao admissionApplicationDao;
     @Autowired
@@ -105,9 +111,36 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
                 esUtileService.updateDoc("researcher",admissionApplication.getAA_RID(),jsonObject);
 
             }
-            return Response.success("审核成功");
+            if (sendEmail(
+                    admissionApplication.getAAemail(),
+                    admissionApplication.getAAname(),
+                    acc
+            )){
+                return Response.success("审核成功");
+            }
+            return Response.fail("审核通过但邮件发送失败");
         }
         return Response.fail("审核失败!");
+    }
+
+    @Value("${spring.mail.username}")
+    private String from;
+    public boolean sendEmail(String to,String name,int accept){
+        String acc = "拒绝";
+        if (accept==1) acc="通过";
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setText("尊敬的AceGate用户,您好:\n"
+                + "\n您申请成为入驻用户,学者名称为: " + name + " 的入驻申请 已被" + acc +"\n"
+                + "\n如您未申请入驻过  AceGate  ，请忽略该邮件。\n(这是一封通过自动发送的邮件，请不要直接回复）");
+        try{
+            mailSender.send(message);
+        }catch (Exception e){
+            return false;
+        }
+        return true;
     }
 
     @Override
