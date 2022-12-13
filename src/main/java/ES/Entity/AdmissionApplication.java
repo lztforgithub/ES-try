@@ -51,8 +51,8 @@ public class AdmissionApplication {
     String AAemail;
 
     //研究领域，申请者自行填写
-    @Column(name = "AAinterestedareas", nullable = false)
-    String AAinterestedareas;
+    @Column(name = "AAinterestedAreas", nullable = false)
+    String AAinterestedAreas;
 
     //主页链接，申请者自行填写,可不填
     @Column(name = "AAhomepage", nullable = false)
@@ -87,7 +87,7 @@ public class AdmissionApplication {
         this.AAname = researcher_name;
         this.AAinstitution = institute;
         this.AAemail = contact;
-        this.AAinterestedareas = interestedAreas;
+        this.AAinterestedAreas = interestedAreas;
         this.AAhomepage = homepage;
         this.AAintroduction = introduction;
         this.AAccept = 0;
