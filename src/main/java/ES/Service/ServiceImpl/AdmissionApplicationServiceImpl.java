@@ -42,7 +42,7 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
                     i.getAAname(),
                     i.getAAinstitution(),
                     i.getAAemail(),
-                    i.getAAinterestedareas(),
+                    i.getAAinterestedAreas(),
                     i.getAAhomepage(),
                     i.getAAintroduction(),
                     i.getAAccept(),
@@ -69,7 +69,7 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
                     i.getAAname(),
                     i.getAAinstitution(),
                     i.getAAemail(),
-                    i.getAAinterestedareas(),
+                    i.getAAinterestedAreas(),
                     i.getAAhomepage(),
                     i.getAAintroduction(),
                     i.getAAccept(),
@@ -93,7 +93,7 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
                 JSONObject jsonObject = esUtileService.queryDocById("researcher",admissionApplication.getAA_RID());
                 jsonObject.put("r_UID",admissionApplication.getAA_UID());
                 jsonObject.put("rverifytime",new Time(new Date().getTime()));
-                jsonObject.put("rcustomconcepts",admissionApplication.getAAinterestedareas());
+                jsonObject.put("rcustomconcepts",admissionApplication.getAAinterestedAreas());
                 //jsonObject.put("Rinstitute",admissionApplication.getInstitution());
                 jsonObject.put("rcontact",admissionApplication.getAAemail());
                 if (admissionApplication.getAAhomepage()!=null) {
