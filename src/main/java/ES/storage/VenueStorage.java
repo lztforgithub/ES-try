@@ -82,7 +82,10 @@ public class VenueStorage {
         for (int i = 0; i < currentConcepts.size(); i++) {
             tries++;
 
-            if (number != (i + 1)) {
+            if (number >= (i + 1)) {
+                continue;
+            }
+            if(tries >= 8) {
                 continue;
             }
 
