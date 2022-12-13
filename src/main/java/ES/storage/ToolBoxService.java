@@ -19,6 +19,7 @@ import de.undercouch.citeproc.csl.CSLType;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +47,9 @@ public class ToolBoxService {
     }
 
     @RequestMapping(value = "/crawlResearchersAgain", method = RequestMethod.POST)
-    public Response<Object> crawlResearchersAgain(String Rname, String Rinstitution) {
+    public Response<Object> crawlResearchersAgain(@RequestBody Map<String, String> map1) {
+        String Rname = map1.get("Rname");
+        String Rinstitution = map1.get("Rinstitution");
         InstitutionStorage institutionStorage = new InstitutionStorage();
         ResearcherStorage researcherStorage = new ResearcherStorage();
         ConceptStorage conceptStorage = new ConceptStorage();
