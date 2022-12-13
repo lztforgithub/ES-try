@@ -47,6 +47,11 @@ public class ResearcherStorage {
         return researcherDocs;
     }
 
+    @RequestMapping(value = "/__delete", method = RequestMethod.GET)
+    public void deleteDocByIndexAndID(String indexName, String ID) {
+        esUtileService.deleteDocById(indexName, ID);
+    }
+
     @RequestMapping(value = "/searchRID", method = RequestMethod.GET)
     public JSONObject searchResearcherById(String ID) {
         // 清除不需要的部分
