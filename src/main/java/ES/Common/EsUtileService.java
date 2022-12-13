@@ -190,6 +190,7 @@ public class EsUtileService {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = buildMultiQuery(andMap, orMap, dimAndMap, dimOrMap, null, null);
         sourceBuilder.query(boolQueryBuilder);
+        sourceBuilder.trackTotalHits(true);
         //高亮处理
         if (!StringUtils.isEmpty(highName)) {
             buildHighlight(sourceBuilder, highName);

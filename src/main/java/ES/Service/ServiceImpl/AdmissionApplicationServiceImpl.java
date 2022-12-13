@@ -160,8 +160,8 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
 
         PageResult<JSONObject> t;
         Map<String,Object> map = new HashMap<>();
-        map.put("r_UID","-");
-        t = esUtileService.conditionSearch("researcher",1,20,"",null,null,map,null);
+        map.put("r_UID","");
+        t = esUtileService.conditionSearch("researcher",1,20,"",map,null,null,null);
         int iScholarSum = (int) t.getTotal();
 
         t = esUtileService.conditionSearch("researcher",1,20,"",null,null,null,null);
