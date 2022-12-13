@@ -30,7 +30,7 @@ public class VenueServiceImpl implements VenueService {
     public Response<Object> view(String venue_id){
         JSONObject jsonObject = esUtileService.queryDocById("venue",venue_id);
         if (jsonObject==null){
-            new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+venue_id);
+            return Response.fail("无效的VID");
         }
         //return Response.success("测试",jsonObject);
         List<String> CID = new ArrayList<>();
