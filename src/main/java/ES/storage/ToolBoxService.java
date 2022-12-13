@@ -1,8 +1,12 @@
 package ES.storage;
 
 
+import ES.Common.HttpUtils;
+import ES.Common.PageResult;
 import ES.Common.Response;
 import ES.Common.WebITS;
+import ES.Crawler.ResearcherCrawler;
+import ES.Document.ResearcherDoc;
 import ES.Document.WorkDoc;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -12,6 +16,8 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.CSLType;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,9 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Scanner;
+import java.util.*;
 
 @Component
 @RestController
@@ -39,6 +43,72 @@ public class ToolBoxService {
             return Response.fail("翻译API连接错误");
         }
         return Response.success("翻译成功", ret);
+    }
+
+    @RequestMapping(value = "/crawlResearchersAgain", method = RequestMethod.GET)
+    public Response<Object> crawlResearchersAgain(String Rname, String Rinstitution) {
+        InstitutionStorage institutionStorage = new InstitutionStorage();
+        ResearcherStorage researcherStorage = new ResearcherStorage();
+        ConceptStorage conceptStorage = new ConceptStorage();
+        JSONObject object = institutionStorage.searchInstitutionByName(Rinstitution);
+        if (object.getInteger("count") == 0) {
+            return Response.fail("未找到对应的研究机构。");
+        }
+        JSONObject instituteObject =object.getJSONArray("results").getJSONObject(0);
+        String R_IID = instituteObject.getString("iID");
+        String R_Iname = instituteObject.getString("iname");
+        String R_Ichinesename = "暂无参考中文名";
+        if (instituteObject.getString("ichinesename") != null) {
+            R_Ichinesename = instituteObject.getString("ichinesename");
+        }
+
+        String requestString = "https://api.openalex.org/authors";
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("filter", "last_known_institution.id:" + R_IID + ",display_name.search:" + Rname));
+        requestString = HttpUtils.buildURL(nameValuePairs, requestString);
+        System.out.println(requestString);
+        ArrayList<ResearcherDoc> temp = ResearcherCrawler.getResearchersByURL(requestString, 1);
+        if (temp.size() == 0) {
+            return Response.fail("未根据学者姓名及机构名称查询到对应的学者。请检查英文拼写。");
+        }
+        ResearcherDoc researcherDoc = temp.get(0);
+
+        // 检查数据库中是否已经有记录
+
+        JSONObject object1 = researcherStorage.searchResearcherById(researcherDoc.getRID());
+        if (object1 != null) {
+            // 已经有记录
+            return Response.fail("未查询到更多记录。");
+        }
+
+
+        institutionStorage.esUtileService.addDoc("researcher", researcherDoc);
+
+        JSONArray conceptNames = new JSONArray();
+        for (String CID : researcherDoc.getRconcepts()) {
+            JSONObject object2 = conceptStorage.searchConceptById(CID);
+            if (object2 != null) {
+                String temp2 = object2.getString("cname");
+                String CnameCN = object2.getString("cnameCN");
+                if (CnameCN != null) {
+                    temp2 = temp2 + "|" + CnameCN;
+                }
+                conceptNames.add(temp2);
+            }
+        }
+
+        try {
+            Map<String,Object> map = new HashMap<>();
+            map.put("rname",researcherDoc.getRname());
+            map.put("rinstitute",R_Iname);
+            PageResult<JSONObject> t = institutionStorage.esUtileService.conditionSearch("researcher",1,20,"",map,null,null,null);
+            return Response.success("匹配的学者如下:",t);
+        } catch (Exception e) {
+            return Response.fail("未查询到更多记录。");
+        }
+
+
+
     }
 
     @RequestMapping(value = "/citations", method = RequestMethod.GET)
@@ -126,9 +196,6 @@ public class ToolBoxService {
 
 
             try {
-
-                System.out.println(CSL.supportsStyle("ieee"));
-
 //                File file = new File(getClass().getResource("/ieee.csl").getFile());
 //                InputStream in = new FileInputStream(file);
 //                Scanner s = new Scanner(in).useDelimiter("\\A");

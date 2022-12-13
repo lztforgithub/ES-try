@@ -19,6 +19,30 @@ import static java.util.Map.Entry.comparingByValue;
 
 public class ResearcherCrawler {
 
+    public static ArrayList<ResearcherDoc> getResearchersByURL(String url, int lim) {
+        //  System.out.println("getResearcher Request url:" + url);
+        ArrayList<ResearcherDoc> ret = new ArrayList<>();
+        String response = HttpUtils.handleRequestURL(url);
+        int counter = 0;
+        try {
+            JSONObject responseJSON = JSONObject.parseObject(response);
+            JSONArray arr = responseJSON.getJSONArray("results");
+            System.out.println("hello");
+            for (int i = 0; i < arr.size(); i++) {
+                ret.add(parseOpenAlexResearcherInfo(arr.getJSONObject(i)));
+                counter++;
+                if (counter >= lim) {
+                    break;
+                }
+            }
+            System.out.println("hello");
+        } catch (Exception e) {
+            System.out.println("ERROR url: " + url);
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
     public static ArrayList<ResearcherDoc> getResearchersByURL(String url) {
        //  System.out.println("getResearcher Request url:" + url);
         ArrayList<ResearcherDoc> ret = new ArrayList<>();
