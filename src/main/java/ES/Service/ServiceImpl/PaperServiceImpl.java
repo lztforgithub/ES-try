@@ -811,7 +811,7 @@ public class PaperServiceImpl implements PaperService {
         String cID = getRandomConcept();
         ArrayList<JSONObject> intimateWorks = getIntimateWorks(cID);
         System.out.println("***"+intimateWorks.size());
-        recommend.setcName(esUtileService.queryDocById("concept", cID).getString("display_name"));
+        recommend.setcName(esUtileService.queryDocById("concept", cID).getString("cname"));
         for(int i=0; i<5&&i<intimateWorks.size(); i++)
         {
             JSONObject result = intimateWorks.get(i);
@@ -870,11 +870,11 @@ public class PaperServiceImpl implements PaperService {
         WorkStorage workStorage = new WorkStorage();
         int count = 0;
         boolean flag = false;
-        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 5, 500, "", null, null, null, null);
+        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 7, 500, "", null, null, null, null);
         for(JSONObject obj:works.getList())
         {
             System.out.println("now is "+obj.get("pID"));
-            /*if((obj.get("pID")).equals("W2155250165"))
+            /*if((obj.get("pID")).equals("W2015582686"))
             {
                 flag = true;
             }
