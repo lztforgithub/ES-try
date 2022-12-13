@@ -12,6 +12,7 @@ public class SearchResultRet {
     List<JSONObject> list;
     List<SimpleAuthor> author;
     List<SimpleVenue> venue;
+    List<String> concepts;
     int num;
     int totalPage;
     Recommendation recommendation;
