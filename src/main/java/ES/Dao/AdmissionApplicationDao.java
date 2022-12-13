@@ -3,7 +3,7 @@ package ES.Dao;
 import ES.Entity.AdmissionApplication;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import java.sql.Time;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -26,4 +26,6 @@ public interface AdmissionApplicationDao {
     String selectUnameByID(@Param("UID") String aa_uid);
 
     void updateUser(String aa_uid);
+
+    int getIscholarSum(String verified);
 }

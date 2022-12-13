@@ -23,7 +23,10 @@
         select Uname from user where UID = #{UID}
     </select>
     <update id="updateUser">
-        update user set Utype = "verified"
+        update user set Utype ="verified"
                     where UID = #{aa_uid}
     </update>
+    <select id="getIscholarSum" resultType="int">
+        select count(*) from user where Utype=#{param1}
+    </select>
 </mapper>

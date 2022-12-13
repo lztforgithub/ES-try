@@ -238,6 +238,7 @@ public class EsUtileService {
         boolQueryBuilder.filter(QueryBuilders.rangeQuery("pdate").from(from.getTime()).to(to.getTime()));
         //System.out.println("Time");
         sourceBuilder.query(boolQueryBuilder);
+        sourceBuilder.trackTotalHits(true);
         //分页设置
         buildPageLimit(sourceBuilder, pageNum, pageSize);
         //超时设置
