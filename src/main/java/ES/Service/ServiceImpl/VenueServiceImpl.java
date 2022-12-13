@@ -5,6 +5,7 @@ import ES.Common.PageResult;
 import ES.Common.Response;
 import ES.Ret.VConcepts;
 import ES.Service.VenueService;
+import ES.storage.VenueStorage;
 import com.alibaba.fastjson.JSONObject;
 import org.elasticsearch.common.recycler.Recycler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class VenueServiceImpl implements VenueService {
     public Response<Object> view(String venue_id){
         JSONObject jsonObject = esUtileService.queryDocById("venue",venue_id);
         if (jsonObject==null){
-            return Response.fail("VID错误!");
+            new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+venue_id);
         }
         //return Response.success("测试",jsonObject);
         List<String> CID = new ArrayList<>();
