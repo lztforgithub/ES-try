@@ -593,6 +593,22 @@ public class PaperServiceImpl implements PaperService {
                 new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+vID);
             }
             String vAbbrname = result.getString("abbreviated_title");
+            if(vAbbrname==null)
+            {
+                JSONArray alternames = result.getJSONArray("alternate_titles");
+                if(alternames.size()>0)
+                {
+                    vAbbrname = alternames.getString(0);
+                    for(int j=0; j<alternames.size(); j++)
+                    {
+                        String temp = alternames.getString(j);
+                        if(temp.length()<vAbbrname.length())
+                        {
+                            vAbbrname = temp;
+                        }
+                    }
+                }
+            }
             confInfo.setvAbbrname(vAbbrname);
             confInfo.setVID(vID);
             confInfo.setvName(vName);
