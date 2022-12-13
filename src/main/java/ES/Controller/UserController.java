@@ -102,6 +102,7 @@ public class UserController {
     public Response<Object> confirmVerCode(HttpServletRequest request,@RequestBody Map<String,String> map){
         String email = map.get("email");
         String verCode = map.get("vercode");
+        System.out.printf("Get email and vercode %s, %s\n", email, verCode);
         return userService.confiemVerCode(email,verCode);
     }
 

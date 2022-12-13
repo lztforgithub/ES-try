@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -158,17 +158,15 @@ public class ToolBoxService {
                 }
 
             }
-            Date Pdate;
-            Calendar cal;
+            Calendar cal = Calendar.getInstance();
             int month = 12;
             int day = 14;
             int year = 2022;
 
-            if (object.getInteger("pdate") != null && object.getInteger("pdate") >= 0) {
-                Pdate = new Date(object.getInteger("pdate"));
-                cal = Calendar.getInstance();
-                cal.setTime(Pdate);
-                month = cal.get(Calendar.MONTH);
+            if (object.getLong("pdate") != null && object.getLong("pdate") >= 0) {
+                cal.setTimeInMillis(object.getLong("pdate"));
+                System.out.println("Cal: " + cal.get(Calendar.MONTH));
+                month = cal.get(Calendar.MONTH) + 1;
                 day = cal.get(Calendar.DAY_OF_MONTH);
                 year = cal.get(Calendar.YEAR);
             }
@@ -192,7 +190,6 @@ public class ToolBoxService {
 
             builder
                     .issued(year, month, day)
-                    .URL(P_Vurl)
                     .accessed(2022, 12, 14)
                     .build();
 
@@ -225,7 +222,7 @@ public class ToolBoxService {
                 CSL cslMLA = new CSL(frogItemProvider, "modern-language-association");
                 cslMLA.setOutputFormat("text");
                 cslMLA.registerCitationItems("1");
-                ret.put("MLA", cslMLA.makeBibliography().makeString());
+                ret.put("MLA", "[1]" + cslMLA.makeBibliography().makeString());
 
 
 //                file = new File(getClass().getResource("/apa.csl").getFile());
@@ -237,7 +234,7 @@ public class ToolBoxService {
                 CSL cslAPA = new CSL(frogItemProvider, "apa");
                 cslAPA.setOutputFormat("text");
                 cslAPA.registerCitationItems("1");
-                ret.put("APA", cslAPA.makeBibliography().makeString());
+                ret.put("APA", "[1]" + cslAPA.makeBibliography().makeString());
 
                 return Response.success("成功生成引用", ret);
             } catch (Exception e) {
@@ -259,7 +256,7 @@ class FrogItemProvider implements ItemDataProvider {
 
     @Override
     public CSLItemData retrieveItem(String id) {
-        System.out.println("Call with " + id);
+        // System.out.println("Call with " + id);
         return builder.id(id).build();
     }
 

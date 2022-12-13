@@ -135,6 +135,8 @@ public class UserServiceImpl implements UserService {
         if (nowtime.after(timestamp)){
             return Response.fail("验证码已过期，请重新发送！");
         }
+
+        System.out.println(toEmail.getVercode());
         if (!verCode.equals(toEmail.getVercode())){
             return Response.fail("验证码错误！");
         }
