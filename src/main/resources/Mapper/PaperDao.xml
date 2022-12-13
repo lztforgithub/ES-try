@@ -18,8 +18,8 @@
             values(#{CID},#{C_UID},#{C_PID},#{Ccontent},#{Ctime},#{Clikes},#{Ctop})
     </insert>
     <insert id="insertLikeRecords" parameterType="ES.Entity.LikeRecords">
-        insert into like_records(LRID,LR_CID,LR_UID)
-            values(#{LRID},#{C_ID},#{UID})
+        insert into like_records(`LRID`,`LR_CID`,`LR_UID`)
+            values(#{LRID},#{LR_CID},#{LR_UID})
     </insert>
     <update id="updateLike">
         update comment set Clikes=Clikes+1

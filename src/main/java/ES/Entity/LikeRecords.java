@@ -20,15 +20,15 @@ public class LikeRecords {
     @Column(name = "LRID", nullable = false)
     String LRID;
 
-    @Column(name = "C_ID", nullable = false)
-    String C_ID;
+    @Column(name = "LR_CID", nullable = false)
+    String LR_CID;
 
-    @Column(name = "UID", nullable = false)
-    String UID;
+    @Column(name = "LR_UID", nullable = false)
+    String LR_UID;
 
     public LikeRecords(String user_id, String comment_id){
         this.LRID = UUID.randomUUID().toString();
-        this.UID = user_id;
-        this.C_ID = comment_id;
+        this.LR_UID = user_id;
+        this.LR_CID = comment_id;
     }
 }
