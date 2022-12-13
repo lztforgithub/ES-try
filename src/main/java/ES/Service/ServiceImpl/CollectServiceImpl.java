@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,12 +53,15 @@ public class CollectServiceImpl implements CollectService {
         collectDao.deleteCollectRecords(user_id,paper_id);
         try{
             for (String i:collect_id){
+                if (i == ""){
+                    return Response.success("取消收藏成功!");
+                }
                 CollectRecords collectRecords = new CollectRecords(i,paper_id);
                 collectDao.insertCollectRecords(collectRecords);
             }
-            return Response.success("收藏成功!");
+            return Response.success("修改收藏成功!");
         }catch (Exception e){
-            return Response.fail("收藏失败!");
+            return Response.fail("修改收藏失败!");
         }
     }
 
