@@ -45,7 +45,7 @@ public class ToolBoxService {
         return Response.success("翻译成功", ret);
     }
 
-    @RequestMapping(value = "/crawlResearchersAgain", method = RequestMethod.GET)
+    @RequestMapping(value = "/crawlResearchersAgain", method = RequestMethod.POST)
     public Response<Object> crawlResearchersAgain(String Rname, String Rinstitution) {
         InstitutionStorage institutionStorage = new InstitutionStorage();
         ResearcherStorage researcherStorage = new ResearcherStorage();
@@ -84,34 +84,33 @@ public class ToolBoxService {
 
         institutionStorage.esUtileService.addDoc("researcher", researcherDoc);
 
-        JSONArray conceptNames = new JSONArray();
-        for (String CID : researcherDoc.getRconcepts()) {
-            JSONObject object2 = conceptStorage.searchConceptById(CID);
-            if (object2 != null) {
-                String temp2 = object2.getString("cname");
-                String CnameCN = object2.getString("cnameCN");
-                if (CnameCN != null) {
-                    temp2 = temp2 + "|" + CnameCN;
-                }
-                conceptNames.add(temp2);
-            }
-        }
-
         try {
             Map<String,Object> map = new HashMap<>();
             map.put("rname",researcherDoc.getRname());
-            map.put("rinstitute",R_Iname);
-            PageResult<JSONObject> t = institutionStorage.esUtileService.conditionSearch("researcher",1,20,"",map,null,null,null);
+            map.put("r_IID", researcherDoc.getR_IID());
+            System.out.printf("%s %s %s\n", researcherDoc.getRID(), researcherDoc.getRname(), researcherDoc.getR_IID());
+//            System.out.println(researcherStorage.searchResearcherById(researcherDoc.getRID()));
+            JSONObject object2 = researcherStorage.searchResearcherById(researcherDoc.getRID());
+            PageResult<JSONObject> t = new PageResult<JSONObject>();
+            ArrayList<JSONObject> objects = new ArrayList<>();
+            objects.add(object2);
+            t.setList(objects);
+            t.setTotal(1);
+            t.setPageNum(1);
+            t.setPageSize(20);
+            t.setTotalPage(1);
+            t.setCurrentPage((long) 1);
+            t.setNumberOfElements(1);
             return Response.success("匹配的学者如下:",t);
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.fail("未查询到更多记录。");
         }
 
-
-
     }
 
-    @RequestMapping(value = "/citations", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/citations", method = RequestMethod.POST)
     public Response<Object> getCitation(String PID) {
 
         try {
