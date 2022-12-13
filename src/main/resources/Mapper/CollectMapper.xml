@@ -20,4 +20,7 @@
         insert into collected(CTID,CTname,CT_UID)
             values(#{CTID},#{CTname},#{CT_UID})
     </insert>
+    <select id="selectByCID" resultType="ES.Entity.CollectRecords">
+        select * from collect_records where CR_CTID = #{ct_id}
+    </select>
 </mapper>

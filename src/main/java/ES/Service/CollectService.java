@@ -12,4 +12,6 @@ public interface CollectService {
     Response<Object> CollectPaper(String user_id, String paper_id, List<String> collect_id);
 
     Response<Object> AddCollect(String user_id, String collect_name);
+
+    Response<Object> viewCollectPaper(String user_id);
 }

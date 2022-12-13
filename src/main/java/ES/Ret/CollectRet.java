@@ -8,12 +8,8 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class SearchResultRet {
+public class CollectRet {
+    String name;
+    String id;
     List<JSONObject> list;
-    List<SimpleAuthor> author;
-    List<SimpleVenue> venue;
-    List<String> concepts;
-    int num;
-    int totalPage;
-    Recommendation recommendation;
 }

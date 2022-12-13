@@ -58,4 +58,13 @@ public class CollectController {
         return collectService.AddCollect(user_id,collect_name);
     }
 
+    //获取收藏夹下的所有文件
+    @RequestMapping("/user/viewCollectPaper")
+    private Response<Object> viewCollectPaper(HttpServletRequest request){
+        String token = request.getHeader("token");
+        String user_id = JwtUtil.getUserId(token);
+        return collectService.viewCollectPaper(user_id);
+    }
+
+
 }
