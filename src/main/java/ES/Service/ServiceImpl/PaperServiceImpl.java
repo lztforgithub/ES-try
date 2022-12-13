@@ -442,6 +442,22 @@ public class PaperServiceImpl implements PaperService {
                 new VenueStorage().storeFirstPageVenuesByURL("http://api.openalex.org/venues?filter=openalex:"+vID);
             }
             String vAbbrname = result.getString("abbreviated_title");
+            if(vAbbrname==null)
+            {
+                JSONArray alternames = result.getJSONArray("alternate_titles");
+                if(alternames.size()>0)
+                {
+                    vAbbrname = alternames.getString(0);
+                    for(int j=0; j<alternames.size(); j++)
+                    {
+                        String temp = alternames.getString(j);
+                        if(temp.length()<vAbbrname.length())
+                        {
+                            vAbbrname = temp;
+                        }
+                    }
+                }
+            }
             confInfo.setvAbbrname(vAbbrname);
             confInfo.setvName(vName);
             confInfo.setVID(vID);
@@ -449,12 +465,15 @@ public class PaperServiceImpl implements PaperService {
             JSONArray counts = result.getJSONArray("counts_by_year");
             for(int j=0; j<3; j++)
             {
-                JSONObject countInfo = counts.getJSONObject(j);
-                int year = Integer.parseInt(countInfo.getString("year"));
-                int num = Integer.parseInt(countInfo.getString("cited_by_count"));
-                if(year>=2020 && year<=2022)
+                if(counts.size()>j)
                 {
-                    vCite += num;
+                    JSONObject countInfo = counts.getJSONObject(j);
+                    int year = Integer.parseInt(countInfo.getString("year"));
+                    int num = Integer.parseInt(countInfo.getString("cited_by_count"));
+                    if(year>=2020 && year<=2022)
+                    {
+                        vCite += num;
+                    }
                 }
             }
             confInfo.setvCite(vCite);
