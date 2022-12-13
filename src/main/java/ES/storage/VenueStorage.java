@@ -75,12 +75,17 @@ public class VenueStorage {
     }
 
     @RequestMapping(value = "/gs", method = RequestMethod.GET)
-    public void crawlVenues(String ancestorID, int level) {
+    public void crawlVenues(String ancestorID, int level, int number) {
         ConceptStorage conceptStorage = new ConceptStorage();
         JSONArray currentConcepts = conceptStorage.searchConceptByLevelAndAncestor(ancestorID, level);
         int tries = 0;
         for (int i = 0; i < currentConcepts.size(); i++) {
             tries++;
+
+            if (number != (i + 1)) {
+                continue;
+            }
+
             JSONObject currentConcept = currentConcepts.getJSONObject(i);
             String CID = currentConcept.getString("cID");
             String Cname = currentConcept.getString("cname");
@@ -96,17 +101,51 @@ public class VenueStorage {
             } catch (Exception e) {
 
             }
+
             int num = 0;
+
             if (i < 10) {
                 num = 8;
             } else {
                 num = 5;
             }
-            System.out.printf("Crawling %d venues by concept: [%s]%s\n", num, CID, Cname);
-            ArrayList<VenueDoc> venueDocs = storeVenuesByURL(requestString, num);
+
+            System.out.println(requestString);
+
+            System.out.printf("Crawling %d venues by concept: [%s]%s\n", 75, CID, Cname);
+            ArrayList<VenueDoc> venueDocs = storeVenuesByURL(requestString, 75);
             // 接着爬取论文
             // 2017年以来，排名前20的文章
+
+            int crawledVenuesCount = 0;
+            int broken = 5;
+
             for (VenueDoc venueDoc : venueDocs) {
+
+                // 先检查相关性
+                // 一级概念相关性排名在5及以内
+
+                if(!CrawlerUtils.checkVenueConceptScore(venueDoc, CID, 5)) {
+                    continue;
+                }
+
+
+                // 确认有关系了再开始爬
+                crawledVenuesCount++;
+
+//                // 检查这个Venue是否已经爬取过
+//                if (CrawlerUtils.checkDocExist("venue", venueDoc.getVID()) == 1) {
+//                    // 已经爬取过了
+//                    System.out.printf("    Duplicated venue [%s]%s\n", venueDoc.getVID(), venueDoc.getVfullname());
+//                    continue;
+//                }
+
+                // 跳过crawledVenuesCount = 1之前的部分
+                if (crawledVenuesCount <= 0) {
+                    continue;
+                }
+
+
                 String Vfullname = venueDoc.getVfullname();
                 String VID = venueDoc.getVID();
                 System.out.printf("    Crawling top 20 papers of [%s]%s\n", VID, Vfullname);
@@ -139,7 +178,7 @@ public class VenueStorage {
 //                    }
                     // 存储自己！
                     if (CrawlerUtils.checkDocExist("works", workDoc.getPID()) == 0) {
-                        System.out.printf("    Store new work: [%s]%s, progress %d / 20\n", workDoc.getPID(), workDoc.getPname(), j);
+                        System.out.printf("    Store new work: [%s]%s, progress %d / 20\n", workDoc.getPID(), workDoc.getPname(), j + 1);
                         esUtileService.addDoc("works", workDoc);
                     }
                     venueWorksCount++;
@@ -147,11 +186,13 @@ public class VenueStorage {
                         break;
                     }
                 }
-                System.out.printf("    Finished crawling top 20 papers of [%s]%s, progress %d / %d\n", VID, Vfullname, i, num);
+                System.out.printf("    Finished crawling top 20 papers of [%s]%s, progress %d / %d\n", VID, Vfullname, crawledVenuesCount, num);
 //                if (tries >= 1) {
 //                    break;
 //                }
-
+                if (crawledVenuesCount >= num) {
+                    break;
+                }
             }
 //            if (tries >= 1) {
 //                break;

@@ -30,6 +30,7 @@ public class ResearcherCrawler {
                 ret.add(parseOpenAlexResearcherInfo(arr.getJSONObject(i)));
             }
         } catch (Exception e) {
+            System.out.println("ERROR url: " + url);
             e.printStackTrace();
         }
         return ret;
@@ -106,13 +107,16 @@ public class ResearcherCrawler {
             // 学者文章API
             ret.setRworks_api_url(researcherJSON.getString("works_api_url"));
 
+            try {
+                // 学者所属机构ID
+                String R_IID = researcherJSON.getJSONObject("last_known_institution").getString("id");
+                ret.setR_IID(AlexUtils.getRawID(R_IID));
+                // 学者所属机构名称
+                ret.setRinstitute(researcherJSON.getJSONObject("last_known_institution").getString("display_name"));
+            } catch (Exception e1) {
+                System.out.printf("Researcher [%s]%s has no known institutions.\n", ret.getRID(), ret.getRname());
+            }
 
-
-            // 学者所属机构ID
-            String R_IID = researcherJSON.getJSONObject("last_known_institution").getString("id");
-            ret.setR_IID(AlexUtils.getRawID(R_IID));
-            // 学者所属机构名称
-            ret.setRinstitute(researcherJSON.getJSONObject("last_known_institution").getString("display_name"));
             // 联系方式（邮箱）
             ret.setRcontact("none");
             // 个人主页

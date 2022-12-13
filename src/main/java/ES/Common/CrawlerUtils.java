@@ -3,9 +3,11 @@ package ES.Common;
 import ES.Crawler.ResearcherCrawler;
 import ES.Crawler.WorkCrawler;
 import ES.Document.ResearcherDoc;
+import ES.Document.VenueDoc;
 import ES.Document.WorkDoc;
 import ES.storage.ResearcherStorage;
 import ES.storage.WorkStorage;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
@@ -28,12 +30,48 @@ public class CrawlerUtils {
 
     public static WorkDoc frogCrawlSingleDoc(String url) {
         String response = HttpUtils.handleRequestURL(url);
-        JSONObject firstDoc = JSONObject.parseObject(response).getJSONArray("results").getJSONObject(0);
-        WorkCrawler workCrawler = new WorkCrawler("none");
-        WorkDoc workDoc = workCrawler.json2Doc(firstDoc.toJSONString());
-        // System.out.println("Check crawler: " + workDoc.getPID());
-        return workDoc;
+        JSONObject firstDoc = new JSONObject();
+        try {
+            firstDoc = JSONObject.parseObject(response).getJSONArray("results").getJSONObject(0);
+            WorkCrawler workCrawler = new WorkCrawler("none");
+            WorkDoc workDoc = workCrawler.json2Doc(firstDoc.toJSONString());
+            if (workDoc == null) {
+                System.out.println("Work not found: " + url);
+                workDoc = new WorkDoc();
+                workDoc.setPID("ERROR");
+                return workDoc;
+            }
+            // System.out.println("Check crawler: " + workDoc.getPID());
+            return workDoc;
+        } catch (Exception e) {
+            System.out.println("Work not found: " + url);
+            WorkDoc workDoc = new WorkDoc();
+            workDoc.setPID("ERROR");
+            return workDoc;
+        }
+
     }
+
+
+    /**
+     * 返回false，代表不相关；返回true，代表相关
+     */
+    public static boolean checkVenueConceptScore(VenueDoc venueDoc, String CID, int pos) {
+        ArrayList<String> conceptIDs = venueDoc.getVconceptIDs();
+        for (int i = 0; i < conceptIDs.size(); i++) {
+            if (i >= pos) {
+                break;
+            }
+            String currentConcept = conceptIDs.get(i);
+            if (currentConcept.equals(CID)) {
+                System.out.printf("%s related.\n", venueDoc.getVfullname());
+                return true;
+            }
+        }
+        System.out.printf("%s not related.\n", venueDoc.getVfullname());
+        return false;
+    }
+
 
     public static ArrayList<WorkDoc> crawlRelatedDocs(WorkDoc originDoc) {
 
@@ -58,10 +96,15 @@ public class CrawlerUtils {
             String requestString = HttpUtils.buildURL(nameValuePairs, "https://api.openalex.org/works");
             // System.out.println("        Request URL:" + requestString);
             WorkDoc workDoc = frogCrawlSingleDoc(requestString);
+
+            if (workDoc.getPID().equals("ERROR")) {
+                continue;
+            }
+
             esUtileService.addDoc("works", workDoc);
             crawledDocsIDs.add(workDoc.getPID());
             counter++;
-            if (counter >= 20) {
+            if (counter >= 10) {
                 break;
             }
             ret.add(workDoc);
@@ -76,7 +119,7 @@ public class CrawlerUtils {
 
         ArrayList<WorkDoc> ret = new ArrayList<>();
 
-        ArrayList<String> referenceDocsIDs = originDoc.getPrelated();
+        ArrayList<String> referenceDocsIDs = originDoc.getPreferences();
         ArrayList<String> crawledDocsIDs = new ArrayList<>();
         int count = 0;
 
@@ -95,10 +138,16 @@ public class CrawlerUtils {
             String requestString = HttpUtils.buildURL(nameValuePairs, "https://api.openalex.org/works");
 //            System.out.println("        Request URL:" + requestString);
             WorkDoc workDoc = frogCrawlSingleDoc(requestString);
+
+            if (workDoc.getPID().equals("ERROR")) {
+                continue;
+            }
+
+
             esUtileService.addDoc("works", workDoc);
             crawledDocsIDs.add(workDoc.getPID());
             count++;
-            if (count >= 20) {
+            if (count >= 10) {
                 break;
             }
             ret.add(workDoc);
@@ -130,13 +179,17 @@ public class CrawlerUtils {
                 String requestString = HttpUtils.buildURL(nameValuePairs, "https://api.openalex.org/authors");
 //                System.out.println("        Request string: " + requestString);
                 ArrayList<ResearcherDoc> temp = ResearcherCrawler.getResearchersByURL(requestString);
+                if (temp.size() == 0) {
+                    System.out.println("Researcher not found: " + researcherID);
+                    continue;
+                }
                 ResearcherDoc researcherDoc = temp.get(0);
                 esUtileService.addDoc("researcher", researcherDoc);
 //                System.out.println("        Get new researcher: " + temp.get(0).getRname());
                 ret.add(researcherDoc);
                 crawledResearchersIDs.add(researcherDoc.getRID());
                 count++;
-                if (count >= 20) {
+                if (count >= 10) {
                     break;
                 }
             } else {
