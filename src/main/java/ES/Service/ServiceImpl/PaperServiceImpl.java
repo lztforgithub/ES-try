@@ -11,6 +11,7 @@ import ES.Ret.PaperDetails;
 import ES.Ret.Rpaper;
 import ES.Service.PaperService;
 import ES.storage.ConceptStorage;
+import ES.storage.ResearcherStorage;
 import ES.storage.VenueStorage;
 import ES.storage.WorkStorage;
 import com.alibaba.fastjson.JSON;
@@ -133,6 +134,18 @@ public class PaperServiceImpl implements PaperService {
 
         if (jsonObject.getString("p_Vurl") == null){
             jsonObject.put("p_Vurl","");
+        }
+
+        String vid = jsonObject.getString("p_VID");
+        JSONObject vInfo = esUtileService.queryDocById("venue", vid);
+        if(vInfo!=null)
+        {
+            String venueName = vInfo.getString("vfullname");
+            jsonObject.put("venueName", venueName);
+        }
+        else
+        {
+            jsonObject.put("venueName", null);
         }
 
         jsonObject.put("Pauthor",Pauthors);
@@ -870,16 +883,13 @@ public class PaperServiceImpl implements PaperService {
         WorkStorage workStorage = new WorkStorage();
         int count = 0;
         boolean flag = false;
-        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 7, 500, "", null, null, null, null);
+        PageResult<JSONObject> works = esUtileService.conditionSearch("works", 14, 500, "", null, null, null, null);
         for(JSONObject obj:works.getList())
         {
             System.out.println("now is "+obj.get("pID"));
-            /*if((obj.get("pID")).equals("W2015582686"))
-            {
-                flag = true;
-            }
+
             if(flag)
-            {*/
+            {
                 JSONArray relates = obj.getJSONArray("prelated");
                 for(int i=0; i<relates.size(); i++)
                 {
@@ -890,7 +900,11 @@ public class PaperServiceImpl implements PaperService {
                         workStorage.storeWork("http://api.openalex.org/works/"+wID);
                     }
                 }
-//            }
+            }
+            if((obj.get("pID")).equals("W2121906867"))
+            {
+                flag = true;
+            }
         }
         System.out.println("count="+count);
     }
