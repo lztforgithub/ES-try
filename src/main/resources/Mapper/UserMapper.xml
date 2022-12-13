@@ -41,7 +41,7 @@
                     where UID = #{UID}
     </update>
     <update id="changePassword" parameterType="java.lang.String">
-        update user set UPassword = #{UPassword}
+        update user set UPassword = #{Upassword}
                     where Uemail = #{Uemail}
     </update>
 </mapper>

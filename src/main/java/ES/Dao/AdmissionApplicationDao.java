@@ -24,4 +24,6 @@ public interface AdmissionApplicationDao {
     int countUser();
 
     String selectUnameByID(@Param("UID") String aa_uid);
+
+    void updateUser(String aa_uid);
 }

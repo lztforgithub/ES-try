@@ -22,4 +22,8 @@
     <select id="selectUnameByID" resultType="java.lang.String">
         select Uname from user where UID = #{UID}
     </select>
+    <update id="updateUser">
+        update user set Utype = "verified"
+                    where UID = #{aa_uid}
+    </update>
 </mapper>

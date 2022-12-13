@@ -110,6 +110,7 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
 
                 esUtileService.updateDoc("researcher",admissionApplication.getAA_RID(),jsonObject);
 
+                admissionApplicationDao.updateUser(admissionApplication.getAA_UID());
             }
             if (sendEmail(
                     admissionApplication.getAAemail(),
@@ -159,20 +160,20 @@ public class AdmissionApplicationServiceImpl implements AdmissionApplicationServ
 
         PageResult<JSONObject> t;
         Map<String,Object> map = new HashMap<>();
-        map.put("r_UID","*");
-        t = esUtileService.conditionSearch("researcher",100,20,"",map,null,null,null);
+        map.put("r_UID","-");
+        t = esUtileService.conditionSearch("researcher",1,20,"",null,null,map,null);
         int iScholarSum = (int) t.getTotal();
 
-        t = esUtileService.conditionSearch("researcher",100,20,"",null,null,null,null);
+        t = esUtileService.conditionSearch("researcher",1,20,"",null,null,null,null);
         int scholarSum = (int) t.getTotal();
 
-        t = esUtileService.conditionSearch("concept",100,20,"",null,null,null,null);
+        t = esUtileService.conditionSearch("concept",1,20,"",null,null,null,null);
         int fieldSum = (int) t.getTotal();
 
-        t = esUtileService.conditionSearch("works",100,20,"",null,null,null,null);
+        t = esUtileService.conditionSearch("works",1,20,"",null,null,null,null);
         int paperSum = (int) t.getTotal();
 
-        t = esUtileService.conditionSearch("institutions",100,20,"",null,null,null,null);
+        t = esUtileService.conditionSearch("institutions",1,20,"",null,null,null,null);
         int insSum = (int) t.getTotal();
 
         BaseRet baseRet = new BaseRet(userSum,iScholarSum,scholarSum,fieldSum,paperSum,insSum);
