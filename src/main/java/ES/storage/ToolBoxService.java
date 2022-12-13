@@ -110,7 +110,7 @@ public class ToolBoxService {
     }
 
 
-    @RequestMapping(value = "/citations", method = RequestMethod.GET)
+    @RequestMapping(value = "/citations", method = RequestMethod.POST)
     public Response<Object> getCitation(String PID) {
 
         try {
