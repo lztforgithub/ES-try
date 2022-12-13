@@ -129,7 +129,12 @@ public class SearchServiceImpl implements SearchService {
                     }
                 }
                 result_i = i;
+
+                String vid = i.getString("p_VID");
+                String vName = esUtileService.queryDocById("venue", vid).getString("vfullname");
+
                 result_i.put("PAuthor", coAuthors);
+                result_i.put("VName", vName);
                 result.add(result_i);
             }
 
@@ -531,7 +536,12 @@ public class SearchServiceImpl implements SearchService {
                     }
                 }
                 result_i = i;
+
+                String vid = i.getString("p_VID");
+                String vName = esUtileService.queryDocById("venue", vid).getString("vfullname");
+
                 result_i.put("PAuthor", coAuthors);
+                result_i.put("VName", vName);
                 result.add(result_i);
 
             }
