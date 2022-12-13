@@ -109,6 +109,23 @@ public class CrawlerUtils {
     }
 
 
+    public static boolean checkWorkConceptRelevance(WorkDoc workDoc, String Cname, int pos) {
+        ArrayList<String> strings = workDoc.getPconcepts();
+        int counter = 0;
+        for (String cur : strings) {
+            counter++;
+            if (Cname.equals(cur)) {
+//                System.out.printf("%s related to %s. \n", work.getString("pID"), Cname);
+                return true;
+            }
+            if ( counter >= pos) {
+//                System.out.printf("%s not related to %s. \n", work.getString("pID"), Cname);
+                return false;
+            }
+        }
+        return false;
+    }
+
     public static void parseWorkDocForCompleteInformation(WorkDoc workDoc) {
         // 爬取相关文献
         CrawlerUtils.crawlRelatedDocs(workDoc);

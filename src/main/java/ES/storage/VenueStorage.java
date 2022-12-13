@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.Basic;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -227,7 +228,59 @@ public class VenueStorage {
         }
     }
 
+    @RequestMapping(value = "/crawlWorksByCSConcept", method = RequestMethod.GET)
     public void crawlWorksByCSConcept(){
+        ConceptStorage conceptStorage = new ConceptStorage();
+        WorkCrawler workCrawler = new WorkCrawler("none");
 
+        // 爬取所有一级概念
+        JSONArray arr = conceptStorage.searchConceptByLevelAndAncestor("C41008148", 1);
+//        System.out.println("Recommend paper concepts:" + arr.size());
+
+        for (int i = 0; i < arr.size(); i++) {
+            JSONObject currentConcept = arr.getJSONObject(i);
+            String CID = currentConcept.getString("cID");
+            String Cname = currentConcept.getString("cname");
+            System.out.println("Crawling works from: " + Cname);
+            String baseURL = "https://api.openalex.org/works";
+            ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+            nameValuePairs.add(new BasicNameValuePair("filter", "concepts.id:" + CID + ",publication_year:>2015"));
+            nameValuePairs.add(new BasicNameValuePair("sort", "cited_by_count:desc"));
+            baseURL = HttpUtils.buildURL(nameValuePairs, baseURL);
+            int page = 0;
+            int count = 0;
+            int tries = 0;
+            int total_page = 0;
+            int totalCrawlWorks = 10;
+
+            while (count < Math.min(10, totalCrawlWorks)) {
+                page++;
+                String requestURL = baseURL + "&page=" + page;
+                String response = HttpUtils.handleRequestURL(requestURL);
+                System.out.println(requestURL);
+                JSONObject responseJSON = JSONObject.parseObject(response);
+//            System.out.println(responseJSON);
+                totalCrawlWorks = responseJSON.getJSONObject("meta").getInteger("count");
+                total_page = totalCrawlWorks / page;
+                JSONArray arr1 = responseJSON.getJSONArray("results");
+                for (int j = 0; j < arr1.size(); j++) {
+                    JSONObject object = arr1.getJSONObject(j);
+                    WorkDoc workDoc = workCrawler.json2Doc(object.toJSONString());
+                    if (!CrawlerUtils.checkWorkConceptRelevance(workDoc, Cname, 3)) continue;
+                    System.out.printf("    Get new work: [%s]%s\n", workDoc.getPID(), workDoc.getPname());
+                    if(workDoc.getPname() == null) {
+                        continue;
+                    }
+                    if(workDoc.getPname().length() <= 2) {
+                        continue;
+                    }
+                    CrawlerUtils.parseWorkDocForCompleteInformation(workDoc);
+                    count++;
+                    if (count >= 10) break;
+                }
+                if(page >= total_page) break;
+            }
+
+        }
     }
 }
