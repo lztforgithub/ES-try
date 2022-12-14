@@ -105,7 +105,11 @@ public class CollectServiceImpl implements CollectService {
 
     @Override
     public Response<Object> CancelCollect(String cid, String pid){
-        collectDao.deleteCidAndPid(cid,pid);
+        try{
+            collectDao.deleteCidAndPid(cid,pid);
+        }catch (Exception e){
+            return Response.fail("取消收藏失败!");
+        }
         return Response.success("取消收藏成功!");
     }
 }
