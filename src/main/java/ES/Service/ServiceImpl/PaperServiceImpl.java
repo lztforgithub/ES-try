@@ -63,7 +63,7 @@ public class PaperServiceImpl implements PaperService {
                 JSONObject t = esUtileService.queryDocById("works", "W"+i.split("W")[1]);
                 if (t != null) {
                     numq++;
-                    if (numq>=5) break;
+                    if (numq>=9) break;
                     //System.out.println(i);
                     Preferences.add(new Rpaper(
                             "W"+i.split("W")[1],

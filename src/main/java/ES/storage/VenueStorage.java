@@ -300,6 +300,7 @@ public class VenueStorage {
 
         while (count < Math.min(50, totalResearchers)) {
             page++;
+            nameValuePairs.add(2, new BasicNameValuePair("page", Integer.toString(page)));
 
         }
 
