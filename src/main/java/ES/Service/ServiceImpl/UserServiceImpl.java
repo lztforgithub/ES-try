@@ -1,6 +1,8 @@
 package ES.Service.ServiceImpl;
 
+import ES.Common.EsUtileService;
 import ES.Common.JwtUtil;
+import ES.Common.PageResult;
 import ES.Common.Response;
 import ES.Dao.UserDao;
 import ES.Entity.ToEmail;
@@ -113,7 +115,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<Object> personInfo(String uid){
-        return Response.success("个人信息如下:",userDao.selectByID(uid));
+        User user = userDao.selectByID(uid);
+        String u_rid = "";
+        if (user.getUtype().equals("verified")) {
+            EsUtileService esUtileService = new EsUtileService();
+            HashMap<String, Object> andMap = new HashMap<>();
+            try {
+//                JSONObject test = new JSONObject();
+//                test.put("r_UID", "f59b5d48-f2a8-47f4-8c63-e69ecec04124");
+//                esUtileService.updateDoc("researcher", "A2141166063", test);
+                andMap.put("r_UID", uid);
+                PageResult<JSONObject> pageResult = esUtileService.conditionSearch("researcher", 1, 10, "",
+                        andMap, null, null, null);
+                JSONObject object = pageResult.getList().get(0);
+                u_rid = object.getString("rID");
+            } catch (Exception e) {
+
+            }
+        }
+
+        JSONObject ret = new JSONObject();
+        ret.put("uname", user.getUname());
+        ret.put("ufield", user.getUfield());
+        ret.put("uinterest", user.getUinterest());
+        ret.put("uemail", user.getUemail());
+        ret.put("utype", user.getUtype());
+        ret.put("uid", user.getUID());
+        ret.put("u_rid", u_rid);
+
+
+        return Response.success("个人信息如下:",ret);
     }
 
     @Override
