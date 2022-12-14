@@ -66,5 +66,14 @@ public class CollectController {
         return collectService.viewCollectPaper(user_id);
     }
 
+    //月老师要求的取消收藏接口
+    @PostMapping("/user/CancelCollect")
+    private Response<Object> CancelCollect(HttpServletRequest request, @RequestBody Map<String, String> map){
+        String token = request.getHeader("token");
+        String user_id = JwtUtil.getUserId(token);
+        String cid = map.get("cid");
+        String pid = map.get("pid");
+        return collectService.CancelCollect(cid,pid);
+    }
 
 }

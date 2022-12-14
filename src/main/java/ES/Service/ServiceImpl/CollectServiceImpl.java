@@ -102,4 +102,14 @@ public class CollectServiceImpl implements CollectService {
         }
         return Response.success("收藏夹文献如下:",collectRets);
     }
+
+    @Override
+    public Response<Object> CancelCollect(String cid, String pid){
+        try{
+            collectDao.deleteCidAndPid(cid,pid);
+        }catch (Exception e){
+            return Response.fail("取消收藏失败!");
+        }
+        return Response.success("取消收藏成功!");
+    }
 }

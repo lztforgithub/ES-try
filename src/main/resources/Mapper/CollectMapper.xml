@@ -23,4 +23,7 @@
     <select id="selectByCID" resultType="ES.Entity.CollectRecords">
         select * from collect_records where CR_CTID = #{ct_id}
     </select>
+    <delete id="deleteCidAndPid">
+        delete from collect_records where CR_CTID = #{cid} and CR_PID = #{pid}
+    </delete>
 </mapper>

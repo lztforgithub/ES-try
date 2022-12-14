@@ -14,4 +14,6 @@ public interface CollectService {
     Response<Object> AddCollect(String user_id, String collect_name);
 
     Response<Object> viewCollectPaper(String user_id);
+
+    Response<Object> CancelCollect(String cid, String pid);
 }

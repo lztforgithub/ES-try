@@ -20,4 +20,6 @@ public interface CollectDao {
     int insertCollected(Collected collected);
 
     List<CollectRecords> selectByCID(String ctid);
+
+    void deleteCidAndPid(@Param("cid") String cid,@Param("pid") String pid);
 }
