@@ -357,21 +357,21 @@ public class SearchServiceImpl implements SearchService {
                     tempMap = new HashMap<>();
                     tempMap.put("rinstitute",content);
                     PageResult<JSONObject> t = esUtileService.conditionSearch("researcher",1,10,"",tempMap,null,null,null);
-                    content = t.getList().get(0).getString("rID");
-                    /*for (JSONObject j:t.getList()){
-                        switch (type){
-                            case 1:
-                                //andmap.put("pauthor", content);
-                                break;
-                            case 2:
-                                ormap.put("pauthor", j.getString("rID"));
-                                break;
-                            case 3:
-                                notmap.put("pauthor", j.getString("rID"));
-                                break;
+                    if (t.getList().size()>0) {
+                        //content = t.getList().get(0).getString("rID");
+                        for (JSONObject j : t.getList()) {
+                            switch (type) {
+                                case 1:
+                                case 2:
+                                    ormap.put("pauthorname", j.getString("rname"));
+                                    break;
+                                case 3:
+                                    notmap.put("pauthorname", j.getString("rname"));
+                                    break;
+                            }
                         }
-                    }*/
-                    switch (type){
+                    }
+                    /*switch (type){
                         case 1:
                             andmap.put("pauthorname", content);
                             break;
@@ -381,7 +381,7 @@ public class SearchServiceImpl implements SearchService {
                         case 3:
                             notmap.put("pauthorname", content);
                             break;
-                    }
+                    }*/
                     continue;
                 }
 
