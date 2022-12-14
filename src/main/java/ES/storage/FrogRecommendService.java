@@ -34,11 +34,11 @@ public class FrogRecommendService {
         JSONArray arr = conceptStorage.searchConceptByLevelAndAncestor("C41008148", 1);
         System.out.println("Recommend paper concepts:" + arr.size());
         // 随机选取一级概念
-        int choose = (int) (Math.random() * 20);
+        int choose = (int) (Math.random() * 15);
 
         while (arr.getJSONObject(choose).getString("cname").equals("Data science")
                 || arr.getJSONObject(choose).getString("cname").equals("Library science")){
-            choose = (int) (Math.random() * 20);
+            choose = (int) (Math.random() * 15);
         }
 
         JSONObject selectedConcept = arr.getJSONObject(choose);
