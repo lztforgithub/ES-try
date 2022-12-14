@@ -229,7 +229,7 @@ public class VenueStorage {
     }
 
     @RequestMapping(value = "/crawlWorksByCSConcept", method = RequestMethod.GET)
-    public void crawlWorksByCSConcept(){
+    public void crawlWorksByCSConcept(int start){
         ConceptStorage conceptStorage = new ConceptStorage();
         WorkCrawler workCrawler = new WorkCrawler("none");
 
@@ -237,7 +237,7 @@ public class VenueStorage {
         JSONArray arr = conceptStorage.searchConceptByLevelAndAncestor("C41008148", 1);
 //        System.out.println("Recommend paper concepts:" + arr.size());
 
-        for (int i = 0; i < arr.size(); i++) {
+        for (int i = start; i < arr.size(); i++) {
             JSONObject currentConcept = arr.getJSONObject(i);
             String CID = currentConcept.getString("cID");
             String Cname = currentConcept.getString("cname");
@@ -266,6 +266,7 @@ public class VenueStorage {
                 for (int j = 0; j < arr1.size(); j++) {
                     JSONObject object = arr1.getJSONObject(j);
                     WorkDoc workDoc = workCrawler.json2Doc(object.toJSONString());
+                    if(workDoc == null) continue;
                     if (!CrawlerUtils.checkWorkConceptRelevance(workDoc, Cname, 3)) continue;
                     System.out.printf("    Get new work: [%s]%s\n", workDoc.getPID(), workDoc.getPname());
                     if(workDoc.getPname() == null) {

@@ -150,7 +150,7 @@ public class FrogRecommendService {
         int counter = 0;
 
         // 搜索期刊
-        for (int j = 1; j <= 3; j++) {
+        for (int j = 1; j <= 6; j++) {
             try {
                 PageResult<JSONObject> pageResult = conceptStorage.esUtileService.conditionSearchWithSort("venue", j, 25, "",
                         andMap, null, null, null, "vciteThree");

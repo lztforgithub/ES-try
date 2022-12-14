@@ -35,7 +35,12 @@ public class InstitutionStorage {
     {
         InstitutionCrawler institutionCrawler = new InstitutionCrawler(url);
         InstitutionStorage institutionStorage = new InstitutionStorage();
-        institutionStorage.addDoc("institutions", institutionCrawler.run());
+
+        JSONObject object = JSONObject.parseObject(HttpUtils.handleRequestURL(url));
+
+        InstitutionDoc institutionDoc = institutionCrawler.json2Doc(object.toJSONString());
+
+        institutionStorage.addDoc("institutions", institutionDoc);
     }
 
     /**
