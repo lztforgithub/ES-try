@@ -117,6 +117,114 @@ public class ToolBoxService {
 
 
     @RequestMapping(value = "/citations", method = RequestMethod.POST)
+    public Response<Object> getNewCitation(@RequestBody Map<String, String> map1){
+        String PID = map1.get("PID");
+
+        String[] months = {"Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."};
+
+
+        try {
+            JSONObject ret = new JSONObject();
+            WorkStorage workStorage = new WorkStorage();
+            JSONObject object = workStorage.findDocByID("works", PID);
+            if (object == null) {
+//            ret.put("status", "ERROR");
+                return Response.fail("未查找到论文");
+            }
+            String Pname = object.getString("pname");
+            String P_Vname;
+            if (object.getString("p_Vname") == null) {
+                P_Vname = "[none]";
+            } else {
+                P_Vname = object.getString("p_Vname");
+                if (P_Vname.length() <= 2) {
+                    P_Vname = "none";
+                }
+            }
+
+            JSONArray researchers = object.getJSONArray("pauthorname");
+            ArrayList<String> parsedResearchers = new ArrayList<>();
+            for (int i = 0; i < researchers.size(); i++) {
+                String rname = researchers.getString(i);
+                if (rname == null) {
+                    parsedResearchers.add("[none] [none]");
+                    continue;
+                }
+                if (rname.length() <= 2) {
+                    parsedResearchers.add("[none] [none]");
+                    continue;
+                }
+                if (rname.contains(" ")) {
+                    parsedResearchers.add(researchers.getString(i));
+                } else {
+                    parsedResearchers.add("[none] [none]");
+                }
+
+            }
+            Calendar cal = Calendar.getInstance();
+            int month = 12;
+            int day = 14;
+            int year = 2022;
+
+            if (object.getLong("pdate") != null && object.getLong("pdate") >= 0) {
+                cal.setTimeInMillis(object.getLong("pdate"));
+                System.out.println("Cal: " + cal.get(Calendar.MONTH));
+                month = cal.get(Calendar.MONTH);
+                day = cal.get(Calendar.DAY_OF_MONTH);
+                year = cal.get(Calendar.YEAR);
+            }
+
+            StringBuilder APABuilder = new StringBuilder();
+            StringBuilder MLABuilder = new StringBuilder();
+            StringBuilder IEEEBuilder = new StringBuilder();
+
+            APABuilder.append("[1]");
+            MLABuilder.append("[1]");
+            IEEEBuilder.append("[1]");
+            // 处理作者姓名
+
+            int counter = 0;
+            for (String temp : parsedResearchers) {
+                counter++;
+
+                int index = temp.indexOf(' ');
+                String givenName = temp.substring(0, index);
+                String familyName = temp.substring(index + 1);
+
+                APABuilder.append(givenName).append(", ").append(familyName.charAt(0)).append(". ");
+                MLABuilder.append(givenName).append(", ").append(familyName).append(". ");
+                IEEEBuilder.append(familyName.charAt(0)).append(". ").append(givenName).append(", ");
+
+                if (counter >= 4) {
+                    APABuilder.append("et. al. ");
+                    MLABuilder.append("et. al. ");
+                    IEEEBuilder.append("et. al. ");
+                    break;
+                }
+            }
+
+            //APA：年份+文章标题
+            APABuilder.append("(").append(year).append("). ").append(Pname);
+
+            //MLA:文章标题+年份
+            MLABuilder.append(Pname).append(" ").append(months[month]).append(" ").append(year).append(".");
+
+            // IEEE: 文章标题+年份
+            IEEEBuilder.append('"').append(Pname).append('"').append(" ").append(months[month]).append(" ").append(year).append(".");
+
+            ret = new JSONObject();
+            ret.put("IEEE", IEEEBuilder.toString());
+            ret.put("MLA", MLABuilder.toString());
+            ret.put("APA", APABuilder.toString());
+            return Response.success("生成引用成功！", ret);
+        }catch (Exception e) {
+            return Response.fail("生成引用失败");
+        }
+
+    }
+
+
+    @RequestMapping(value = "/old_citations", method = RequestMethod.POST)
     public Response<Object> getCitation(@RequestBody Map<String, String> map1) {
 
         String PID = map1.get("PID");
@@ -185,7 +293,7 @@ public class ToolBoxService {
                 String givenName = temp.substring(0, index);
                 String familyName = temp.substring(index + 1);
 
-                builder = builder.author(givenName + " John", familyName + " Doe");
+                builder = builder.author(givenName, familyName);
             }
 
             builder
@@ -200,12 +308,12 @@ public class ToolBoxService {
 
 
             try {
+//                System.out.println("Avail " + CSL.supportsStyle("ieee"));
 //                File file = new File(getClass().getResource("/ieee.csl").getFile());
 //                InputStream in = new FileInputStream(file);
 //                Scanner s = new Scanner(in).useDelimiter("\\A");
 //                String ieeeStyle = s.hasNext() ? s.next() : "";
 //                in.close();
-//                System.out.println(ieeeStyle);
 
                 CSL cslIEEE = new CSL(frogItemProvider, "ieee");
                 cslIEEE.setOutputFormat("text");
@@ -230,6 +338,7 @@ public class ToolBoxService {
 //                s = new Scanner(in).useDelimiter("\\A");
 //                String apaStyle = s.hasNext() ? s.next() : "";
 //                in.close();
+//                s.close();
 
                 CSL cslAPA = new CSL(frogItemProvider, "apa");
                 cslAPA.setOutputFormat("text");

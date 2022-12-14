@@ -284,4 +284,32 @@ public class VenueStorage {
 
         }
     }
+
+    public void crawlWorksAndResearchersByInstitution(String IID, int num) {
+        WorkCrawler workCrawler = new WorkCrawler("none");
+
+        // 爬取学者
+        String baseURL = "https://api.openalex.org/authors";
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("filter", "last_known_institution.id:" + IID));
+        nameValuePairs.add(new BasicNameValuePair("sort", "cited_by_count:desc"));
+
+        int page = 0;
+        int count = 0;
+        int totalResearchers = 25;
+
+        while (count < Math.min(50, totalResearchers)) {
+            page++;
+
+        }
+
+
+    }
+
+    @RequestMapping(value = "/removeApply", method = RequestMethod.GET)
+    public void removeApply(){
+        JSONObject test = new JSONObject();
+        test.put("r_UID", "none");
+        esUtileService.updateDoc("researcher", "A2050314250", test);
+    }
 }
